@@ -1,0 +1,10 @@
+#install python library
+python -m pip install -r .\requirement.txt  
+
+#initial config
+In Terminal:
+npm install @chakra-ui/react@2.0.2
+npm install @emotion/react@11.9.0 @emotion/styled@11.8.1 emotion-theming@11.0.0
+#run UI
+npm start
+
