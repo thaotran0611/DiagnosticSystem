@@ -1,0 +1,22 @@
+html, body {
+    height: 100vh;
+}
+
+.bg-contain{
+    height: 100vh;
+    width: 100%;
+    background: rgb(79,70,181);
+    background: linear-gradient(110deg, rgba(79,70,181,1) 0%, rgba(119,110,254,0.3) 280%);
+    position: relative;
+}
+
+.login-contain{
+    height: 100vh;
+    width: 60%;
+    margin-left: calc(100% - 60%);
+    right: 0;
+    border-bottom: 100vh solid white;
+    border-left: 100px solid transparent;
+    position: relative;
+}
+

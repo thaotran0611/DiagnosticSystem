@@ -1,0 +1,51 @@
+.Note {
+    background-color: white;
+    width: 440px;
+    height: 320px;
+    border-radius: 20px;
+    padding: 18px;
+    position: relative;
+}
+
+.header {
+    font-size: 25px;
+    font-weight: 600;
+    display: inline;
+    margin-right: 2%;
+}
+
+.icon-add, .icon-calendar{
+    display: inline;
+    cursor: pointer;
+    width: 8%;
+    height: 8%;
+    fill: #111;
+    fill-opacity: 40%;
+}
+
+.icon-add:hover, .icon-calendar:hover{
+    fill-opacity: 100%;
+}
+
+.date{
+    display: inline;
+    font-size: 16px;
+    margin-left: 42%;
+    text-align: right;
+}
+
+.icon-calendar{
+    display: inline;
+    margin-left: 1%;
+}
+
+.NoteList{
+    height: 260px;
+    width: 408px;
+}
+
+.pagination-note-container{
+    position: absolute;
+    left: calc(50% - 228px/2);
+    bottom: 4%
+}

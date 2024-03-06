@@ -1,0 +1,57 @@
+.MiniNote-contain{
+    width: 408px;
+    height: 110px;
+    /* background-color: white; */
+    padding: 10px 
+}
+
+.MiniNote-content{
+    background-color: white;
+    position: relative;
+    opacity: 100%;
+    width: 388px;
+    height: 90px;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.content-date{
+    font-size: 12px;
+    color: rgba(17,17,17,0.5)
+}
+
+.MiniNote-content .content-text{
+    height: 75%;
+    overflow-y: hidden;
+    font-size: 14px;
+}
+
+.tipin-icon{
+    rotate: 270deg;
+    color: red;
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: 10px;
+}
+
+.edit-icon{
+    position: absolute;
+    left: 80%;
+    top: 68%;
+    color: rgb(37, 167, 206);
+    cursor: pointer;
+}
+
+.delete-icon{
+    position: absolute;
+    left: 90%;
+    top: 68%;
+    color: red;
+    cursor: pointer;
+    opacity: 100%;
+}
+
+.delete-icon:hover, .edit-icon:hover{
+    opacity: 50%;
+}
