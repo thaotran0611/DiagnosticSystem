@@ -1,0 +1,57 @@
+.takenote{
+    width: 871px;
+    height: 579px;
+    border-radius: 20px;
+    background-color:#ccc;
+    padding: 50px;
+    position: relative;
+}
+
+.takenote > h1{
+    font-size: 25px;
+    font-weight: 600;
+    display: inline;
+}
+
+.non-important{
+    display: inline;
+    margin-left: 2%;
+    width: 6%;
+    height: 6%;
+    cursor: pointer;
+    color: #111;
+    opacity: 20%;
+}
+
+.important{
+    display: inline;
+    margin-left: 2%;
+    width: 6%;
+    height: 6%;
+    cursor: pointer;
+    color: #EB3223;
+    opacity: 100%
+}
+
+.non-important:hover{
+    color: #EB3223;
+    opacity: 100%
+}
+
+.takenote >textarea{
+    display: block;
+    width: 751px;
+    height: 396px;
+    margin-top: 2%;
+    padding: 2%;
+    font-size: 18px;
+    outline: none;
+    resize: none;
+    overflow: auto;
+    border-radius: 20px;
+}
+
+.submit-btn{
+    margin-top: 2%;
+    margin-left: 78%
+}
