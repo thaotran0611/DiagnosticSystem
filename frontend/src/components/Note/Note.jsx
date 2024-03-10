@@ -6,9 +6,11 @@ import { format } from 'date-fns'
 import { useState } from "react";
 import Takenote from "./Takenote";
 import Popup from "reactjs-popup";
-import { Pagination, ThemeProvider, createTheme} from "@mui/material";
+import { ThemeProvider, createTheme} from "@mui/material";
 import { NoteData } from "./NoteData";
 import MiniNote from "./MiniNote";
+import MyPagination from '../Pagination/Pagination'
+
 import 'reactjs-popup/dist/index.css';
 
 const theme = createTheme();
@@ -27,7 +29,6 @@ const Note = () => {
     const endIndex = startIndex + pageSize;
     const slicedData = data.slice(startIndex, endIndex);
     
-
     return (
         <div className="Note">
             <p className="header">Note</p> 
@@ -64,13 +65,10 @@ const Note = () => {
                         }
                     </div>
                     <div className="pagination-note-container">
-                    <Pagination
+                    <MyPagination
                         count={Math.ceil(data.length / pageSize)}
                         page={page}
                         onChange={handleChangePage}
-                        shape="rounded"
-                        showFirstButton
-                        showLastButton
                     />
                     </div>
                 </ThemeProvider>

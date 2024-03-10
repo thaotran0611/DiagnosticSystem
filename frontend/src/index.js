@@ -7,17 +7,20 @@ import PatientList from "./components/PatientList/PatientList";
 import Note from "./components/Note/Note";
 import InformationTag from "./components/InformationTag/InformationTag";
 import OveralTag from "./components/OveralTag/OveralTag";
+import LayoutSelector from "./components/LayoutSelector/LayoutSelector";
 import LoginPage from "./screens/Login/LoginPage";
+
 function App() {
   
   return (
     <ChakraProvider>
-      {/* <PatientList /> */}
+      { <PatientList /> }
       {/* <SideBar /> */}
-      {/* <Note /> */}
+      { /* <Note /> */ }
+      { /*< LayoutSelector /> */ }
       {/* <InformationTag/> */}
       {/* <OveralTag /> */}
-      <LoginPage/>
+      {/*<LoginPage/>*/}
       {/* <InputTag/> */}
     </ChakraProvider>
   )

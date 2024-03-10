@@ -1,27 +1,52 @@
+#layout-option {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    transform: translate(0, 10%);
+    margin-right: 5% ;
+}
+.one-column {
+    width: 100%; 
+}
+.one-column .patientCard{
+    grid-template-columns: 12% 60% 20%;
+}
+.two-column .patientCard{
+    grid-template-columns: 25% 30% 35%;
+}
+.two-column {
+    width: 45%; 
+}
+.one-column-layout {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%; /* Ensure the columns take the full width */
+    margin-top: 5%;
+  }
 .two-column-layout {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
     width: 100%; /* Ensure the columns take the full width */
-  }
-  
-  .column {
-    width: 50%; /* Adjust the width as needed, considering margin and padding */
-    margin-bottom: 10px;
+    margin-top: 5%;
   }
 
   .pagination-container {
-    margin-top: 20px; /* Add margin-top for spacing */
+    margin-top: 20px; 
     display: flex;
     align-items: center;
   }
   
   .itemPerPage {
-    margin-left: 10px; /* Add margin-left for spacing */
+    background-color: transparent;
+    margin-left: 10px; 
   }
 .PatientList{
-    width: 50%;
-    height: 50%;
+    position: relative;
+    width: 60%;
     border-radius: 20pt;
     background-color: #d5c0e0;
     display: flex;
@@ -31,13 +56,11 @@
 
 }
 .patientCard{
-    width: 90%;
+    width: 100%;
     font-size: 16pt;
     display: grid;    
-    grid-template-columns: 20% 30% 35%;
-    grid-column-gap: 1%;
     align-items: center;
-    margin-top: 2%;
+    padding: 1%;
 }
 .patientCard .circle{
     grid-column: 1 / span 1;
