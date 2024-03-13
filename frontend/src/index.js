@@ -11,20 +11,25 @@ import OveralTag from "./components/OveralTag/OveralTag";
 import LoginPage from "./screens/Login/LoginPage";
 import MyTabs from "./components/Tabs/Tabs";
 import PatientInfor from "./components/PatientInfor/PatientInfor";
+import PatientCard from "./components/PatientList/PatientCard";
+
+import PatientGridCard from "./components/PatientGridCard/PatientGridCard";
 
 function App() {
   
   return (
     <ChakraProvider>
       {/* <LoginPage/> */}
-      {/* <PatientList /> */}
+      <PatientList />
       {/* <SideBar /> */}
       { /* <Note /> */ }
       { /*< LayoutSelector /> */ }
       {/* <InformationTag/> */}
       {/* <OveralTag /> */}
       {/* <MyTabs/> */}
-      {<PatientInfor/>}
+      {/* {<PatientInfor/>} */}
+      {/* {<PatientCard/>} */}
+      {/* {<PatientGridCard/>} */}
       {/* <InputTag/> */}
     </ChakraProvider>
   )
