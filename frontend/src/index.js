@@ -8,7 +8,6 @@ import Note from "./components/Note/Note";
 import LayoutSelector from "./components/LayoutSelector/LayoutSelector";
 import InformationTag from "./components/InformationTag/InformationTag";
 import OveralTag from "./components/OveralTag/OveralTag";
-import LayoutSelector from "./components/LayoutSelector/LayoutSelector";
 import LoginPage from "./screens/Login/LoginPage";
 import MyTabs from "./components/Tabs/Tabs";
 import PatientInfor from "./components/PatientInfor/PatientInfor";
@@ -24,7 +23,6 @@ function App() {
       { /*< LayoutSelector /> */ }
       {/* <InformationTag/> */}
       {/* <OveralTag /> */}
-      {/* <LayoutSelector/> */}
       {/* <MyTabs/> */}
       {<PatientInfor/>}
       {/* <InputTag/> */}
