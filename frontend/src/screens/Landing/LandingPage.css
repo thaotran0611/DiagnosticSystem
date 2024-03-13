@@ -1,0 +1,93 @@
+.LandingPage_Header{
+    height: 120px;
+    position: fixed;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    z-index: 999;
+    width: 100%;
+    top:0;
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.10), 0 12px 20px 0 rgba(0, 0, 0, 0.03), 0 18px 0 0 rgba(0, 0, 0, 0.01);
+}
+
+.LandingPage_Body{
+    padding-top: 160px;
+    /* background-color: rgba(0, 0, 0, 0.1); */
+}
+
+.LandingPage_icu{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    width: 100%;
+    height: 600px;
+}
+
+.LandingPage_icu_img{
+    position: relative;
+}
+
+.LandingPage_process_doctor{
+    display: grid;
+    grid-template-columns: 45% 55%;
+    width: 100%;
+}
+
+.LandingPage_process_doctor_img{
+    position: relative;
+}
+
+.LandingPage_process_medicine{
+    position: relative;
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
+
+.LandingPage_more_infor{
+    display: grid;
+    grid-template-columns: calc((100% - 200px)/3) calc((100% - 200px)/3) calc((100% - 200px)/3);
+    gap: 100px 100px;
+    margin: 0 100px;
+}
+
+.Landingpage_Footer{
+    margin-top: 50px;
+    background-color: rgba(62, 54, 176, 1);
+    height: max-content;
+    border-radius: 0 0 20px 20px;
+    display: grid;
+    grid-template-columns: 15% 50% 35%;
+}
+
+.Landingpage_Footer_contact_parent{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.Landingpage_Footer_contact{
+    display: grid;
+    grid-template-rows: 60% 40%;
+    gap: 10px;
+}
+
+.Landingpage_Footer_contact_child{
+    display: grid;
+    grid-template-columns: 10% 90%;
+    gap: 15px
+}
+
+.Landingpage_Footer_contact_link{
+    margin-top: 40px;
+    padding: 0 200px;
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+}
+
+.Landingpage_Footer_contact_link img{
+    padding-left: calc(50% - 15px);
+}
+
+.pagination-landing-container{
+    position: absolute;
+    left: calc(50% - 418px/2);
+    bottom: 0
+}
