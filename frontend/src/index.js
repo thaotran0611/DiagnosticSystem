@@ -21,8 +21,8 @@ function App() {
     <ChakraProvider>
       {/* <LoginPage/> */}
       {/* <PatientList /> */}
-      {<MyTable/>}
-      {/* <SideBar /> */}
+      {/* {<MyTable/>} */}
+      <SideBar />
       { /* <Note /> */ }
       { /*< LayoutSelector /> */ }
       {/* <InformationTag/> */}
