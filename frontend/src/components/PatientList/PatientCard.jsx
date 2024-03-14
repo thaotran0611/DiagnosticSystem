@@ -13,7 +13,7 @@ export default function PatientCard({patientList}){
                     <Flex> 
                         <CircleComponent gender = {patient.Gender[0]} /> 
                         <Flex ml = {2} direction="column"> 
-                            <Text margin={0} fontWeight="bold" >patient.Name </Text> 
+                            <Text margin={0} fontWeight="bold" >{patient.Name} </Text> 
                             <Text margin={0}>{patient.AdmitTime}</Text> 
                         </Flex>
                         <Spacer />

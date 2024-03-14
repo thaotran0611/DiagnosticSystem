@@ -12,7 +12,7 @@ import LoginPage from "./screens/Login/LoginPage";
 import MyTabs from "./components/Tabs/Tabs";
 import PatientInfor from "./components/PatientInfor/PatientInfor";
 import PatientCard from "./components/PatientList/PatientCard";
-
+import MyTable from "./components/MyTable/MyTable";
 import PatientGridCard from "./components/PatientGridCard/PatientGridCard";
 
 function App() {
@@ -20,7 +20,8 @@ function App() {
   return (
     <ChakraProvider>
       {/* <LoginPage/> */}
-      <PatientList />
+      {/* <PatientList /> */}
+      {<MyTable/>}
       {/* <SideBar /> */}
       { /* <Note /> */ }
       { /*< LayoutSelector /> */ }
