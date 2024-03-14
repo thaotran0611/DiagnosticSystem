@@ -1,0 +1,16 @@
+.Doctor_Overview_Container{
+    display: grid;
+    grid-template-columns: 8% 92%;
+}
+.Doctor_Overview_Body{
+    position:relative;
+    display: grid;
+    grid-template-rows: 6% 40% 52%;
+    /* gap: 1%; */
+}
+.Doctor_Overview_Body_row{
+    display: grid;
+    grid-template-columns: 59.5% 39.5%;
+    gap: 1%;
+    padding-left: 2%;
+}

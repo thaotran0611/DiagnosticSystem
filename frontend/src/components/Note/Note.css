@@ -1,6 +1,6 @@
 .Note {
     background-color: white;
-    width: 440px;
+    width: 550px;
     height: 320px;
     border-radius: 20px;
     padding: 18px;
@@ -30,7 +30,7 @@
 .date{
     display: inline;
     font-size: 16px;
-    margin-left: 42%;
+    margin-left: 50%;
     text-align: right;
 }
 

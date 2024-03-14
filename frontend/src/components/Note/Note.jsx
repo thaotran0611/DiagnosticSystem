@@ -9,6 +9,7 @@ import Popup from "reactjs-popup";
 import { Pagination, ThemeProvider, createTheme} from "@mui/material";
 import { NoteData } from "./NoteData";
 import MiniNote from "./MiniNote";
+
 import 'reactjs-popup/dist/index.css';
 
 const theme = createTheme();
@@ -44,6 +45,7 @@ const Note = () => {
             {calendar ? (
             <div style={{
                 position: 'absolute',
+                right: '3%',
                 zIndex: '1'
             }}>
                 <CalendarCustomize
@@ -64,6 +66,7 @@ const Note = () => {
                         }
                     </div>
                     <div className="pagination-note-container">
+                    
                     <Pagination
                         count={Math.ceil(data.length / pageSize)}
                         page={page}

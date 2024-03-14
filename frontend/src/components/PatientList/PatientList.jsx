@@ -1,22 +1,30 @@
 // Import necessary dependencies
-import './PatientCard.css';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PatientCard from './PatientCard';
-import { Pagination, ThemeProvider, createTheme } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material';
+import MyPagination from '../Pagination/Pagination'
+import LayoutSelector from '../LayoutSelector/LayoutSelector';
+import { Center,SimpleGrid, Stack, Flex} from '@chakra-ui/react'; 
 
-// Create a basic theme
-const theme = createTheme();
-
-
-const PatientList = () => {
+const PatientList = ({size}) => {
+  const theme = createTheme({
+    sizes: {
+      container: size || '800px',
+    },
+  });
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const pageSizeList = [10, 20, 30];
+  const pageSizeList = [6, 8, 10, 20, 30];
   const [pageSize, setPageSize] = useState(pageSizeList[0]);
 
+  const [selectedLayout, setSelectedLayout] = useState('list');
+  const handleLayoutChange = (layout) => {
+    setSelectedLayout(layout);
+    // Additional logic or state updates if needed
+  };
   useEffect(() => {
     axios.get('https://raw.githubusercontent.com/thaotran0611/API/main/patient.json')
       .then(res => {
@@ -51,33 +59,37 @@ const PatientList = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <div className='PatientList'>
-        <div className="two-column-layout">
-            <div className="column">
-              <PatientCard patientList={column1} />
-            </div>
-            <div className="column">
-              <PatientCard patientList={column2} />
-            </div>
-          </div>
-        <div className="pagination-container">
-        <Pagination
-          count={Math.ceil(data.length / pageSize)}
-          page={page}
-          onChange={handleChangePage}
-          shape="rounded"
-
-        />
-        
+      <Flex justifyContent="flex-end">
+        <Stack direction="row" spacing="4" p="2" m='0' marginLeft="auto">
+          <LayoutSelector
+          onChange = {handleLayoutChange}
+          selectedLayout = {selectedLayout} />
         <select className='itemPerPage' onChange={e => setPageSize(Number(e.target.value))} value={pageSize}>
-          {pageSizeList.map(size => (
-            <option key={size} value={size}>
-              Show {size}
-            </option>
-          ))}
-        </select>
-        </div>
-      </div>
+            {pageSizeList.map(size => (
+              <option key={size} value={size}>
+                Show {size}
+              </option>
+            ))}
+          </select>
+        </Stack>
+      </Flex>
+        {selectedLayout === 'list' ? 
+            (<SimpleGrid mt={5} columns={1} spacing={2}> 
+               <PatientCard w={750} patientList={slicedData}/>
+          </SimpleGrid>) 
+          :(
+              <SimpleGrid mt={5} columns={2} spacing={2}> 
+                <PatientCard w={800} patientList={slicedData}/>
+              </SimpleGrid>
+        )}
+          
+        <Center mb={3}>
+          <MyPagination
+            count={Math.ceil(data.length / pageSize)}
+            page={page}
+            onChange={handleChangePage}
+          />
+        </Center>
     </ThemeProvider>
   );
 };

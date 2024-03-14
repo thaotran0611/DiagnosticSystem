@@ -8,6 +8,19 @@ import Note from "./components/Note/Note";
 import InformationTag from "./components/InformationTag/InformationTag";
 import OveralTag from "./components/OveralTag/OveralTag";
 import LoginPage from "./screens/Login/LoginPage";
+import LandingPage from "./screens/Landing/LandingPage";
+import UserTag from "./components/Usertag/UserTag";
+import Search from "./components/Search/Search";
+import Filter from "./components/Filter/Filter";
+import SearchAndFilterBar from "./components/SearchAndFilterBar/SearchAndFilterBar";
+import FilterTag from "./components/Filter/FilterTag";
+import Tabs from "./components/Tabs/Tabs"
+import BarChart from "./components/Chart/BarChart";
+import ChartEvents from "./components/Chart/ChartEvents";
+import { LineChart } from "./components/Chart/LineChart";
+import { PieChart } from "./components/Chart/PieChart";
+import { HorizontalChart } from "./components/Chart/HorizontalChart";
+import Overview from "./screens/Doctor/Overview/Overview";
 function App() {
   
   return (
@@ -17,8 +30,21 @@ function App() {
       {/* <Note /> */}
       {/* <InformationTag/> */}
       {/* <OveralTag /> */}
-      <LoginPage/>
+      {/* <LoginPage/> */}
+      {/* <LandingPage /> */}
       {/* <InputTag/> */}
+      {/* <UserTag/> */}
+      {/* <Search /> */}
+      {/* <Filter/> */}
+      {/* <SearchAndFilterBar/> */}
+      {/* <FilterTag /> */}
+      {/* <Tabs/> */}
+      {/* <BarChart /> */}
+      {/* <ChartEvents/> */}
+      {/* <LineChart/> */}
+      {/* <PieChart/> */}
+      {/* <HorizontalChart/> */}
+      <Overview/>
     </ChakraProvider>
   )
 }

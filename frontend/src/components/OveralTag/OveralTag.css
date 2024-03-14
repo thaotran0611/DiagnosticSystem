@@ -1,5 +1,6 @@
 .linear-bg{
-    width: 747px;
+    width: 100%;
+    position: relative;
     height: 283px;
     background: rgb(62,54,176);
     background: linear-gradient(215deg, rgba(62,54,176,0.7) 0%, rgba(166,222,247,1) 100%);

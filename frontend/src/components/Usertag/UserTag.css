@@ -1,0 +1,4 @@
+.UserTag_container{
+    display: grid;
+    grid-template-columns: 40% 60%;
+}
