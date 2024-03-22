@@ -1,9 +1,9 @@
 #sidebar{
-    padding-top: 5%;
-    padding-bottom: 5%;
-
-    width: 8%;
-    height: 100%;
+    position: relative;
+    padding-top: 70%;
+    padding-bottom: 15%;
+    width: 100%;
+    height: 100vh;
     background-color: #3E36B0;
     justify-content: center;
 
@@ -27,15 +27,15 @@
     align-items: center;
     list-style-type: none;
     margin: 0%;
-    padding: 20%;
+    padding: 20% 10%;
     color: white;
     text-align: center;
 }
 .row #icon{
-    flex: 50%;
+    flex: 80%;
     display: grid;
     place-items: center;
-    font-size: 5vmin;
+    font-size: 3vmin;
 }
 .row #title{
     flex: 50%;

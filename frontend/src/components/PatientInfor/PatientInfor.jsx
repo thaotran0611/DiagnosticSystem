@@ -14,20 +14,27 @@ const PatientInfor = (props) => {
     const gender = 'M' 
     const diseaseList = ['Lungs','Heart']
   return ( 
-    <Card width={500}> 
-      <CardHeader> 
-        <Heading size="md">Patient's Information</Heading> 
+    <Card width={'98%'} h={'100%'} borderRadius="20px" border="none"> 
+      <CardHeader paddingBottom={0}>
+        <Flex>
+          <Flex>
+            <Heading size="md">Patient's Information</Heading> 
+            {/* <Box ml="auto"> 
+              <Button bg="#3E36B0" color="white">Detail</Button> 
+            </Box>  */}
+          </Flex>
+        </Flex> 
       </CardHeader> 
  
       <CardBody border="1px solid #B9DDDF" borderRadius="20px" p="4" m='2'> 
-        <Stack divider={<StackDivider />} spacing="4"> 
+        <Stack divider={<StackDivider />} spacing="1"> 
           <Flex> 
                 <CircleComponent gender = {gender} /> 
                 <Flex ml = {2} direction="column"> 
                     <Text margin={0} fontWeight="bold" >Alisha John - 12345</Text> 
                     <Text margin={0}>01/02/2002</Text> 
                 </Flex> 
-            </Flex> 
+          </Flex> 
 
           <Stack direction="row" spacing="4" p="2" m='0'>
             {diseaseList.map((disease, index) => (
@@ -35,21 +42,21 @@ const PatientInfor = (props) => {
             ))}
           </Stack>
 
-            <SimpleGrid columns={2} spacing={3}> 
+            <SimpleGrid columns={2} spacing={0}> 
                 {data.map((item, index) => ( 
                 <React.Fragment key={index}> 
-                    <Text fontWeight="bold">{item.key}:</Text> 
-                    <Text>{item.value}</Text> 
+                    <Text fontSize={'sm'} fontWeight="bold">{item.key}:</Text> 
+                    <Text fontSize={'sm'}>{item.value}</Text> 
                 </React.Fragment> 
                 ))} 
             </SimpleGrid> 
         </Stack> 
       </CardBody> 
-      <CardFooter> 
+      {/* <CardFooter> 
         <Box ml="auto"> 
           <Button bg="#3E36B0" color="white">Detail</Button> 
         </Box> 
-      </CardFooter> 
+      </CardFooter>  */}
     </Card> 
   ); 
 }; 

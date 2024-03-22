@@ -12,10 +12,10 @@ const SearchAndFilterBar = (props) => {
     const [gender, setGender] = useState(0);
     const [recently, setRecently] = useState(false)
     return(
-        <div style={{width: '1300px'}}>
+        <div style={{width: '100%'}}>
             <Grid
-                h='200px'
-                templateRows='repeat(3, 1fr)'
+                h='150px'
+                templateRows='repeat(2, 1fr)'
                 templateColumns='repeat(10, 1fr)'
                 gap={4}
                 >

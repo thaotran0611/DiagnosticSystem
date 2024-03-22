@@ -29,7 +29,7 @@ import { Stack } from "@chakra-ui/react";
 const Filter = (props) => {
     return (
         <Menu closeOnSelect={false} direction="rtl">
-            <MenuButton as={Button} rightIcon={<IoChevronDown/>}>
+            <MenuButton bgColor={'#3E36B0'} color={'#fff'} as={Button} rightIcon={<IoChevronDown/>}>
                 Filter
             </MenuButton>
             <MenuList>

@@ -14,10 +14,10 @@ const DiseaseCard = ({ text }) => {
   return (
     <Box w={20} overflow="hidden">
       <Box>
-        <Image src={imagePaths[text]} alt={`Card Image for ${text}`}/>
+        <Image boxSize='30px' src={imagePaths[text]} alt={`Card Image for ${text}`}/>
       </Box>
-      <Box p="4">
-        <Text fontSize="md" fontWeight="semibold" mb="2">
+      <Box p="1">
+        <Text fontSize="sm" fontWeight="semibold" mb="2">
           {text}
         </Text>
       </Box>

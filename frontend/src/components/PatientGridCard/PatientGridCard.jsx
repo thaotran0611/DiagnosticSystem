@@ -1,22 +1,22 @@
 import CircleComponent from '../CircleComponent/CircleComponent' 
 import TypeCard from '../PatientList/TypeCard';
-import React from 'react'; 
+import React, {useState} from 'react'; 
 import { Card, CardBody, StackDivider, Stack, Text,SimpleGrid, Spacer, Flex } from '@chakra-ui/react'; 
  
 const PatientGridCard = (props) => { 
-    const data = [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ]; 
+    // const data = [ 
+    //     { key: 'Ethnicity', value: 'Asian' }, 
+    //     { key: 'Addmission date', value: '12/12/2012' }, 
+    //     { key: 'Discharge date', value: '20/12/2012' }, 
+    //     { key: 'Marital status', value: 'Emergency' }, 
+    //     { key: 'Insurance', value: 'Private' }, 
+    //     { key: 'Diagnose', value: 'Overdose' }, 
+    //   ]; 
     const gender = 'M' 
-    const halfIndex = Math.ceil(data.length / 2);
+    const halfIndex = Math.ceil(props.data.length / 2);
     const type = 'NEWBORN'
   return ( 
-    <Card w={600}> 
+    <Card w={700} onClick={props.onClick}> 
       <CardBody border="1px solid #B9DDDF" borderRadius="20px" p="4" m='2'> 
         <Stack divider={<StackDivider />} spacing="4"> 
           <Flex> 
@@ -31,20 +31,20 @@ const PatientGridCard = (props) => {
 
             <SimpleGrid columns={2} spacing={2}> 
                 <SimpleGrid columns={2} spacing={2}> 
-                    {data.slice(0, halfIndex).map((item, index) => ( 
+                    {props.data ? props.data.slice(0, halfIndex).map((item, index) => ( 
                     <React.Fragment key={index}> 
                         <Text fontWeight="bold">{item.key}:</Text> 
                         <Text>{item.value}</Text> 
                     </React.Fragment> 
-                    ))} 
+                    )): null} 
                 </SimpleGrid>
                 <SimpleGrid columns={2} spacing={2}> 
-                    {data.slice(halfIndex).map((item, index) => ( 
+                    {props.data ? props.data.slice(halfIndex).map((item, index) => ( 
                     <React.Fragment key={index}> 
                         <Text fontWeight="bold">{item.key}:</Text> 
                         <Text>{item.value}</Text> 
                     </React.Fragment> 
-                    ))} 
+                    )): null} 
                 </SimpleGrid>  
             </SimpleGrid> 
         </Stack> 

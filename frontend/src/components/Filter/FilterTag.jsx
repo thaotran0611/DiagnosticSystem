@@ -19,9 +19,11 @@ const FilterTag = (props) => {
                 variant='solid'
                 colorScheme='gray'
                 _disabled={props.disabled}
+                onClick={props.onClickTag}
+                cursor={'pointer'}
                 >
-                <TagLabel>{props.text}</TagLabel>
-                <TagCloseButton onClick={props.onClick} />
+                    <TagLabel>{props.text}</TagLabel>
+                    <TagCloseButton onClick={props.onClick} />
                 </Tag>
             {/* </HStack> */}
         </div>

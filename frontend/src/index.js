@@ -5,36 +5,61 @@ import { ChakraProvider } from "@chakra-ui/react";
 import SideBar from "./components/Sidebar/Sidebar";
 import PatientList from "./components/PatientList/PatientList";
 import Note from "./components/Note/Note";
-import LayoutSelector from "./components/LayoutSelector/LayoutSelector";
 import InformationTag from "./components/InformationTag/InformationTag";
 import OveralTag from "./components/OveralTag/OveralTag";
 import LoginPage from "./screens/Login/LoginPage";
-import MyTabs from "./components/Tabs/Tabs";
-import PatientInfor from "./components/PatientInfor/PatientInfor";
-import PatientCard from "./components/PatientList/PatientCard";
-import MyTable from "./components/MyTable/MyTable";
-import PatientGridCard from "./components/PatientGridCard/PatientGridCard";
-
-function App() {
+import LandingPage from "./screens/Landing/LandingPage";
+import UserTag from "./components/Usertag/UserTag";
+import Search from "./components/Search/Search";
+import Filter from "./components/Filter/Filter";
+import SearchAndFilterBar from "./components/SearchAndFilterBar/SearchAndFilterBar";
+import FilterTag from "./components/Filter/FilterTag";
+import Tabs from "./components/Tabs/Tabs"
+import BarChart from "./components/Chart/BarChart";
+import ChartEvents from "./components/Chart/ChartEvents";
+import { LineChart } from "./components/Chart/LineChart";
+import { PieChart } from "./components/Chart/PieChart";
+import { HorizontalChart } from "./components/Chart/HorizontalChart";
+import Overview from "./screens/Doctor/Overview/Overview";
+import Patient from "./screens/Doctor/Patient/Patient";
+import { DoctorLayout } from "./layout/DoctorLayout";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+// function App() {
   
-  return (
-    <ChakraProvider>
-      {/* <LoginPage/> */}
-      {/* <PatientList /> */}
-      {/* {<MyTable/>} */}
-      <SideBar />
-      { /* <Note /> */ }
-      { /*< LayoutSelector /> */ }
-      {/* <InformationTag/> */}
-      {/* <OveralTag /> */}
-      {/* <MyTabs/> */}
-      {/* {<PatientInfor/>} */}
-      {/* {<PatientCard/>} */}
-      {/* {<PatientGridCard/>} */}
-      {/* <InputTag/> */}
-    </ChakraProvider>
-  )
-}
+//   return (
+//     <ChakraProvider>
+//       {/* <PatientList /> */}
+//       {/* <SideBar /> */}
+//       {/* <Note /> */}
+//       {/* <InformationTag/> */}
+//       {/* <OveralTag /> */}
+//       {/* <LoginPage/> */}
+//       {/* <LandingPage /> */}
+//       {/* <InputTag/> */}
+//       {/* <UserTag/> */}
+//       {/* <Search /> */}
+//       {/* <Filter/> */}
+//       {/* <SearchAndFilterBar/> */}
+//       {/* <FilterTag /> */}
+//       {/* <Tabs/> */}
+//       {/* <BarChart /> */}
+//       {/* <ChartEvents/> */}
+//       {/* <LineChart/> */}
+//       {/* <PieChart/> */}
+//       {/* <HorizontalChart/> */}
+//       <Overview/>
+//       {/* <Patient/> */}
+//       {/* <DoctorLayout/> */}
+//     </ChakraProvider>
+//   )
+// }
 
 const rootElement = document.getElementById("root")
-render(<App />, rootElement)
+render(
+  <BrowserRouter>
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  </BrowserRouter> 
+, rootElement)

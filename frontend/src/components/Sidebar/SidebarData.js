@@ -6,24 +6,24 @@ import { MdPeopleAlt } from "react-icons/md";
 
 export const SidebarData = [
     {
-        title: "Home",
+        title: "Overview",
         icon: <AiFillLayout class="icon" />,
-        link: "#"
+        link: "../doctor/overview"
     },
     {
         title: "Patient",
         icon: <MdPeopleAlt class="icon" />,
-        link: "#"
+        link: "../doctor/patient"
     },
     {
-        title: "Visit",
+        title: "Setting",
         icon: <IoLocationOutline class="icon"/>,
-        link: "#"
+        link: "../doctor/setting"
     },
-    {
-        title: "Logout",
-        icon: <CiLogout class="icon"/>,
-        link: "#"
-    }
+    // {
+    //     title: "Logout",
+    //     icon: <CiLogout class="icon"/>,
+    //     link: "#"
+    // }
 
 ]

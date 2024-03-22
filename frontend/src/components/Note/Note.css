@@ -1,7 +1,7 @@
 .Note {
     background-color: white;
-    width: 440px;
-    height: 320px;
+    width: 98%;
+    height: 94%;
     border-radius: 20px;
     padding: 18px;
     position: relative;
@@ -30,7 +30,7 @@
 .date{
     display: inline;
     font-size: 16px;
-    margin-left: 42%;
+    margin-left: 50%;
     text-align: right;
 }
 
@@ -40,12 +40,21 @@
 }
 
 .NoteList{
-    height: 260px;
-    width: 408px;
+    height: 100%;
+    width: 100%;
 }
 
 .pagination-note-container{
     position: absolute;
     left: calc(50% - 228px/2);
-    bottom: 4%
+    bottom: 2%
+}
+
+fieldset{
+    border: none !important;
+    font-size: xx-small !important;
+}
+
+svg{
+    margin: 0;
 }

@@ -20,20 +20,14 @@ import linkedin from "../../img/LandingPage/linkedin.png";
 import telegram from "../../img/LandingPage/telegram.png";
 import axios from 'axios';
 import { Pagination, ThemeProvider, createTheme} from "@mui/material";
+import { useNavigate, useNavigation } from "react-router-dom";
+import Scrollspy from 'react-scrollspy'
 
 
 const theme = createTheme();
 
 
 const LandingPage = () => {
-    const IcuRef = useRef(null);
-    const IcuProcessRef = useRef(null);
-    const MedicineProcessRef = useRef(null);
-    const ContactRef = useRef(null);
-    const myRef = [IcuRef, IcuProcessRef, MedicineProcessRef, ContactRef]
-    const handleScroll = (id) => {
-        myRef[id].current?.scrollIntoView({ behavior: 'smooth' });
-    }
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -77,31 +71,38 @@ const LandingPage = () => {
         setPage(newpage);
     };
 
+    // useEffect(() => {
+    //     setInterval(() => {
+    //       setPage(page + 1)
+    //     }, 10000);
+    //   }, []);
+      
     const AnyReactComponent = ({ text }) => <div style={{width: 'max-content', color: 'red', fontSize: '10pxpx'}}>{text}</div>;
 
+    const navigate = useNavigate();
     return(
         <div style={{height: 'max-content'}}>
             <div className="LandingPage_Header">
                 <img style={{height: '120px', marginLeft: '10%'}} src={logo}/>
                 <div style={{marginLeft: '80%', marginTop: '50px'}}>
-                    <Submit_button text = 'Login'/>
+                    <Submit_button onClick={()=>{navigate('../login')}} text = 'Login'/>
                 </div>
                 <nav style={{position: 'absolute', marginTop: '40px', marginLeft: '44%'}} class="navbar navbar-expand-lg bg-body-tertiary">
                     <div class="container-fluid">
                         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                        <div style={{fontSize: '20px', fontWeight: '600', color: '#111'}} class="navbar-nav">
-                            <a onClick={() => {handleScroll(0)}} style={{margin: '0 10px', color: '#111', cursor: 'pointer'}} className="nav-link">ICU information</a>
-                            <a onClick={() => {handleScroll(1)}} style={{margin: '0 10px', color: '#111', cursor: 'pointer'}} className="nav-link">ICU process</a>
-                            <a onClick={() => {handleScroll(2)}} style={{margin: '0 10px', color: '#111', cursor: 'pointer'}} class="nav-link">Medicine process</a>
-                            <a onClick={() => {handleScroll(3)}} style={{margin: '0 10px', color: '#111', cursor: 'pointer'}} class="nav-link">Contact us</a>
-                        </div>
+                        <Scrollspy currentClassName="active" items={['ICU', 'ICUProcess', 'MedicineProcess', 'Contact']} style={{fontSize: '20px', fontWeight: '600', color: '#111'}} className="navbar-nav">
+                            <a style={{textDecoration: 'none', color: 'black', borderRadius: '10px', margin: '0px 20px'}} href="#ICU" className="nav-link">ICU information</a>
+                            <a style={{textDecoration: 'none', color: 'black', borderRadius: '10px', margin: '0px 20px'}} href="#ICUProcess" className="nav-link">ICU process</a>
+                            <a style={{textDecoration: 'none', color: 'black', borderRadius: '10px', margin: '0px 20px'}} href="#MedicineProcess" className="nav-link">Medicine process</a>
+                            <a style={{textDecoration: 'none', color: 'black', borderRadius: '10px', margin: '0px 20px'}} href="#Contact" className="nav-link">Contact us</a>
+                        </Scrollspy>
                         </div>
                     </div>
                 </nav>
             </div>
 
             <div className="LandingPage_Body">
-                <div ref={IcuRef} id="ICU" className="LandingPage_icu">
+                <div id="ICU" className="LandingPage_icu">
                     <div className="LandingPage_icu_img">
                         <img style={{position: 'absolute'}} src={doctor} alt="no img" />
                         <img style={{position: 'absolute', left: '390px'}} src={patient} alt="no img" />
@@ -122,7 +123,7 @@ const LandingPage = () => {
                         <Submit_button text='Read more...' />
                     </div>
                 </div>
-                <div ref={IcuProcessRef} id="ICUProcess" style={{height: '800px'}} className="LandingPage_process_doctor">
+                <div id="ICUProcess" style={{height: '800px'}} className="LandingPage_process_doctor">
                     <div style={{padding: '200px 100px'}} className="LandingPage_process_doctor_content">
                         <img style={{width: '1000px'}} src={doctor_process} alt="no img" />
                         <div style={{marginTop: '50px', paddingLeft: '500px'}}>
@@ -134,7 +135,7 @@ const LandingPage = () => {
                         <img style={{position: 'absolute', right: '20px', top: '140px'}} src={doctor2} alt="no img" />
                     </div>
                 </div>
-                <div ref={MedicineProcessRef} id="MedicineProcess" className="LandingPage_process_medicine">
+                <div id="MedicineProcess" className="LandingPage_process_medicine">
                     <div className="LandingPage_process_medicine_img">
                         <img style={{position: 'absolute'}} src={bg2} alt="no img" />
                         <img style={{position: 'absolute', top: '80px', left: '20px'}} src={medicine_process} alt="no img" />
@@ -175,7 +176,7 @@ const LandingPage = () => {
                     </ThemeProvider>
                 </div>
             </div>
-            <div ref={ContactRef} className="Landingpage_Footer">
+            <div id="Contact" className="Landingpage_Footer">
                 <div style={{padding: '50px 20px', position: 'relative'}}>
                     <img src={logo} alt="no img" />
                 </div>
