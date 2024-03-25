@@ -7,17 +7,17 @@ import { MdPeopleAlt } from "react-icons/md";
 export const SidebarData = [
     {
         title: "Overview",
-        icon: <AiFillLayout class="icon" />,
+        icon: <AiFillLayout class="icon"  style={{ fontSize: "3.5rem"}} />,
         link: "../doctor/overview"
     },
     {
         title: "Patient",
-        icon: <MdPeopleAlt class="icon" />,
+        icon: <MdPeopleAlt class="icon"  style={{ fontSize: "3.5rem"}}/>,
         link: "../doctor/patient"
     },
     {
         title: "Setting",
-        icon: <IoLocationOutline class="icon"/>,
+        icon: <IoLocationOutline class="icon"  style={{ fontSize: "3.5rem"}}/>,
         link: "../doctor/setting"
     },
     // {

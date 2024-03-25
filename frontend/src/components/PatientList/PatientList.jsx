@@ -4,7 +4,10 @@ import PatientCard from './PatientCard';
 import { ThemeProvider, createTheme } from '@mui/material';
 import MyPagination from '../Pagination/Pagination'
 import LayoutSelector from '../LayoutSelector/LayoutSelector';
-import { Center, SimpleGrid, Stack, Flex, Box } from '@chakra-ui/react';
+import { Text, Center, SimpleGrid, Stack, Flex, Box,  Button, Spacer } from '@chakra-ui/react';
+import {TextField} from '@mui/material';
+import GoToPage from '../GoToPage/GoToPage';
+
 
 const PatientList = ({ size }) => {
   const theme = createTheme({
@@ -16,8 +19,9 @@ const PatientList = ({ size }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const pageSizeList = [6, 8, 10, 20, 30];
+  const pageSizeList = [10, 20, 30];
   const [pageSize, setPageSize] = useState(pageSizeList[0]);
+  const [goToPage, setGoToPage] = useState("");
 
   const [selectedLayout, setSelectedLayout] = useState('list');
   const handleLayoutChange = (layout) => {
@@ -39,6 +43,16 @@ const PatientList = ({ size }) => {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    setGoToPage(newPage.toString()); // Update the input field when page changes
+  };
+
+  const handleGoToPage = () => {
+    const pageNumber = parseInt(goToPage);
+    if (pageNumber >= 1 && pageNumber <= Math.ceil(data.length / pageSize)) {
+      setPage(pageNumber);
+    } else {
+      alert(`Page number should be between 1 and ${Math.ceil(data.length / pageSize)}`);
+    }
   };
 
   const startIndex = (page - 1) * pageSize;
@@ -58,22 +72,25 @@ const PatientList = ({ size }) => {
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} >
       <Flex justifyContent="flex-end">
-        <Stack direction="row" spacing="4" p="2" m='0' marginLeft="auto">
-          <LayoutSelector
-            onChange={handleLayoutChange}
-            selectedLayout={selectedLayout} />
-          <select className='itemPerPage' onChange={e => setPageSize(Number(e.target.value))} value={pageSize}>
-            {pageSizeList.map(size => (
-              <option key={size} value={size}>
-                Show {size}
-              </option>
-            ))}
-          </select>
+        <Text pl="5" pt="2" fontSize={35} fontWeight="bold" marginRight="auto">Patient List</Text>
+        <Stack direction="row" spacing="4" p="2" m='0' marginLeft="auto" mr={5}>
+            <GoToPage handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage ={setGoToPage}/>
+            <LayoutSelector
+              onChange={handleLayoutChange}
+              selectedLayout={selectedLayout} />
+            <select className='itemPerPage' onChange={e => setPageSize(Number(e.target.value))} value={pageSize}>
+              {pageSizeList.map(size => (
+                <option key={size} value={size}>
+                  Show {size}
+                </option>
+              ))}
+            </select>
         </Stack>
       </Flex>
-      <Box maxHeight="330px" overflowY="auto" style={{
+      
+      <Box p={5} maxHeight="330px" overflowY="auto" style={{
             scrollbarWidth: 'thin', 
             scrollbarColor: '#A0AEC0 #ffffff', 
           }}>
@@ -88,13 +105,17 @@ const PatientList = ({ size }) => {
             </SimpleGrid>
           )}
       </Box>
-      <Center mb={3}>
+      <Center pb={10}>
         <MyPagination
           count={Math.ceil(data.length / pageSize)}
           page={page}
           onChange={handleChangePage}
         />
       </Center>
+  
+      
+
+        
     </ThemeProvider>
   );
 };

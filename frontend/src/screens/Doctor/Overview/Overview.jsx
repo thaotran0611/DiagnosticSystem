@@ -12,14 +12,14 @@ import {
   } from '@chakra-ui/react'
 import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { useNavigate } from "react-router-dom";
-import { Grid, GridItem } from '@chakra-ui/react'
+import { Grid, GridItem,Text } from '@chakra-ui/react'
 const Overview = () => {
     const navigate = useNavigate();
     return(
         <DoctorLayout path={
-            <Breadcrumb>
+            <Breadcrumb fontSize="xl">
                 <BreadcrumbItem isCurrentPage>
-                    <BreadcrumbLink href='#'>Overview</BreadcrumbLink>
+                    <BreadcrumbLink href='#' style={{ fontSize: "25px"}}>Overview</BreadcrumbLink>
                 </BreadcrumbItem>
             </Breadcrumb>
             }

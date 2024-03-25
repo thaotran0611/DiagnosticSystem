@@ -1,42 +1,16 @@
-// import './Sidebar.css';
-// import {SidebarData} from './SidebarData.js'
-// import { useNavigate } from 'react-router-dom';
-
-// function SideBar(){
-//   const navigate = useNavigate();
-//   return <div id='sidebar'> <ul class ="SidebarList">
-//     {SidebarData.map((val,key) => {
-//       return (
-//         <li key={key} class="row" onClick={()=> {navigate(val.link)}}> 
-//           {" "}
-//           <div id="icon"> {val.icon}</div> {" "}
-//           <div id="title"> 
-//             {val.title}
-//           </div>
-//         </li>
-//         );
-//     })}
-//     </ul>
-//   </div>;
-// }
-// export default SideBar;
-
 import React, { useState } from 'react';
 import { Box, Stack, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure, Grid, GridItem } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import { SidebarData } from './SidebarData.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretRight, faCaretLeft, faBars } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom';
+import { faCaretRight, faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = () => {
-  const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
-  <IconButton bg={'none'} boxSize={5} icon={<FontAwesomeIcon icon={faBars} />} aria-label="Open Sidebar" onClick={onOpen} />
-
+  <IconButton icon={<FontAwesomeIcon icon={faCaretRight} />} aria-label="Open Sidebar" onClick={onOpen} />
       <Drawer isOpen={isOpen} onClose={onClose} placement="left" size="xs">
         <DrawerOverlay>
           <DrawerContent>
@@ -50,7 +24,7 @@ const Sidebar = () => {
                 {SidebarData.map((val, key) => (
                   <Box
                     key={key}
-                    onClick={() => { navigate(val.link) }}
+                    onClick={() => { window.location.pathname = val.link }}
                     align="center"
                     size="md"
                     _hover={{ 
@@ -68,7 +42,6 @@ const Sidebar = () => {
                 ))}
               </Stack>
             </DrawerBody>
-
             <DrawerFooter>
             </DrawerFooter>
           </DrawerContent>
