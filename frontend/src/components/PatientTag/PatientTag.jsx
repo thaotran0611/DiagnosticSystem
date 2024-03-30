@@ -1,20 +1,32 @@
-import { Card, CardHeader, Flex, Avatar, Box, Heading, IconButton, Text, BsThreeDotsVertical, AbsoluteCenter, Center, CardBody, SimpleGrid, Divider } from "@chakra-ui/react";
+import { Card, CardHeader, Flex, Avatar, Box, Heading, IconButton, Text, BsThreeDotsVertical, AbsoluteCenter, Center, CardBody, SimpleGrid, Divider, Icon } from "@chakra-ui/react";
 import React from "react";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DiseaseCard from "../DiseaseCard/DiseaseCard";
+import { GiMedicines } from "react-icons/gi";
 
 const PatientTag = (props) => { 
     const halfIndex = Math.ceil(props.data.length / 2);
     return(
         <Card width={'98%'} shadow={'none'} height={'100%'} borderRadius={'20px'}>
-            <CardHeader>
+            <CardHeader position={'relative'}>
                 <AbsoluteCenter top={0}>
-                    <Box bg={'#fff'} borderRadius={'50%'} width={'100px'} height={'100px'}>
+                    <Box position={'relative'} bg={'#fff'} borderRadius={'50%'} width={'100px'} height={'100px'}>
                         <AbsoluteCenter>
-                            <Box borderRadius={'50%'} width={'90px'} height={'90px'} border={'1px solid #A6DEF7'}>
+                            <Box position={'relative'} borderRadius={'50%'} width={'90px'} height={'90px'} border={'1px solid #A6DEF7'}>
                                 <AbsoluteCenter>
-                                    <Box borderRadius={'50%'} width={'80px'} height={'80px'} bg={'rgba(166,222,247,0.4)'}>
-                                        <AbsoluteCenter bottom={-5}>
+                                    <Box position={'relative'} borderRadius={'50%'} width={'80px'} height={'80px'} bg={'rgba(166,222,247,0.4)'}>
+                                        <AbsoluteCenter>
+                                            {props.patient ? 
                                             <Text color={'#A6DEF7'} fontWeight={'medium'} fontSize={'40px'}>10</Text>
+                                            : props.disease ?
+                                            <DiseaseCard text={props.type} hidden={true}/> 
+                                            : props.medicine ? 
+                                            <Box w={10} overflow="hidden">
+                                                <Box>
+                                                    <Icon boxSize={10} as={GiMedicines}/>
+                                                </Box>
+                                            </Box>: 
+                                            null}
                                         </AbsoluteCenter>
                                     </Box>
                                 </AbsoluteCenter>

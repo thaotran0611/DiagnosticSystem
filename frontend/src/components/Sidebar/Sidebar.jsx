@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
 import { Box, Stack, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure, Grid, GridItem } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
-import { SidebarData } from './SidebarData.js';
+import { SidebarDataDoctor, SidebarDataResearcher, SidebarDataAnalyst, SidebarDataAdmin } from './SidebarData.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretRight, faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 
-const Sidebar = () => {
+const Sidebar = ({role}) => {
+  let SidabarData = null;
+  if (role === 1) {
+    SidabarData = SidebarDataDoctor
+  }
+  else if (role === 2) {
+    SidabarData = SidebarDataResearcher
+  }
+  else if (role === 3) {
+    SidabarData = SidebarDataAnalyst
+  }
+  else if (role === 4) {
+    SidabarData = SidebarDataAdmin
+  }
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -21,7 +34,7 @@ const Sidebar = () => {
 
             <DrawerBody>
               <Stack spacing={10} align="center">
-                {SidebarData.map((val, key) => (
+                {SidabarData.map((val, key) => (
                   <Box
                     key={key}
                     onClick={() => { window.location.pathname = val.link }}

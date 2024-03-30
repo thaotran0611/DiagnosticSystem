@@ -29,7 +29,7 @@ const GeneralTab = ({generalTag, expand, pageSize, setPageSize}) => {
             {expandGeneral === 1 ? null : 
             <GridItem position={'relative'}>
                 <ThemeProvider theme={theme}>
-                    <SimpleGrid h={'80%'} columns={expand ? 6 : 4} spacing={8}>
+                    <SimpleGrid h={'80%'} columns={expand ? 6 : 4} spacing={8} autoRows={false}>
                         {
                             slicedData.map(infor => (
                                 <GeneralCard heading = {infor.heading} content={infor.content}/>
@@ -76,7 +76,6 @@ const GeneralTab = ({generalTag, expand, pageSize, setPageSize}) => {
                 </Center>
             </GridItem>
             {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'8'}>
-                {/* <MyTable/> */}
                 <Box h={'100%'}>
                     <MyTable2 height={expandGeneral === 1 ? '620px': '450px'} width={expand ? '1700px' : '1100px'}/>
                 </Box>

@@ -12,13 +12,21 @@ import PatientGridCard from './components/PatientGridCard/PatientGridCard';
 import DetailPatient from './screens/Doctor/DetailPatient/DetailPatient';
 import Sidebar from './components/Sidebar/Sidebar';
 import Setting from './screens/Setting/Setting';
+import OverviewResearcher from './screens/Reseacher/Overview/Overview';
+import Disease from './screens/Reseacher/Disease/Diseases';
+import DetailDisease from './screens/Reseacher/DetailDisease/DetailDisease';
+import Medicine from './screens/Reseacher/Medicine/Medicine';
+import DetailMedicine from './screens/Reseacher/DetailMedicine/DetailMedicine';
+import OverviewAnalyst from './screens/Analyst/Overview/Overview';
+import Model from './screens/Analyst/Model/Model';
+import OverviewAdmin from './screens/Administrator/Overview/Overview';
+import User from './screens/Administrator/User/User';
+import DetailUser from './screens/Administrator/DetailUser/DetailUser';
+import Schedule from './screens/Administrator/Schedule/Schedule';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   return (
-    // <Sidebar/>
-    // <BasicDateTimePicker/>
-    // <PatientGridCard/>
     <Box>
       <Routes>
         <Route 
@@ -57,24 +65,74 @@ function App() {
             <Setting/>
           }
         />
+        <Route 
+          path='/researcher/overview'
+          element={
+            <OverviewResearcher/>
+          }
+        />
+        <Route 
+          path='/researcher/disease'
+          element={
+            <Disease />
+          }
+        />
+        <Route 
+          path='/researcher/disease/detaildisease'
+          element={
+            <DetailDisease />
+          }
+        />
+        <Route
+          path='/researcher/medicine'
+          element={
+            <Medicine/>
+          }
+        />
+        <Route 
+          path='/researcher/medicine/detailmedicine'
+          element={
+            <DetailMedicine/>
+          }
+        />
+        <Route
+          path='/analyst/overview'
+          element={
+            <OverviewAnalyst/>
+          }
+        />
+        <Route
+          path='/analyst/model'
+          element={
+            <Model/>
+          }
+        />
+        <Route
+          path='/admin/overview'
+          element={
+            <OverviewAdmin/>
+          }
+        />
+        <Route
+          path='/admin/users'
+          element={
+            <User/>
+          }
+        />
+        <Route
+          path='/admin/users/detailuser'
+          element={
+            <DetailUser/>
+          }
+        />
+        <Route
+          path='/admin/schedule'
+          element={
+            <Schedule/>
+          }
+        />
       </Routes>
     </Box>
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
   );
 }
 

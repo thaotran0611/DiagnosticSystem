@@ -1,0 +1,7 @@
+.Doctor_Layout_Container{
+    display: grid;
+    grid-template-columns: 100%;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}

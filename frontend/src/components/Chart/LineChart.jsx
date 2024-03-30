@@ -24,6 +24,7 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       position: 'top'
@@ -32,6 +33,15 @@ export const options = {
       display: true,
       text: 'Chart.js Line Chart',
     },
+  },
+  animations: {
+    tension: {
+      duration: 1000,
+      easing: 'linear',
+      from: 1,
+      to: 0,
+      loop: false
+    }
   },
 };
 

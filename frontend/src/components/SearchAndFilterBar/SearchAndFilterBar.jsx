@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Grid, GridItem } from '@chakra-ui/react'
+import { Grid, GridItem, Spacer } from '@chakra-ui/react'
 import Search from "../Search/Search";
 import Filter from "../Filter/Filter";
 import { format } from 'date-fns'

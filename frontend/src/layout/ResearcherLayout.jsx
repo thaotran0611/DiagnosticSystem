@@ -1,5 +1,5 @@
 import React from "react";
-import './DoctorLayout.css'
+import './ResearcherLayout.css'
 import { Grid, GridItem } from "@chakra-ui/react";
 
 import UserTag from "../components/Usertag/UserTag";
@@ -10,17 +10,17 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import Sidebar from "../components/Sidebar/Sidebar";
 
-export const DoctorLayout = ({children, path, expand, patient}) => {
+export const ResearcherLayout = ({children, path, expand, disease}) => {
     const navigate = useNavigate();
     return(
-        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0', overflow: 'auto'}}>
+        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0'}}>
             <Grid
-            templateAreas={patient ? `"header header"
+            templateAreas={disease ? `"header header"
                                       "nav main"` :
                                       `"header"
                                        "main"`}
             gridTemplateRows={'7% 93%'}
-            gridTemplateColumns={ patient ? !expand ? '35% 65%': '3% 97%' : '100%'}
+            gridTemplateColumns={ disease ? !expand ? '35% 65%': '3% 97%' : '100%'}
             h='99%'
             gap='0'
             color='blackAlpha.700'
@@ -30,7 +30,7 @@ export const DoctorLayout = ({children, path, expand, patient}) => {
             >
                 <GridItem pl='2' area={'header'}>
                     <Grid paddingRight={'40px'} paddingTop={'8px'} paddingLeft={'40px'} templateColumns={'repeat(20, 1fr)'}>
-                        <GridItem colSpan={1} colStart={1}><Sidebar role={1}/></GridItem>
+                        <GridItem colSpan={1} colStart={1}><Sidebar role={2}/></GridItem>
                         <GridItem colSpan={6} colStart={2}>
                             {path}
                         </GridItem>

@@ -1,10 +1,26 @@
 import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
+import { Box } from '@chakra-ui/react';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+export const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'right',
+      },
+      title: {
+        display: true,
+        text: 'Chart.js Pie Chart'
+      }
+  }
+}
+
 export const data = {
+  
   labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
   datasets: [
     {
@@ -32,5 +48,9 @@ export const data = {
 };
 
 export function PieChart(props) {
-  return <Pie data={data} />;
+  return (
+    <Box display={'block'} height={'100%'} position={'relative'} overflow={'auto'}>
+      <Pie data={data} options={options}/>
+    </Box>
+  );
 }

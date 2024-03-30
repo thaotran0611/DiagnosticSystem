@@ -10,20 +10,21 @@ const imagePaths = {
   'Alcohol Abuse': 'https://cdn-icons-png.flaticon.com/512/8804/8804463.png',
 };
 
-const DiseaseCard = ({ text }) => {
+const DiseaseCard = ({ text, hidden }) => {
   return (
     <Box w={10} overflow="hidden">
       <Box>
         <Image src={imagePaths[text]} alt={`Card Image for ${text}`}/>
       </Box>
-      <Box>
-        <Center> 
-        <Text fontSize="md" fontWeight="semibold" mb="2">
-          {text}
-        </Text>
-        </Center>
-        
-      </Box>
+      {hidden ? null : 
+        <Box>
+          <Center> 
+          <Text fontSize="md" fontWeight="semibold" mb="2">
+            {text}
+          </Text>
+          </Center>
+        </Box>
+      }
     </Box>
   );
 };
