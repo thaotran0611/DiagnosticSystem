@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  metastore:
+    container_name: metastore
+    image: hive-mysql
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - G:\opt\hive\data\warehouse:/opt/hive/data/warehouse
+    environment:
+      SERVICE_NAME: metastore
+      DB_DRIVER: mysql
+      SERVICE_OPTS: "-Djavax.jdo.option.ConnectionDriverName=com.mysql.cj.jdbc.Driver -Djavax.jdo.option.ConnectionURL=jdbc:mysql://host.docker.internal:3306/${MYSQL_DATABASE} -Djavax.jdo.option.ConnectionUserName=${MYSQL_USER} -Djavax.jdo.option.ConnectionPassword=${MYSQL_PASSWORD}"
+    ports:
+      - "9083:9083"
+    networks:
+      - electron
+  hiveserver:
+    container_name: hiveserver
+    image: apache/hive:4.0.0
+    restart: always
+    volumes:
+      - G:\opt\hive\data\warehouse:/opt/hive/data/warehouse
+    environment:
+      SERVICE_NAME: hiveserver2
+      SERVICE_OPTS: "-Dhive.metastore.uris=thrift://metastore:9083"
+      IS_RESUME: true
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    networks:
+      - electron
+
+networks:
+  electron:
