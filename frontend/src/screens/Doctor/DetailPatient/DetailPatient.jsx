@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
@@ -21,11 +22,88 @@ import PrescriptionTab from "./PrescriptionTab";
 import NoteTab from "./NoteTab";
 import DiseasesTab from "./DiseasesTab";
 import ProcedureTab from "./ProcedureTab";
+import { useParams } from 'react-router-dom';
 
 const theme = createTheme();
 
 const DetailPatient = (props) => {
-    const navigate=useNavigate();
+    const navigate = useNavigate();
+
+    const doctor_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    const { patientCode } = useParams();
+
+    const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
+    const [loadingPatient, setLoadingPatient] = useState(true);
+
+    const [error, setError] = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-overview', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                console.log(response)
+                setPatientData(response.data.patientDetail);
+                setLoadingPatient(false);
+            } catch (error) {
+                setError(error);
+                setLoadingPatient(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const [addmission, setAddmission] = useState([]); // PASS AS PARAMETER
+    const [loadingAdmission, setLoadingAdmission] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-admission', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                console.log(response)
+                setAddmission(response.data.admission);
+                setLoadingAdmission(false);
+            } catch (error) {
+                setError(error);
+                setLoadingAdmission(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const [note, setNote] = useState([])
+    const [loadingNote, setLoadingNote] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patient-notes', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                console.log(response)
+                setNote(response.data.note);
+                setLoadingNote(false);
+            } catch (error) {
+                setError(error);
+                setLoadingNote(false);
+            }
+        };
+        fetchData();
+    }, []);
+
     const [expand, setExpand] = useState(false);
     const data = [ 
         { key: 'Full name', value: 'Lucy Biaca' }, 
@@ -150,14 +228,14 @@ const DetailPatient = (props) => {
                         {!expand?
                         <GridItem position={'relative'} area={'information'} marginTop={'8%'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <PatientTag data={data} name='Lucy' id='511'/>
+                                <PatientTag data={patientdata} loading={loadingPatient}/>
                             </ScaleFade>
                         </GridItem> : null }
 
                         {!expand?
                         <GridItem area={'note'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <Note pageSize='3'/>
+                                <Note pageSize={3} data={note}/>
                             </ScaleFade>
                         </GridItem>: null }
                         <GridItem area={'divider'}>

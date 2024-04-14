@@ -6,7 +6,7 @@ metadata.reflect(bind=engine)
 
 #add 1 table for the number of patients a doctor need to visit each day
 
-USER = sa.Table('users', metadata, autoload=True, autoload_with=engine)  
+USERS = sa.Table('users', metadata, autoload=True, autoload_with=engine)  
 DOCTOR = sa.Table('doctor', metadata, autoload=True, autoload_with=engine) 
 ADMINISTRATOR = sa.Table('aministrator', metadata, autoload=True, autoload_with=engine)  
 ANALYST = sa.Table('analyst', metadata, autoload=True, autoload_with=engine) 
@@ -22,7 +22,7 @@ D_LABITEMS = sa.Table('d_labitems', metadata, autoload=True, autoload_with=engin
 DISEASE = sa.Table('disease', metadata, autoload=True, autoload_with=engine)  
 DO_D_ICD_DIAGNOSES = sa.Table('do_d_icd_diagnoses', metadata, autoload=True, autoload_with=engine)   
 DO_D_ICD_PROCEDURE = sa.Table('do_d_icd_procedure', metadata, autoload=True, autoload_with=engine)   
-DO_D_ITEMS = sa.Table('do_d_items', metadata, autoload=True, autoload_with=engine) 
+# DO_D_ITEMS = sa.Table('do_d_items', metadata, autoload=True, autoload_with=engine) 
 DO_D_LABITEMS = sa.Table('do_d_labitems', metadata, autoload=True, autoload_with=engine)  
 DRUG = sa.Table('drug', metadata, autoload=True, autoload_with=engine)  
 GET_DATE_SCHEDULE = sa.Table('get_date_schedule', metadata, autoload=True, autoload_with=engine)   

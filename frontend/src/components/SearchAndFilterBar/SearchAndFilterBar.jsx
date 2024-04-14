@@ -19,7 +19,7 @@ const SearchAndFilterBar = (props) => {
                 templateColumns='repeat(10, 1fr)'
                 gap={4}
                 >
-                <GridItem rowSpan={1} colSpan={10} style={{padding: '5px'}}>
+                <GridItem rowSpan={1} colSpan={9} style={{padding: '5px'}}>
                     <Search/>
                 </GridItem>
                 <GridItem rowSpan={1} colSpan={9}>

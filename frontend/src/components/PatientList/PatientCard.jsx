@@ -3,18 +3,21 @@ import CircleComponent from '../CircleComponent/CircleComponent'
 import TypeCard from './TypeCard'
 import { Card, CardBody, Box, StackDivider, Stack, Heading, Text, Spacer , Flex } from '@chakra-ui/react'; 
  
-export default function PatientCard({patientList}){
-    const gender = 'M' 
+export default function PatientCard({patientList, onClick}){
+    const handleCardClick = (patient) => {
+        onClick(patient);
+    };
+
     return (
         patientList.map(patient => (
-            <Card key={patient.SubjectID} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}}> 
+            <Card key={patient.subject_id} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}} onClick={() => handleCardClick(patient)}> 
             <CardBody border="1px solid rgba(17, 17, 17, 0.3)" borderRadius="20px" p="2" m='1'> 
                 <Stack divider={<StackDivider />} spacing="2"> 
                     <Flex> 
-                        <CircleComponent gender = {patient.Gender[0]} /> 
+                        <CircleComponent gender = {patient.gender[0]} /> 
                         <Flex ml = {2} direction="column"> 
-                            <Text margin={0} fontWeight="bold" >{patient.Name} - {patient.SubjectID} </Text> 
-                            <Text margin={0}>{patient.AdmitTime}</Text> 
+                            <Text margin={0} fontWeight="bold" > {patient.subject_id} - {patient.name} </Text> 
+                            <Text margin={0}>{patient.dob}</Text> 
                         </Flex>
                         <Spacer />
                         <TypeCard type={patient.Type}/>

@@ -14,7 +14,7 @@ export const SidebarDataDoctor = [
     {
         title: "Overview",
         icon: <AiFillLayout class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../doctor/overview"
+        link: "../overview"
     },
     {
         title: "Patient",
@@ -32,7 +32,7 @@ export const SidebarDataResearcher = [
     {
         title: "Overview",
         icon: <AiFillLayout class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../researcher/overview"
+        link: "../overview"
     },
     {
         title: "Diseases",
@@ -55,7 +55,7 @@ export const SidebarDataAnalyst = [
     {
         title: "Overview",
         icon: <AiFillLayout class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../analyst/overview"
+        link: "../overview"
     },
     {
         title: "Model",
@@ -73,7 +73,7 @@ export const SidebarDataAdmin = [
     {
         title: "Overview",
         icon: <AiFillLayout class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../admin/overview"
+        link: "../overview"
     },
     {
         title: "Users",

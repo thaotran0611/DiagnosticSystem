@@ -8,7 +8,7 @@ export const NoteData = [
     {
         id: 2,
         date: new Date(),
-        text: "Yêu cầu y tá thay dụng cụ vệ sinh cho bệnh nhân tại phòng 102",
+        text: "Yêu cầu y tá thay dụng cụ vệ sinh cho bệnh nhân tại phòng 102 Yêu cầu y tá thay dụng cụ vệ sinh cho bệnh nhân tại phòng 102 Yêu cầu y tá thay dụng cụ vệ sinh cho bệnh nhân tại phòng 102",
         important: "important"
     },
     {

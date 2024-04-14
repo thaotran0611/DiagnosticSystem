@@ -20,6 +20,7 @@ const GeneralTab = ({generalTag, expand, pageSize, setPageSize}) => {
     
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
+    console.log(typeof generalTag)
     const slicedData = generalTag.slice(startIndex, endIndex);
     return(
         <Grid gridTemplateRows={expandGeneral === 1 ? '3% 97%':

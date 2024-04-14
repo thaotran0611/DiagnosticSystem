@@ -26,6 +26,10 @@ import Schedule from './screens/Administrator/Schedule/Schedule';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  var role = '';
+  if (sessionStorage.getItem('user')) {
+      role = JSON.parse(sessionStorage.getItem('user')).role;
+  }
   return (
     <Box>
       <Routes>
@@ -38,99 +42,108 @@ function App() {
         <Route
           path="/login"
           element={
-            <LoginPage/>
+            <LoginPage setLoggedIn={setLoggedIn}/>
           }
         />
-        <Route 
-          path='/doctor/overview'
+        {role == 'DOCTOR' && (<Route 
+          path='/overview'
           element={
             <Overview/>
           }
-        />
-        <Route
+        />)}
+        {role == 'DOCTOR' && (<Route
           path='/doctor/patient'
           element={
             <Patient/>
           }
-        />
-        <Route
-          path='/doctor/patient/detailpatient'
+        />)}
+        
+        {role == 'DOCTOR' && (<Route
+          path='/doctor/patient/detailpatient/:patientCode'
           element={
             <DetailPatient/>
           }
         />
-        <Route
+        )}
+        {role == 'DOCTOR' && (<Route
           path='/doctor/setting'
           element={
             <Setting/>
           }
         />
-        <Route 
-          path='/researcher/overview'
+        )}
+        {role == 'RESEARCHER' && (<Route 
+          path='/overview'
           element={
             <OverviewResearcher/>
           }
-        />
-        <Route 
+        /> )}
+        {role == 'RESEARCHER' && (<Route 
           path='/researcher/disease'
           element={
             <Disease />
           }
         />
-        <Route 
+        )}
+        {role == 'RESEARCHER' && (<Route 
           path='/researcher/disease/detaildisease'
           element={
             <DetailDisease />
           }
-        />
-        <Route
+        /> )}
+        {role == 'RESEARCHER' && (<Route
           path='/researcher/medicine'
           element={
             <Medicine/>
           }
-        />
-        <Route 
+        />)}
+
+        {role == 'RESEARCHER' && (<Route 
           path='/researcher/medicine/detailmedicine'
           element={
             <DetailMedicine/>
           }
-        />
-        <Route
-          path='/analyst/overview'
+        />)}
+        
+        {role == 'ANALYST' && (<Route
+          path='/overview'
           element={
             <OverviewAnalyst/>
           }
-        />
-        <Route
+        />)}
+
+        {role == 'ANALYST' && (<Route
           path='/analyst/model'
           element={
             <Model/>
           }
-        />
-        <Route
-          path='/admin/overview'
+        /> )}
+
+        {role == 'ADMINISTRATOR' && (<Route
+          path='/overview'
           element={
             <OverviewAdmin/>
           }
-        />
-        <Route
+        />)}
+
+        {role == 'ADMINISTRATOR' && (<Route
           path='/admin/users'
           element={
             <User/>
           }
-        />
-        <Route
+        />)}
+        {role == 'ADMINISTRATOR' && (<Route
           path='/admin/users/detailuser'
           element={
             <DetailUser/>
           }
-        />
-        <Route
+        />)}
+        {role == 'ADMINISTRATOR' && (<Route
           path='/admin/schedule'
           element={
             <Schedule/>
           }
-        />
+        />)}
       </Routes>
     </Box>
   );

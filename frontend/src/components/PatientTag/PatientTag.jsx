@@ -5,10 +5,16 @@ import DiseaseCard from "../DiseaseCard/DiseaseCard";
 import { GiMedicines } from "react-icons/gi";
 
 const PatientTag = (props) => { 
-    const halfIndex = Math.ceil(props.data.length / 2);
+    let patientDataList = [];
+    if (props.data && props.data.length > 0) {
+        patientDataList = Object.entries(props.data[0]).slice(2).map(([key, value]) => {
+            return { key: key, value: value };
+        });
+    }
+    const halfIndex = Math.ceil(patientDataList.length / 2);
     return(
         <Card width={'98%'} shadow={'none'} height={'100%'} borderRadius={'20px'}>
-            <CardHeader position={'relative'}>
+            <CardHeader position={'relative'} paddingTop={4} paddingBottom={2}>
                 <AbsoluteCenter top={0}>
                     <Box position={'relative'} bg={'#fff'} borderRadius={'50%'} width={'100px'} height={'100px'}>
                         <AbsoluteCenter>
@@ -34,15 +40,16 @@ const PatientTag = (props) => {
                         </AbsoluteCenter>
                     </Box>
                 </AbsoluteCenter>
-                <Center marginTop={8}>
-                    <Text fontWeight={'500'} fontSize={'22px'}>{props.name} -</Text>
-                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.id}</Text>
-                </Center>
             </CardHeader>
-            <CardBody>
+            {props.loading ? <div><Center> Loading... </Center></div>: <div> 
+            <CardBody paddingTop={2}>
+                <Center marginTop={4} marginBottom={1}>
+                    <Text fontWeight={'500'} fontSize={'22px'}>{props.data[0].subject_id} -</Text>
+                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.data[0].name}</Text>
+                </Center>
                 <SimpleGrid columns={3} spacing={2} gridTemplateColumns={'48% 4% 48%'}>
                     <SimpleGrid columns={2} spacing={1}>
-                        {props.data ? props.data.slice(0, halfIndex).map((item, index) => ( 
+                        {patientDataList ? patientDataList.slice(0, halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
                             <Text fontWeight="bold">{item.key}:</Text> 
                             <Text>{item.value}</Text> 
@@ -53,7 +60,7 @@ const PatientTag = (props) => {
                         <Divider style={{height: '100%', width: '1px'}} orientation="vertical"/>
                     </Center>
                     <SimpleGrid columns={2} spacing={1}> 
-                        {props.data ? props.data.slice(halfIndex).map((item, index) => ( 
+                        {patientDataList ? patientDataList.slice(halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
                             <Text fontWeight="bold">{item.key}:</Text> 
                             <Text>{item.value}</Text> 
@@ -62,7 +69,9 @@ const PatientTag = (props) => {
                 </SimpleGrid> 
                 </SimpleGrid>
             </CardBody>
+            </div>}
         </Card>
+        
     )
 }
 

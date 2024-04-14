@@ -10,7 +10,7 @@ const Search = (props) => {
                 <Input display={'block'} border={'2px solid #3E36B0'} onChangeCapture={props.onChangeCapture} style={{borderTopRightRadius: '0', borderBottomRightRadius: '0'}} onChange={props.onChange} placeholder='Search' />
             </GridItem>
             <GridItem>
-                <Button bgColor={'#3E36B0'} color={'#fff'} onClick={props.onClick} style={{borderTopLeftRadius: '0', borderBottomLeftRadius: '0'}}>search</Button>
+                <Button bgColor={'#3E36B0'} color={'#fff'} onClick={props.onClick} style={{borderTopLeftRadius: '0', borderBottomLeftRadius: '0'}}>Search</Button>
             </GridItem>
         </Grid>
     )

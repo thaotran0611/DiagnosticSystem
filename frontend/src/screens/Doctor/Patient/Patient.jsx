@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import SearchAndFilterBar from "../../../components/SearchAndFilterBar/SearchAndFilterBar";
 import { Center, Slider, Divider, SimpleGrid, Icon  } from "@chakra-ui/react";
 import {
@@ -17,78 +18,35 @@ import { useNavigate } from "react-router-dom";
 const theme = createTheme();
 
 const Patient = () => {
-    const [data, setData] = useState([[ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ],
-      [ 
-        { key: 'Ethnicity', value: 'Asian' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Marital status', value: 'Emergency' }, 
-        { key: 'Insurance', value: 'Private' }, 
-        { key: 'Diagnose', value: 'Overdose' }, 
-      ]]); 
+
+    const doctor_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+
+    const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
+    const [loadingPatient, setLoadingPatient] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+      const fetchData = async () => {
+          try {
+              const response = await axios.get('http://localhost:8000/patients', {
+                  params: {
+                      doctor_code: doctor_code
+                  }
+              });
+              console.log(response)
+              setPatientData(response.data.data);
+              setLoadingPatient(false);
+          } catch (error) {
+              setError(error);
+              setLoadingPatient(false);
+          }
+      };
+  
+      fetchData();
+  }, []);
+    
     const pageSize = 4;
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
@@ -96,9 +54,12 @@ const Patient = () => {
     };
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const slicedData = data.slice(startIndex, endIndex);
+    const slicedData = patientdata.slice(startIndex, endIndex);
     const navigate = useNavigate();
 
+    const handleClick = (patientCode) => {
+        navigate(`detailpatient/${patientCode}`); // Assuming the URL pattern is '/patient/:patientCode'
+    };
     return(
         <DoctorLayout path={
           <Breadcrumb>
@@ -118,14 +79,14 @@ const Patient = () => {
                                 <SimpleGrid mt={0} columns={2} spacing={1}>
                                     {
                                         slicedData.map(item => (
-                                            <PatientGridCard data={item}/>
+                                            <PatientGridCard data={item} onClick={handleClick}/>
                                         ))
                                     }
                                 </SimpleGrid>
                             </Center>
-                            <Center>
+                            <Center mt={1.5}>
                                 <MyPagination 
-                                    count={Math.ceil(data.length / pageSize)} 
+                                    count={Math.ceil(patientdata.length / pageSize)} 
                                     page = {page} 
                                     onChange = {handleChangePage}/>
                             </Center>

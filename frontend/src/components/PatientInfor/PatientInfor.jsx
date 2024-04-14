@@ -3,17 +3,25 @@ import DiseaseCard from '../DiseaseCard/DiseaseCard'
 import React from 'react'; 
 import { Card, CardHeader, CardBody, Box, StackDivider, Stack, Heading, Text, CardFooter,Button,SimpleGrid, Divider, Flex } from '@chakra-ui/react'; 
  
-const PatientInfor = (props) => { 
-    const data = [ 
-        { key: 'Ethnicity', value: 'England' }, 
-        { key: 'Addmission date', value: '12/12/2012' }, 
-        { key: 'Discharge date', value: '20/12/2012' }, 
-        { key: 'Addmission type', value: 'Emergency' }, 
-        { key: 'Addmission location', value: 'EMERGENCY ROOM ADMIT' }, 
-      ]; 
-    const gender = 'M' 
-    const diseaseList = ['Lungs','Heart']
-  return ( 
+const PatientInfor = (data) => { 
+    // const data = [ 
+    //     { key: 'Ethnicity', value: 'England' }, 
+    //     { key: 'Addmission date', value: '12/12/2012' }, 
+    //     { key: 'Discharge date', value: '20/12/2012' }, 
+    //     { key: 'Addmission type', value: 'Emergency' }, 
+    //     { key: 'Addmission location', value: 'EMERGENCY ROOM ADMIT' }, 
+    //   ]; 
+
+    let keyValueList = []; // Initialize keyValueList as an empty array
+    console.log(data.data)
+    if (data.data !== null) {
+      keyValueList = Object.entries(data.data).slice(5).map(([key, value]) => {
+        return { key: key, value: value };
+      });
+    }
+    
+  const diseaseList = ['Lungs','Heart']
+  return (data.data !== null ? ( 
     <Card width={'98%'} h={'100%'} borderRadius="20px" border="none"> 
       <CardHeader paddingBottom={0}>
         <Flex>
@@ -29,10 +37,10 @@ const PatientInfor = (props) => {
       <CardBody border="1px solid #B9DDDF" borderRadius="20px" p="4" m='2'> 
         <Stack divider={<StackDivider />} spacing="1"> 
           <Flex> 
-                <CircleComponent gender = {gender} /> 
+                <CircleComponent gender = {data.data.gender} /> 
                 <Flex ml = {2} direction="column"> 
-                    <Text margin={0} fontWeight="bold" >Alisha John - 12345</Text> 
-                    <Text margin={0}>01/02/2002</Text> 
+                    <Text margin={0} fontWeight="bold" >{data.data.subject_id} - {data.data.name}</Text> 
+                    <Text margin={0}>{data.data.dob}</Text> 
                 </Flex> 
           </Flex> 
 
@@ -43,7 +51,7 @@ const PatientInfor = (props) => {
           </Stack>
 
             <SimpleGrid columns={2} spacing={0}> 
-                {data.map((item, index) => ( 
+                {keyValueList.map((item, index) => ( 
                 <React.Fragment key={index}> 
                     <Text fontSize={'sm'} fontWeight="bold">{item.key}:</Text> 
                     <Text fontSize={'sm'}>{item.value}</Text> 
@@ -58,7 +66,7 @@ const PatientInfor = (props) => {
         </Box> 
       </CardFooter>  */}
     </Card> 
-  ); 
+  ): <div>Null page content</div>); 
 }; 
  
 export default PatientInfor;

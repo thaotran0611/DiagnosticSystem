@@ -1,31 +1,106 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './Takenote.css';
-import { useState } from "react";
 import { TiPin } from "react-icons/ti";
 import Submit_button from "../Button/Submit-button";
 import { format } from "date-fns";
+import {
+    Alert,
+    AlertIcon,
+    AlertTitle,
+    AlertDescription,
+  } from '@chakra-ui/react'
 const Takenote = (props) => {
-    const [message, setMessage] = useState(props.text ? props.text : '');
+    const user_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    const [message, setMessage] = useState(props.content ? props.content : '');
+    const [title, setTitle] = useState(props.title ? props.title : '');
+
     const handleTakenote = event => {
         setMessage(event.target.value);
     };
-    const [important, setImportant] = useState(props.important ? props.important : "non-important")
+    const [important, setImportant] = useState(props.priority == 1 ? "important" : "non-important")
+    const [priority, setPriority] = useState(0)
+    const [insertSuccess, setInsertSuccess] = useState(false);
+
+
     const handleImportant = () => {
-        if (important == "important") setImportant("non-important");
-        else setImportant("important")
+        if (important === "important") {
+            setImportant("non-important");
+            setPriority(0);
+        } else {
+            setImportant("important");
+            setPriority(1);
+        }
     };
+
     const submit = () => {
-        console.log(important, message)
+        const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        axios({
+            method: 'post',
+            url: 'http://localhost:8000/insert-self-note',
+            data: {
+                priority: priority,
+                title: title,
+                content: message,
+                created_at:currentDate,
+                user_code: user_code
+            },
+          })
+            .then((res) => {
+              console.log(res)
+              setInsertSuccess(true);
+            })
+            .catch((res) => {
+              console.log(res);
+              setInsertSuccess(false);
+            });
+        setTimeout(() => {
+            props.onSubmit();
+        }, 1000);
     }
-    
+    const handleTitleChange = event => {
+        setTitle(event.target.value);
+    };
+    const change = () =>{
+        const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        axios({
+            method: 'post',
+            url: 'http://localhost:8000/insert-self-note',
+            data: {
+                priority: priority,
+                title: title,
+                content: message,
+                created_at:currentDate,
+                user_code: user_code
+            },
+          })
+            .then((res) => {
+              console.log(res)
+              setInsertSuccess(true);
+            })
+            .catch((res) => {
+              console.log(res);
+              setInsertSuccess(false);
+            });
+        setTimeout(() => {
+            props.onSubmit();
+        }, 3000);
+    }
     return(
         <div className="takenote">
             <h1>Take note</h1>
             <TiPin id="important" name="important" onClick={handleImportant} className={important}/>
-            <p style={{display: 'inline', paddingLeft: '55%', fontSize: '14px'}}>{props.date ? props.date : format(new Date(), 'dd-MMM-yyyy hh:mm:ss a')}</p>
+            <p style={{display: 'inline', paddingLeft: '55%', fontSize: '14px'}}>{props.created_at  ? props.created_at : format(new Date(), 'dd-MMM-yyyy hh:mm:ss a')}</p>
+            <textarea id="title" value={title} onChange={handleTitleChange} placeholder="Enter title" name="title" />
             <textarea id="takenote" value={message} onChange={handleTakenote} placeholder="Write your note here!" name="takenote" />
             <div className="submit-btn">
-                <Submit_button text = "submit" onClick = {submit} />
+                {props.new ? <Submit_button text = "Submit" onClick = {submit} />: <Submit_button text = "Change" onClick = {submit} /> }
+                {/* {
+                    insertSuccess && <Alert status='success'> <AlertIcon /> Insert New Note ! </Alert>
+                } */}
+
             </div>
         </div>
     )

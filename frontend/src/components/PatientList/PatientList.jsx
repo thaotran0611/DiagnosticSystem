@@ -9,15 +9,13 @@ import {TextField} from '@mui/material';
 import GoToPage from '../GoToPage/GoToPage';
 
 
-const PatientList = ({ size }) => {
+const PatientList = ({ size, data, onPatientSelect }) => {
   const theme = createTheme({
     sizes: {
       container: size || '800px',
     },
   });
   const [page, setPage] = useState(1);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const pageSizeList = [10, 20, 30];
   const [pageSize, setPageSize] = useState(pageSizeList[0]);
@@ -26,20 +24,7 @@ const PatientList = ({ size }) => {
   const [selectedLayout, setSelectedLayout] = useState('list');
   const handleLayoutChange = (layout) => {
     setSelectedLayout(layout);
-    // Additional logic or state updates if needed
   };
-
-  useEffect(() => {
-    axios.get('https://raw.githubusercontent.com/thaotran0611/API/main/patient.json')
-      .then(res => {
-        setData(res.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error);
-        setLoading(false);
-      });
-  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -60,12 +45,10 @@ const PatientList = ({ size }) => {
   const slicedData = data.slice(startIndex, endIndex);
 
   const midIndex = Math.ceil(slicedData.length / 2);
-  const column1 = slicedData.slice(0, midIndex);
-  const column2 = slicedData.slice(midIndex);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  // if (loading) {
+  //   return <p>Loading...</p>;
+  // }
 
   if (error) {
     return <p>Error: {error.message}</p>;
@@ -82,7 +65,7 @@ const PatientList = ({ size }) => {
               selectedLayout={selectedLayout} />
             <select className='itemPerPage' onChange={e => setPageSize(Number(e.target.value))} value={pageSize}>
               {pageSizeList.map(size => (
-                <option key={size} value={size}>
+                <option key={size} value={size} >
                   Show {size}
                 </option>
               ))}
@@ -96,12 +79,12 @@ const PatientList = ({ size }) => {
           }}>
           {selectedLayout === 'list' ?
           (<SimpleGrid mt={5} columns={1} spacing={2}>
-            <PatientCard w={750} patientList={slicedData} />
+            <PatientCard w={750} patientList={slicedData} onClick={onPatientSelect} />
           </SimpleGrid>)
           :
           (
             <SimpleGrid mt={5} columns={2} spacing={2}>
-              <PatientCard w={800} patientList={slicedData} />
+              <PatientCard w={800} patientList={slicedData} onClick={onPatientSelect} />
             </SimpleGrid>
           )}
       </Box>
