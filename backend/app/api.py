@@ -27,7 +27,7 @@ app.add_middleware(
 
 def transform_timestamp(df,col_list):
     for col in col_list:
-        df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
+        df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if x is not None else None)
 
 def generate_random_string(length):
     characters = string.ascii_letters + string.digits
@@ -196,6 +196,37 @@ async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
 
     return {"message": "Note inserted successfully"}
 
+@app.post("/insert-patient-note", tags=["root"])
+async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
+    print(data)
+    # note_id = generate_random_string(random.randint(4, 9))
+    priority = data.get("priority")
+    title = data.get("title")
+    content = data.get("content")
+    created_at = data.get("created_at")
+    user_code = data.get("user_code")
+    subject_id = data.get("subject_id")
+
+    # Establish connection to Hive
+    conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    # Create cursor
+    cursor = conn.cursor()
+    insert_query = """INSERT INTO TABLE patient_note VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+    # Define data to be inserted
+    data = (user_code,subject_id, created_at, created_at, content, priority, title)
+
+    # Execute INSERT statement
+    cursor.execute(insert_query, data)
+
+    # Commit transaction
+    conn.commit()
+
+    # Close cursor and connection
+    cursor.close()
+    conn.close()
+
+    return {"message": "Note inserted successfully"}
+
 @app.post("/delete-self-note", tags=["root"])
 async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
     print(data)
@@ -206,7 +237,6 @@ async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
     # Create cursor
     cursor = conn.cursor()
     query = f"""DELETE FROM note where note_id={note_id}"""
-   
     # Execute INSERT statement
     cursor.execute(query)
 
@@ -234,18 +264,13 @@ async def get_self_note(doctor_code, db=Depends(get_db)) -> dict:
 @app.get("/patient-notes", response_model=dict, tags=["root"]) 
 async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
     subject_id = int(subject_id)
-    
-    subq = sa.select([
-        ADMISSIONS_CHECKED.columns.hadm_id,
-        ]) \
-        .where(ADMISSIONS_CHECKED.columns.subject_id == subject_id).subquery()
-    
-    subq_hadm_ids = sa.select([subq.columns.hadm_id]).as_scalar()
-    
-    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.hadm_id.in_(subq_hadm_ids)))\
+    doctor_code = int(doctor_code)
+    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.subject_id))\
         .order_by(sa.desc(PATIENT_NOTE.columns.updated_at))
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
+    print(df)
+
     if len(df)>0:
         transform_timestamp(df,['created_at','updated_at'])
         result = df.to_dict(orient='records')
@@ -257,7 +282,7 @@ async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
 
 
 @app.get("/patients-detail-admission", response_model=dict, tags=["root"])  
-async def get_patients_detail_overview(doctor_code, subject_id, db=Depends(get_db)) -> dict:
+async def get_patients_admission_overview(doctor_code, subject_id, db=Depends(get_db)) -> dict:
     subject_id = int(subject_id)
 
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
@@ -302,7 +327,7 @@ async def get_patients_detail_overview(doctor_code, subject_id, db=Depends(get_d
     stmt2 = PATIENTS_CHECKED.select().where(PATIENTS_CHECKED.columns.subject_id == subject_id)
 
     df2 = pd.DataFrame(db.execute(stmt2).fetchall())
-
+    print(df2)
     if len(df2)>0:
         transform_timestamp(df2,['dob','dod','dod_hosp','dod_ssn'])
         result2 = df2.to_dict(orient='records')

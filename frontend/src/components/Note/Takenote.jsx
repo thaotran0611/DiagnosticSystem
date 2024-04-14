@@ -34,18 +34,20 @@ const Takenote = (props) => {
             setPriority(1);
         }
     };
-
+    
+    const url = props.type == "self-note" ? 'http://localhost:8000/insert-self-note': 'http://localhost:8000/insert-patient-note';
     const submit = () => {
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         axios({
             method: 'post',
-            url: 'http://localhost:8000/insert-self-note',
+            url: url,
             data: {
                 priority: priority,
                 title: title,
                 content: message,
                 created_at:currentDate,
-                user_code: user_code
+                user_code: user_code,
+                subject_id: props.subject_id
             },
           })
             .then((res) => {
@@ -63,31 +65,7 @@ const Takenote = (props) => {
     const handleTitleChange = event => {
         setTitle(event.target.value);
     };
-    const change = () =>{
-        const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-        axios({
-            method: 'post',
-            url: 'http://localhost:8000/insert-self-note',
-            data: {
-                priority: priority,
-                title: title,
-                content: message,
-                created_at:currentDate,
-                user_code: user_code
-            },
-          })
-            .then((res) => {
-              console.log(res)
-              setInsertSuccess(true);
-            })
-            .catch((res) => {
-              console.log(res);
-              setInsertSuccess(false);
-            });
-        setTimeout(() => {
-            props.onSubmit();
-        }, 3000);
-    }
+    
     return(
         <div className="takenote">
             <h1>Take note</h1>

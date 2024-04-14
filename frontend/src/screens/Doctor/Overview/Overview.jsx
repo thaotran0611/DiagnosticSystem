@@ -69,7 +69,7 @@ const Overview = () => {
     
         fetchData();
     }, []);
-    
+
     const handlePatientSelect = (patient) => {
         setSelectedPatient(patient);
     };
@@ -96,7 +96,7 @@ const Overview = () => {
                         </GridItem>
                         <GridItem area={'note'} position={'relative'}>
                             <Center position={'relative'} height={'100%'}>
-                                <Note pageSize={2} data={note}/>
+                                <Note loading ={loadingNote} pageSize={2} data={note} type={"self-note"} subject_id={""} />
                             </Center>
                         </GridItem>
                         {loadingPatient ? (

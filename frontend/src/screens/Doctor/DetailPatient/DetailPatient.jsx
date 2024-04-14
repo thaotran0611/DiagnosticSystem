@@ -33,11 +33,12 @@ const DetailPatient = (props) => {
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
     const { patientCode } = useParams();
-
+    console.log(patientCode)
     const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
     const [loadingPatient, setLoadingPatient] = useState(true);
 
     const [error, setError] = useState(null);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -102,17 +103,19 @@ const DetailPatient = (props) => {
             }
         };
         fetchData();
+        const intervalId = setInterval(fetchData, 5000);
+        return () => clearInterval(intervalId);
     }, []);
 
     const [expand, setExpand] = useState(false);
-    const data = [ 
-        { key: 'Full name', value: 'Lucy Biaca' }, 
-        { key: 'Birthday', value: '12/12/2012' }, 
-        { key: 'Job', value: 'Teacher' }, 
-        { key: 'Gender', value: 'Female' }, 
-        { key: 'Address', value: 'London, UK' }, 
-        { key: 'Phone', value: '1234658' }, 
-    ];
+    // const data = [ 
+    //     { key: 'Full name', value: 'Lucy Biaca' }, 
+    //     { key: 'Birthday', value: '12/12/2012' }, 
+    //     { key: 'Job', value: 'Teacher' }, 
+    //     { key: 'Gender', value: 'Female' }, 
+    //     { key: 'Address', value: 'London, UK' }, 
+    //     { key: 'Phone', value: '1234658' }, 
+    // ];
     const expandPage = () => {
         setExpand(!expand); 
         setPageSizeGeneral(pageSizeGeneral*4/6);
@@ -235,7 +238,7 @@ const DetailPatient = (props) => {
                         {!expand?
                         <GridItem area={'note'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <Note pageSize={3} data={note}/>
+                                <Note loading ={loadingNote} pageSize={3} data={note} type={"patient-note"} subject_id={patientCode}/>
                             </ScaleFade>
                         </GridItem>: null }
                         <GridItem area={'divider'}>

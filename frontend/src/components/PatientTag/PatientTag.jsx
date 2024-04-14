@@ -3,8 +3,10 @@ import React from "react";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DiseaseCard from "../DiseaseCard/DiseaseCard";
 import { GiMedicines } from "react-icons/gi";
+import { Grid, GridItem, Spinner} from '@chakra-ui/react'
 
 const PatientTag = (props) => { 
+    console.log(props.data)
     let patientDataList = [];
     if (props.data && props.data.length > 0) {
         patientDataList = Object.entries(props.data[0]).slice(2).map(([key, value]) => {
@@ -41,10 +43,11 @@ const PatientTag = (props) => {
                     </Box>
                 </AbsoluteCenter>
             </CardHeader>
-            {props.loading ? <div><Center> Loading... </Center></div>: <div> 
+            {props.loading ? <Center h={'100%'}> <Spinner size="xl" /></Center> : 
+            <div> 
             <CardBody paddingTop={2}>
                 <Center marginTop={4} marginBottom={1}>
-                    <Text fontWeight={'500'} fontSize={'22px'}>{props.data[0].subject_id} -</Text>
+                    <Text fontWeight={'500'} fontSize={'22px'}>{props.data[0].subject_id} - </Text>
                     <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.data[0].name}</Text>
                 </Center>
                 <SimpleGrid columns={3} spacing={2} gridTemplateColumns={'48% 4% 48%'}>

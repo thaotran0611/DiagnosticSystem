@@ -12,7 +12,7 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import MyPagination from "../../../components/Pagination/Pagination";
 import PatientGridCard from "../../../components/PatientGridCard/PatientGridCard";
 import { DoctorLayout } from "../../../layout/DoctorLayout";
-import { Grid, GridItem } from '@chakra-ui/react'
+import { Grid, GridItem, Spinner } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 
 const theme = createTheme();
@@ -74,6 +74,11 @@ const Patient = () => {
                     <SearchAndFilterBar/>
                 </Center>
                     <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
+                    {loadingPatient ?(
+                        <Center h={'100%'} bg={'#fff'} borderRadius={'20px'}>
+                            <Spinner size="xl" />
+                        </Center>
+                    ) :
                         <ThemeProvider theme={theme}>
                             <Center>
                                 <SimpleGrid mt={0} columns={2} spacing={1}>
@@ -84,13 +89,14 @@ const Patient = () => {
                                     }
                                 </SimpleGrid>
                             </Center>
-                            <Center mt={1.5}>
+                            <Center mt={3} mb={3}>
                                 <MyPagination 
                                     count={Math.ceil(patientdata.length / pageSize)} 
                                     page = {page} 
                                     onChange = {handleChangePage}/>
                             </Center>
                         </ThemeProvider>
+                }
                 </GridItem>
         </DoctorLayout>
     )

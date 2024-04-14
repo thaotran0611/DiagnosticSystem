@@ -16,6 +16,7 @@ import { Center, Grid, GridItem, Text } from "@chakra-ui/react";
 import BasicDateTimePicker from "../DateTimePicker/DateTimePicker";
 import dayjs from 'dayjs';
 import { Button } from "bootstrap";
+import {Spinner } from "@chakra-ui/react";
 
 
 const theme = createTheme();
@@ -74,7 +75,7 @@ const Note = (props) => {
                     <Text className="header">Note</Text> 
                     <Popup trigger={<PlusSquareIcon marginBottom={1} boxSize={'1.2em'} className="icon-add"/>}
                         nested modal contentStyle={{background: 'none', border: 'none'}}>
-                        {close => <Takenote onSubmit={close} new={true} />}
+                        {close => <Takenote onSubmit={close} new={true} type={props.type} subject_id={props.subject_id}/>}
                     </Popup>
                 </GridItem>
                 <GridItem colSpan={4} rowSpan={1}>
@@ -90,6 +91,13 @@ const Note = (props) => {
                 </GridItem>
             </Grid>
             <div className="NoteList">
+                {props.loading ?(
+                        
+                                <Center h={'50%'} bg={'#fff'} borderRadius={'20px'}>
+                                    <Spinner size="xl" />
+                                </Center>
+                            
+                        ) :
                 <ThemeProvider theme={theme}>
                     <div className="NoteDetail" style={{width: '100%'}}>
                         {
@@ -110,6 +118,7 @@ const Note = (props) => {
                     />
                     </div>
                 </ThemeProvider>
+                }
             </div>
         </div>
     );
