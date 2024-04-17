@@ -256,20 +256,20 @@ async def get_self_note(doctor_code, db=Depends(get_db)) -> dict:
     if len(df)>0:
         transform_timestamp(df,['created_at','updated_at'])
         result = df.to_dict(orient='records')
-        print(result)
     else:
         result = []
+    print(result)
     return JSONResponse(content={"data": result})
 
 @app.get("/patient-notes", response_model=dict, tags=["root"]) 
 async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
     subject_id = int(subject_id)
-    doctor_code = int(doctor_code)
-    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.subject_id))\
+    print(subject_id)
+    # doctor_code = int(doctor_code)
+    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.subject_id == subject_id))\
         .order_by(sa.desc(PATIENT_NOTE.columns.updated_at))
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
-    print(df)
 
     if len(df)>0:
         transform_timestamp(df,['created_at','updated_at'])
@@ -277,7 +277,7 @@ async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
         print(result)
     else:
         result = []
-    print(result)
+    # print(result)
     return JSONResponse(content={"note": result})
 
 
