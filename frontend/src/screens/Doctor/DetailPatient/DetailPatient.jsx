@@ -71,9 +71,9 @@ const DetailPatient = (props) => {
                         subject_id: patientCode
                     }
                 });
-                console.log(response)
                 setAddmission(response.data.admission);
                 setLoadingAdmission(false);
+                console.log(addmission)
             } catch (error) {
                 setError(error);
                 setLoadingAdmission(false);
@@ -103,8 +103,8 @@ const DetailPatient = (props) => {
             }
         };
         fetchData();
-        const intervalId = setInterval(fetchData, 5000);
-        return () => clearInterval(intervalId);
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
     }, []);
 
     const [expand, setExpand] = useState(false);
@@ -278,7 +278,7 @@ const DetailPatient = (props) => {
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'}>
-                                <GeneralTab generalTag={generalTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral}/>
+                                <GeneralTab addmission={addmission} generalTag={generalTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral}/>
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
                                 <MedicalTestTab generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>

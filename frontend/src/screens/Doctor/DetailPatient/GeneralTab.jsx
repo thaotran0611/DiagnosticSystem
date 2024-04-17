@@ -10,17 +10,17 @@ import MyTable from "../../../components/MyTable/MyTable";
 import MyTable2 from "../../../components/MyTable/MyTable2";
 
 const theme = createTheme();
-const GeneralTab = ({generalTag, expand, pageSize, setPageSize}) => {
+const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize}) => {
     const [expandGeneral, setExpandGenaral] = useState(2);
     // const [pageSize, setPageSize] = useState(4);
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
-    
+    console.log(addmission)
+
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    console.log(typeof generalTag)
     const slicedData = generalTag.slice(startIndex, endIndex);
     return(
         <Grid gridTemplateRows={expandGeneral === 1 ? '3% 97%':
@@ -78,7 +78,7 @@ const GeneralTab = ({generalTag, expand, pageSize, setPageSize}) => {
             </GridItem>
             {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'8'}>
                 <Box h={'100%'}>
-                    <MyTable2 height={expandGeneral === 1 ? '620px': '450px'} width={expand ? '1700px' : '1100px'}/>
+                    <MyTable2 data = {addmission} height={expandGeneral === 1 ? '620px': '400px'} width={expand ? '1700px' : '1100px'}/>
                 </Box>
                 </GridItem>}
         </Grid>
