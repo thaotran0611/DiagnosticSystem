@@ -18,7 +18,7 @@ const theme = createTheme({
 
 export default function MyTable2(props) {
   const apiRef = useGridApiRef();
-  console.log(props.data)
+  // console.log(props.data)
   // const columns = [
   //   { field: 'id', headerName: 'ID', width: 90 },
   //   {
@@ -79,13 +79,27 @@ export default function MyTable2(props) {
     field: columnName,
     headerName: columnName.charAt(0).toUpperCase() + columnName.slice(1), // Capitalizing first letter
     width: 150,
-    editable: true,
+    editable: false,
   }));
 
   const rows = data.map((row, index) => ({
     id: row.id || index, // Use the provided id or index as a fallback
     ...row,
   }));
+
+
+  const [selectedRow, setSelectedRow] = useState(null);
+
+  // Event handler for row selection change
+  const handleRowSelectionChange = (selection) => {
+    setSelectedRow(selection[0] !== undefined ? rows[selection[0].index] : null); // Update selectedRow based on the index of the selection
+    if (props.onSelect && selection[0] !== undefined) {
+      const selectedRowIndex = selection[0].index;
+      console.log(rows[selectedRowIndex])
+      const selectedRowText = rows[selectedRowIndex].text; // Assuming 'text' is the field containing the note text
+      props.onSelect(selectedRowText);
+    }
+  };
 
   const [page, setPage] = useState(1);
   const pageSizeList = [10, 20, 30];
@@ -116,6 +130,15 @@ export default function MyTable2(props) {
             rows={slicedData}
             columns={columns}
             // loading={loading} 
+            onRowSelectionModelChange={(ids) => {
+              const selectedIDs = new Set(ids);
+              const selectedRowData = rows.filter((row) =>
+                selectedIDs.has(row.id)
+              )
+              props.onSelect(selectedRowData[0].text)
+              // console.log(selectedRowData);
+              // console.log(selectedIDs)
+            }}
             slots={{ toolbar: GridToolbar }} 
             hideFooter
             />

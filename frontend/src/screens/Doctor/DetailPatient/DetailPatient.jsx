@@ -48,7 +48,7 @@ const DetailPatient = (props) => {
                         subject_id: patientCode
                     }
                 });
-                console.log(response)
+                // console.log(response)
                 setPatientData(response.data.patientDetail);
                 setLoadingPatient(false);
             } catch (error) {
@@ -73,7 +73,7 @@ const DetailPatient = (props) => {
                 });
                 setAddmission(response.data.admission);
                 setLoadingAdmission(false);
-                console.log(addmission)
+                // console.log(addmission)
             } catch (error) {
                 setError(error);
                 setLoadingAdmission(false);
@@ -94,7 +94,7 @@ const DetailPatient = (props) => {
                         subject_id: patientCode
                     }
                 });
-                console.log(response)
+                // console.log(response)
                 setNote(response.data.note);
                 setLoadingNote(false);
             } catch (error) {
@@ -284,13 +284,13 @@ const DetailPatient = (props) => {
                                 <MedicalTestTab generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>
                             </TabPanel>
                             <TabPanel key={3} h={'100%'}>
-                                <ProcedureTab/>
+                                <ProcedureTab subject_id={patientCode}/>
                             </TabPanel>
                             <TabPanel key={4} h={'100%'}>
-                                <PrescriptionTab/>
+                                <PrescriptionTab subject_id={patientCode}/>
                             </TabPanel>
                             <TabPanel key={5} h={'100%'}>
-                                <NoteTab expand={expand}/>
+                                <NoteTab expand={expand} subject_id={patientCode}/>
                             </TabPanel>
                             <TabPanel key={6} h={'100%'}>
                                 <DiseasesTab/>
