@@ -71,21 +71,21 @@ async def login(data: dict, db=Depends(get_db)) -> dict:
 @app.get("/patients", response_model=dict, tags=["root"])  
 async def get_patients(doctor_code, db=Depends(get_db)) -> dict: #care x adminssion x patient
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
-    subq = sa.select([
+    subq = sa.select(
         CARE.columns.hadm_id,
         CARE.columns.charge_of
-        ]) \
+        ) \
         .where(CARE.columns.doctor_code == doctor_code).subquery()
     
-    subq_hadm_ids = sa.select([subq.columns.hadm_id]).as_scalar()
+    subq_hadm_ids = sa.select(subq.columns.hadm_id).as_scalar()
 
-    subq2 = sa.select([
+    subq2 = sa.select(
             PATIENTS_CHECKED.columns.subject_id,
             PATIENTS_CHECKED.columns.name,
             PATIENTS_CHECKED.columns.gender,
             PATIENTS_CHECKED.columns.dob,
             max_admittime
-        ]).select_from(
+        ).select_from(
             sa.join(PATIENTS_CHECKED, ADMISSIONS_CHECKED, PATIENTS_CHECKED.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)
         ).where(
             ADMISSIONS_CHECKED.columns.hadm_id.in_(subq_hadm_ids)
@@ -125,21 +125,21 @@ async def get_patients(doctor_code, db=Depends(get_db)) -> dict: #care x adminss
 @app.get("/patients-overview", response_model=dict, tags=["root"])  
 async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care x adminssion x patient
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
-    subq = sa.select([
+    subq = sa.select(
         CARE.columns.hadm_id,
         CARE.columns.charge_of
-        ]) \
+        ) \
         .where(CARE.columns.doctor_code == doctor_code).subquery()
     
-    subq_hadm_ids = sa.select([subq.columns.hadm_id]).as_scalar()
+    subq_hadm_ids = sa.select(subq.columns.hadm_id).as_scalar()
 
-    subq2 = sa.select([
+    subq2 = sa.select(
             PATIENTS_CHECKED.columns.subject_id,
             PATIENTS_CHECKED.columns.name,
             PATIENTS_CHECKED.columns.gender,
             PATIENTS_CHECKED.columns.dob,
             max_admittime
-        ]).select_from(
+        ).select_from(
             sa.join(PATIENTS_CHECKED, ADMISSIONS_CHECKED, PATIENTS_CHECKED.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)
         ).where(
             ADMISSIONS_CHECKED.columns.hadm_id.in_(subq_hadm_ids)
@@ -294,10 +294,10 @@ async def get_patients_admission_overview(doctor_code, subject_id, db=Depends(ge
 
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
     
-    subq = sa.select([
+    subq = sa.select(
         ADMISSIONS_CHECKED.columns.subject_id,
         max_admittime
-    ])\
+    )\
     .select_from(sa.join(CARE, ADMISSIONS_CHECKED, CARE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
     .where(sa.and_(CARE.columns.doctor_code == doctor_code, ADMISSIONS_CHECKED.columns.subject_id == subject_id))\
     .group_by(ADMISSIONS_CHECKED.columns.subject_id).alias("subq")
@@ -350,10 +350,10 @@ async def get_patients_detail_prescription(doctor_code, subject_id, db=Depends(g
 
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
     
-    subq = sa.select([
+    subq = sa.select(
         ADMISSIONS_CHECKED.columns.subject_id,
         max_admittime
-    ])\
+    )\
     .select_from(sa.join(CARE, ADMISSIONS_CHECKED, CARE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
     .where(sa.and_(CARE.columns.doctor_code == doctor_code, ADMISSIONS_CHECKED.columns.subject_id == subject_id))\
     .group_by(ADMISSIONS_CHECKED.columns.subject_id).alias("subq")
@@ -364,7 +364,7 @@ async def get_patients_detail_prescription(doctor_code, subject_id, db=Depends(g
         sa.join(subq, ADMISSIONS_CHECKED, subq.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
     .where(subq.columns.max_admittime >= ADMISSIONS_CHECKED.columns.admittime).as_scalar()
     
-    stmt = sa.select([PRESCRIPTIONS]).where(PRESCRIPTIONS.columns.hadm_id.in_(subq_hadm_ids))
+    stmt = sa.select(PRESCRIPTIONS).where(PRESCRIPTIONS.columns.hadm_id.in_(subq_hadm_ids))
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
 
@@ -383,10 +383,10 @@ async def get_patients_detail_note(doctor_code, subject_id, db=Depends(get_db)) 
 
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
     
-    subq = sa.select([
+    subq = sa.select(
         ADMISSIONS_CHECKED.columns.subject_id,
         max_admittime
-    ])\
+    )\
     .select_from(sa.join(CARE, ADMISSIONS_CHECKED, CARE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
     .where(sa.and_(CARE.columns.doctor_code == doctor_code, ADMISSIONS_CHECKED.columns.subject_id == subject_id))\
     .group_by(ADMISSIONS_CHECKED.columns.subject_id).alias("subq")
