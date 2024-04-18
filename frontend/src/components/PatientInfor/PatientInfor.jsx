@@ -2,7 +2,9 @@ import CircleComponent from '../CircleComponent/CircleComponent'
 import DiseaseCard from '../DiseaseCard/DiseaseCard' 
 import React from 'react'; 
 import { Card, CardHeader, CardBody, Box, StackDivider, Stack, Heading, Text, CardFooter,Button,SimpleGrid, Divider, Flex } from '@chakra-ui/react'; 
- 
+import { useNavigate } from "react-router-dom";
+
+
 const PatientInfor = (data) => { 
     // const data = [ 
     //     { key: 'Ethnicity', value: 'England' }, 
@@ -20,6 +22,11 @@ const PatientInfor = (data) => {
       });
     }
     
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    navigate(`/doctor/patient/detailpatient/${data.data.subject_id}`); // Assuming the URL pattern is '/patient/:patientCode'
+};
   const diseaseList = ['Lungs','Heart']
   return (data.data !== null ? ( 
     <Card width={'98%'} h={'100%'} borderRadius="20px" border="none"> 
@@ -42,6 +49,9 @@ const PatientInfor = (data) => {
                     <Text margin={0} fontWeight="bold" >{data.data.subject_id} - {data.data.name}</Text> 
                     <Text margin={0}>{data.data.dob}</Text> 
                 </Flex> 
+                <Box ml="auto">
+                  <Button bg="#3E36B0" color="white" ml={2} onClick={handleClick}>...</Button>
+                </Box>
           </Flex> 
 
           <Stack direction="row" spacing="4" p="2" m='0'>
