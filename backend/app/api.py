@@ -27,7 +27,14 @@ app.add_middleware(
 
 def transform_timestamp(df,col_list):
     for col in col_list:
-        df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if x is not None else None)
+        # df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if x is not None else None)
+        df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notnull(x) and x is not None else None)
+
+def transform_date(df,col_list):
+    for col in col_list:
+        # df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if x is not None else None)
+        df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d') if x is not None else None)
+
 
 def generate_random_string(length):
     characters = string.ascii_letters + string.digits
@@ -110,7 +117,7 @@ async def get_patients(doctor_code, db=Depends(get_db)) -> dict: #care x adminss
     if len(df)>0:
         transform_timestamp(df,['admittime','dischtime','dob'])
         result = df.to_dict(orient='records')
-        print(result)
+        # print(result)
     else:
         result = []
     return JSONResponse(content={"data": result})
@@ -162,14 +169,14 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
     if len(df)>0:
         transform_timestamp(df,['admittime','dischtime','dob'])
         result = df.to_dict(orient='records')
-        print(result)
+        # print(result)
     else:
         result = []
     return JSONResponse(content={"data": result})
 
 @app.post("/insert-self-note", tags=["root"])
 async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
-    print(data)
+    # print(data)
     note_id = generate_random_string(random.randint(4, 9))
     priority = data.get("priority")
     title = data.get("title")
@@ -198,7 +205,7 @@ async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
 
 @app.post("/insert-patient-note", tags=["root"])
 async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
-    print(data)
+    # print(data)
     # note_id = generate_random_string(random.randint(4, 9))
     priority = data.get("priority")
     title = data.get("title")
@@ -258,13 +265,13 @@ async def get_self_note(doctor_code, db=Depends(get_db)) -> dict:
         result = df.to_dict(orient='records')
     else:
         result = []
-    print(result)
+    # print(result)
     return JSONResponse(content={"data": result})
 
 @app.get("/patient-notes", response_model=dict, tags=["root"]) 
 async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
     subject_id = int(subject_id)
-    print(subject_id)
+    # print(subject_id)
     # doctor_code = int(doctor_code)
     stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.subject_id == subject_id))\
         .order_by(sa.desc(PATIENT_NOTE.columns.updated_at))
@@ -274,7 +281,7 @@ async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
     if len(df)>0:
         transform_timestamp(df,['created_at','updated_at'])
         result = df.to_dict(orient='records')
-        print(result)
+        # print(result)
     else:
         result = []
     # print(result)
@@ -316,7 +323,7 @@ async def get_patients_admission_overview(doctor_code, subject_id, db=Depends(ge
         transform_timestamp(df1,['admittime','dischtime'])
         result1 = df1.to_dict(orient='records')
         
-    print(result1)
+    # print(result1)
     
     return JSONResponse(content={"admission": result1})
 
@@ -327,11 +334,88 @@ async def get_patients_detail_overview(doctor_code, subject_id, db=Depends(get_d
     stmt2 = PATIENTS_CHECKED.select().where(PATIENTS_CHECKED.columns.subject_id == subject_id)
 
     df2 = pd.DataFrame(db.execute(stmt2).fetchall())
-    print(df2)
+    # print(df2)
     if len(df2)>0:
         transform_timestamp(df2,['dob','dod','dod_hosp','dod_ssn'])
         result2 = df2.to_dict(orient='records')
         
-    print(result2)
+    # print(result2)
     
     return JSONResponse(content={"patientDetail": result2})
+
+@app.get("/patients-detail-prescription", response_model=dict, tags=["root"])  
+async def get_patients_detail_prescription(doctor_code, subject_id, db=Depends(get_db)) -> dict:
+    subject_id = int(subject_id)
+    doctor_code = int(doctor_code)
+
+    max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
+    
+    subq = sa.select([
+        ADMISSIONS_CHECKED.columns.subject_id,
+        max_admittime
+    ])\
+    .select_from(sa.join(CARE, ADMISSIONS_CHECKED, CARE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
+    .where(sa.and_(CARE.columns.doctor_code == doctor_code, ADMISSIONS_CHECKED.columns.subject_id == subject_id))\
+    .group_by(ADMISSIONS_CHECKED.columns.subject_id).alias("subq")
+
+    subq_hadm_ids = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,        
+    ).select_from(
+        sa.join(subq, ADMISSIONS_CHECKED, subq.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
+    .where(subq.columns.max_admittime >= ADMISSIONS_CHECKED.columns.admittime).as_scalar()
+    
+    stmt = sa.select([PRESCRIPTIONS]).where(PRESCRIPTIONS.columns.hadm_id.in_(subq_hadm_ids))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        transform_timestamp(df,['startdate','enddate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"prescription": result})
+
+@app.get("/patients-detail-note", response_model=dict, tags=["root"])  
+async def get_patients_detail_note(doctor_code, subject_id, db=Depends(get_db)) -> dict:
+    subject_id = int(subject_id)
+
+    max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
+    
+    subq = sa.select([
+        ADMISSIONS_CHECKED.columns.subject_id,
+        max_admittime
+    ])\
+    .select_from(sa.join(CARE, ADMISSIONS_CHECKED, CARE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
+    .where(sa.and_(CARE.columns.doctor_code == doctor_code, ADMISSIONS_CHECKED.columns.subject_id == subject_id))\
+    .group_by(ADMISSIONS_CHECKED.columns.subject_id).alias("subq")
+
+    subq_hadm_ids = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,        
+    ).select_from(
+        sa.join(subq, ADMISSIONS_CHECKED, subq.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
+    .where(subq.columns.max_admittime >= ADMISSIONS_CHECKED.columns.admittime).as_scalar()
+    
+    stmt = sa.select(NOTEEVENTS.columns.hadm_id,
+                     NOTEEVENTS.columns.chartdate,
+                     NOTEEVENTS.columns.category,
+                     NOTEEVENTS.columns.description,
+                     NOTEEVENTS.columns.text,) \
+            .select_from(NOTEEVENTS) \
+            .where(NOTEEVENTS.columns.hadm_id.in_(subq_hadm_ids))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        # transform_timestamp(df,['charttime','storetime'])
+        transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"note": result})
+    
+    
+
