@@ -9,6 +9,7 @@ import json
 import random
 import string
 from pyhive import hive
+from decimal import Decimal
 
 app = FastAPI()
 
@@ -24,6 +25,40 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+def mapping_column(col):
+    dic = {"admittime":"", 
+           "admission_type":"",
+           "admission_location":"",
+           "dischtime":"",
+           "ethnicity":"",
+           "marital_status":"",
+           "gender":"",
+           "dob":"",
+           "dod":"",
+           "dod_hosp":"",
+           "dod_ssn":"",
+           "expire_flag":"",
+           "hadm_id":"",
+           "discharge_location":"",
+           "startdate":"",
+           "enddate":"",
+           "drug_type":"",
+           "drug":"",
+           "drug_name_poe":"",
+           "drug_name_generic":"",
+           "formulary_drug_cd":"",
+           "gsn":"",
+           "dnc":"",
+           "prod_strength":"",
+           "dose_val_rx":"",
+           "dose_unit_rx":"",
+           "form_val_disp":"",
+           "form_unit_disp":"",
+           "route":"",
+           "chartdate":"",
+           "category":"",
+           "description":"",
+           "text":""}
 
 def transform_timestamp(df,col_list):
     for col in col_list:
@@ -167,7 +202,8 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
     if len(df)>0:
-        transform_timestamp(df,['admittime','dischtime','dob'])
+        transform_timestamp(df,['admittime','dischtime'])
+        transform_date(df,['dob'])
         result = df.to_dict(orient='records')
         # print(result)
     else:
@@ -416,6 +452,69 @@ async def get_patients_detail_note(doctor_code, subject_id, db=Depends(get_db)) 
         result = []
     # print(result)
     return JSONResponse(content={"note": result})
+
+@app.get("/patients-annotate", response_model=dict, tags=["root"])  
+async def get_patients_annotate(doctor_code, subject_id, db=Depends(get_db)) -> dict: #update this by adding parameter hadm_id
+    subject_id = int(subject_id)
+    stmt = sa.select(ANNOTATE.columns.disease_code,
+                     ANNOTATE.columns.value,
+                     ANNOTATE.columns.time) \
+            .select_from(sa.join(ANNOTATE, ADMISSIONS_CHECKED, ANNOTATE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
+            .where(ADMISSIONS_CHECKED.columns.subject_id == subject_id)
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        transform_timestamp(df,['time'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    print(result)
+    return JSONResponse(content={"annotate": result})
+
+@app.get("/patients-detail-procedure", response_model=dict, tags=["root"])  
+async def get_patients_detail_procedure(doctor_code, subject_id, db=Depends(get_db)) -> dict:
+    subject_id = int(subject_id)
+
+    max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
+    
+    subq = sa.select(
+        ADMISSIONS_CHECKED.columns.subject_id,
+        max_admittime
+    )\
+    .select_from(sa.join(CARE, ADMISSIONS_CHECKED, CARE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
+    .where(sa.and_(CARE.columns.doctor_code == doctor_code, ADMISSIONS_CHECKED.columns.subject_id == subject_id))\
+    .group_by(ADMISSIONS_CHECKED.columns.subject_id).alias("subq")
+
+    subq_hadm_ids = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,        
+    ).select_from(
+        sa.join(subq, ADMISSIONS_CHECKED, subq.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
+    .where(subq.columns.max_admittime >= ADMISSIONS_CHECKED.columns.admittime).as_scalar()
+    
+    stmt = sa.select(PROCEDURE) \
+            .where(PROCEDURE.columns.hadm_id.in_(subq_hadm_ids))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        df['value'] = df['value'].apply(lambda x: float(x))
+
+        transform_timestamp(df,['starttime','endtime','storetime','comments_date'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"procedure": result})
+
+
+
+
+
     
     
 

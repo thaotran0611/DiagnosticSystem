@@ -293,7 +293,7 @@ const DetailPatient = (props) => {
                                 <NoteTab expand={expand} subject_id={patientCode}/>
                             </TabPanel>
                             <TabPanel key={6} h={'100%'}>
-                                <DiseasesTab/>
+                                <DiseasesTab subject_id={patientCode}/>
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

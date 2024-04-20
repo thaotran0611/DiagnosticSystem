@@ -61,6 +61,9 @@ const Overview = () => {
                 console.log(response)
                 setPatientData(response.data.data);
                 setLoadingPatient(false);
+                if (response.data.data.length > 0) {
+                    setSelectedPatient(response.data.data[0]);
+                }
             } catch (error) {
                 setError(error);
                 setLoadingPatient(false);

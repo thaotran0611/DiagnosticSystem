@@ -35,5 +35,7 @@ PATIENT_NOTE = sa.Table('patient_note', metadata, autoload=True, autoload_with=e
 PATIENTS_CHECKED = sa.Table('patients_checked', metadata, autoload=True, autoload_with=engine) 
 PRESCRIPTIONS = sa.Table('prescriptions', metadata, autoload=True, autoload_with=engine) 
 RETRAIN_SCHEDULE = sa.Table('retrain_schedule', metadata, autoload=True, autoload_with=engine)  
+PROCEDURE = sa.Table('procedureevents_mv', metadata, autoload=True, autoload_with=engine)  
+
 
 

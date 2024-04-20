@@ -1,7 +1,7 @@
 import CircleComponent from '../CircleComponent/CircleComponent' 
 import DiseaseCard from '../DiseaseCard/DiseaseCard' 
 import React from 'react'; 
-import { Card, CardHeader, CardBody, Box, StackDivider, Stack, Heading, Text, CardFooter,Button,SimpleGrid, Divider, Flex } from '@chakra-ui/react'; 
+import { Center, Spinner, Card, CardHeader, CardBody, Box, StackDivider, Stack, Heading, Text, CardFooter,Button,SimpleGrid, Divider, Flex } from '@chakra-ui/react'; 
 import { useNavigate } from "react-router-dom";
 
 
@@ -27,7 +27,7 @@ const PatientInfor = (data) => {
   const handleClick = () => {
     navigate(`/doctor/patient/detailpatient/${data.data.subject_id}`); // Assuming the URL pattern is '/patient/:patientCode'
 };
-  const diseaseList = ['Lungs','Heart']
+  const diseaseList = ['LD','HD']
   return (data.data !== null ? ( 
     <Card width={'98%'} h={'100%'} borderRadius="20px" border="none"> 
       <CardHeader paddingBottom={0}>
@@ -41,7 +41,10 @@ const PatientInfor = (data) => {
         </Flex> 
       </CardHeader> 
  
-      <CardBody border="1px solid #B9DDDF" borderRadius="20px" p="4" m='2'> 
+      <CardBody border="1px solid #B9DDDF" borderRadius="20px" p="4" m='2' overflowY="auto" style={{
+            scrollbarWidth: 'thin', 
+            scrollbarColor: '#A0AEC0 #ffffff', 
+          }}> 
         <Stack divider={<StackDivider />} spacing="1"> 
           <Flex> 
                 <CircleComponent gender = {data.data.gender} /> 
@@ -54,7 +57,7 @@ const PatientInfor = (data) => {
                 </Box>
           </Flex> 
 
-          <Stack direction="row" spacing="4" p="2" m='0'>
+          <Stack direction="row" spacing="4" m='0'>
             {diseaseList.map((disease, index) => (
               <DiseaseCard key={index} text={disease} />
             ))}
@@ -76,7 +79,11 @@ const PatientInfor = (data) => {
         </Box> 
       </CardFooter>  */}
     </Card> 
-  ): <div>Null page content</div>); 
+  ):  <Card width={'98%'} h={'100%'} borderRadius="20px" border="none"> 
+        <Center h={'100%'}>
+            <Spinner size="xl" />
+        </Center>
+      </Card> ); 
 }; 
  
 export default PatientInfor;

@@ -16,13 +16,13 @@ const ProcedureTab = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-detail-admission', {
+                const response = await axios.get('http://localhost:8000/patients-detail-procedure', {
                     params: {
                         doctor_code: doctor_code,
                         subject_id: props.subject_id
                     }
                 });
-                setProcedure(response.data.admission);
+                setProcedure(response.data.procedure);
                 setLoadingProcedure(false);
                 // console.log(procedure)
             } catch (error) {
@@ -35,7 +35,7 @@ const ProcedureTab = (props) => {
 
     return(
         <Box h={'100%'}>
-            <MyTable2 height={'620px'}/>
+            <MyTable2 data ={procedure} height={'620px'}/>
         </Box>
     )
 }
