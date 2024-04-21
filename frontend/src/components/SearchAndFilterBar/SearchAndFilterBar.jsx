@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Grid, GridItem, Spacer } from '@chakra-ui/react'
+import { Checkbox, Grid, GridItem, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, Spacer, Stack } from '@chakra-ui/react'
 import Search from "../Search/Search";
 import Filter from "../Filter/Filter";
 import { format } from 'date-fns'
@@ -10,7 +10,35 @@ const SearchAndFilterBar = (props) => {
     const [adms, setAdms] = useState(null);
     const [disc, setDisc] = useState(null);
     const [gender, setGender] = useState(0);
-    const [recently, setRecently] = useState(false)
+    const AddFilter = (name, value) => {
+        // Dynamically set a property in the object
+        if (props.dynamicFilter.find(item => item.name === name && item.value === value)) {
+            props.setDynamicFilter(props.dynamicFilter.filter(item => item.value !== value));
+        }
+        else {
+            props.setDynamicFilter((prevValues) => ([
+            ...prevValues,
+            {name: name, value: value}
+            ]));
+        }
+    };
+    const ChangeFilter = (name, old_value, new_value) => {
+        if (props.dynamicFilter.find(item => item.name === name && item.value === new_value)){
+            AddFilter(name, new_value);
+        }
+        else {
+            props.setDynamicFilter(props.dynamicFilter.find(item => item.name === name && item.value === old_value).value = new_value);
+            const updatedDynamicFilter = props.dynamicFilter.map(item => {
+                if (item.value === old_value) {
+                // Return a new object with updated quantity
+                return { ...item, value: new_value};
+                }
+                return item; // Return unchanged item for other items
+            });
+            props.setDynamicFilter(updatedDynamicFilter); // Update state with the new array
+            // AddFilter(name, new_value);
+        }
+    }
     return(
         <div style={{width: '100%'}}>
             <Grid
@@ -19,26 +47,10 @@ const SearchAndFilterBar = (props) => {
                 templateColumns='repeat(10, 1fr)'
                 gap={4}
                 >
-                <GridItem rowSpan={1} colSpan={9} style={{padding: '5px'}}>
-                    <Search/>
-                </GridItem>
                 <GridItem rowSpan={1} colSpan={9}>
-                    <HStack spacing={4}>
-                        {
-                            adms ? <FilterTag key={'adms'} onClick={() => {setAdms(null)}} text={'Admission from ' + format(adms, 'dd-MMM-yyyy')} /> : null
-                        }
-                        {
-                            disc ? <FilterTag key={'disc'} onClick={() => {setDisc(null)}} text={'Discharge from ' + format(disc, 'dd-MMM-yyyy')} /> : null
-                        }
-                        {
-                            gender ? <FilterTag key={'gender'} onClick={() => {setGender(null)}} text={gender == 1 ? 'Female' : gender == 2 ? 'Male' : gender == 3 ? 'All' : null} /> : null
-                        }
-                        {
-                            recently ? <FilterTag key={'disc'} onClick={() => {setRecently(false)}} text={'Recently'} /> : null
-                        }
-                    </HStack>
+                    <Search setSearchInput={props.setSearchInput} onClick={props.onClick} onChange={props.onChange}/>
                 </GridItem>
-                <GridItem rowSpan={1}colSpan={1} padding={'0 0 20px 18px'}>
+                <GridItem rowSpan={1}colSpan={1}>
                     <Filter
                         adms={adms}
                         onChangeAdms={setAdms}
@@ -47,9 +59,50 @@ const SearchAndFilterBar = (props) => {
                         onChangeFemale={(e) => {setGender(e.target.value)}}
                         onChangeMale={(e) => {setGender(e.target.value)}}
                         onChangeAll={(e) => {setGender(e.target.value)}}
-                        onClickRecently={(e) => {setRecently(e.target.value)}}
+                        filterData = {props.filterData}
+                        setDynamicFilter = {AddFilter}
+                        dynamicFilter = {props.dynamicFilter}
+                        searchItems = {props.searchItems}
                         />
                 </GridItem>
+                <GridItem rowSpan={1} colSpan={9}>
+                    <HStack spacing={4}>
+                        {
+                            adms ? <FilterTag name={'admission date'} key={'adms'} onClick={() => {setAdms(null)}} text={'Admission from ' + format(adms, 'dd-MMM-yyyy')} /> : null
+                        }
+                        {
+                            disc ? <FilterTag name={'discharge date'} key={'disc'} onClick={() => {setDisc(null)}} text={'Discharge from ' + format(disc, 'dd-MMM-yyyy')} /> : null
+                        }
+                        {
+                            gender ? <FilterTag name={'gender'} key={'gender'} onClick={() => {setGender(null)}} text={gender == 1 ? 'Female' : gender == 2 ? 'Male' : gender == 3 ? 'All' : null} /> : null
+                        }
+                        {
+                            props.dynamicFilter.map(item => (
+                                <Popover closeOnBlur={true}>
+                                    <FilterTag name={item.name} key={item.name} onClick={() => AddFilter(item.name, item.value)} text={item.value}/>
+                                    <PopoverContent>
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverBody maxH={'500px'} mt={2} overflow={'auto'}>
+                                            {
+                                            props.filterData.find(item2 => item2.name === item.name).data.map(value => (
+                                                <Stack pl={6} mt={3} spacing={1}>
+                                                    <Checkbox value={value}
+                                                    onChange={() => {ChangeFilter(item.name, item.value, value); props.searchItems()}}
+                                                    isChecked={props.dynamicFilter.find(a => a.name === item.name && a.value === value) ? true : false}
+                                                    >
+                                                        {value}
+                                                    </Checkbox>
+                                                </Stack>
+                                            ))}
+                                        </PopoverBody>
+                                    </PopoverContent>
+                                </Popover>
+                            ))
+                        }
+                    </HStack>
+                </GridItem>
+                
             </Grid>
         </div>
     )

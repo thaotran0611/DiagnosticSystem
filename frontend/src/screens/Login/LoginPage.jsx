@@ -12,6 +12,7 @@ import {
   }
   from 'mdb-react-ui-kit';
 import { useNavigate } from "react-router-dom";
+import { Button } from "@chakra-ui/react";
 
 const LoginPage = ({ setLoggedIn }) => {
     const navigate = useNavigate();
@@ -19,7 +20,7 @@ const LoginPage = ({ setLoggedIn }) => {
     // Define state variables for username and password
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
+    const [isLoading, setIsLoading] = useState(false);
     // Handler function to update username state
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -32,6 +33,7 @@ const LoginPage = ({ setLoggedIn }) => {
         console.log(password)
     };
     const handleLogin = (event) =>{
+      setIsLoading(true);
         axios({
             method: 'put',
             url: 'http://localhost:8000/auth',
@@ -93,8 +95,14 @@ const LoginPage = ({ setLoggedIn }) => {
                         <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
                         <a href="!#">Forgot password?</a>
                     </div>
-                    <MDBBtn onClick={handleLogin}  style={{backgroundColor:'#3E36B0', border: 'none', borderRadius: '10px'}} className="mb-4">Log in</MDBBtn>
-                    {/* <MDBBtn onClick={() => {navigate('../doctor/overview')}}  style={{backgroundColor:'#3E36B0', border: 'none', borderRadius: '10px'}} className="mb-4">Log in</MDBBtn> */}
+                    <Button
+                      onClick={handleLogin}
+                      isLoading={isLoading}
+                      colorScheme="blue"
+                      style={{backgroundColor:'#3E36B0', border: 'none', borderRadius: '10px'}}
+                    >
+                      Log in
+                    </Button>
                 </MDBContainer>
             </div>
             <div style={{position: 'absolute', bottom: '0', left: '18%', height: '90vh'}}>

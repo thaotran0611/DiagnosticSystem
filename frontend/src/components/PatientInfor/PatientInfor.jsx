@@ -53,7 +53,7 @@ const PatientInfor = (data) => {
                     <Text margin={0}>{data.data.dob}</Text> 
                 </Flex> 
                 <Box ml="auto">
-                  <Button bg="#3E36B0" color="white" ml={2} onClick={handleClick}>...</Button>
+                  <Button bg="#3E36B0" color="white" fontSize={20} fontWeight={600} ml={2} onClick={handleClick}>...</Button>
                 </Box>
           </Flex> 
 

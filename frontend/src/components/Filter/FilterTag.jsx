@@ -5,6 +5,8 @@ import {
     TagLeftIcon,
     TagRightIcon,
     TagCloseButton,
+    Text,
+    PopoverTrigger,
   } from '@chakra-ui/react'
 import { HStack } from "@chakra-ui/react";
 
@@ -12,6 +14,7 @@ const FilterTag = (props) => {
     return(
         <div>
             {/* <HStack spacing={4}> */}
+                <Text cursor={'pointer'}>{props.name}</Text>
                 <Tag
                 size={'lg'}
                 key={props.key}
@@ -22,7 +25,10 @@ const FilterTag = (props) => {
                 onClick={props.onClickTag}
                 cursor={'pointer'}
                 >
+                <PopoverTrigger>
                     <TagLabel>{props.text}</TagLabel>
+                </PopoverTrigger>
+
                     <TagCloseButton onClick={props.onClick} />
                 </Tag>
             {/* </HStack> */}

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Stack, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Stack, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, DrawerFooter, useDisclosure, Grid, GridItem, Text, Icon, Image } from '@chakra-ui/react';
 import { HamburgerIcon } from '@chakra-ui/icons';
 import { SidebarDataDoctor, SidebarDataResearcher, SidebarDataAnalyst, SidebarDataAdmin } from './SidebarData.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretRight, faCaretLeft } from '@fortawesome/free-solid-svg-icons';
+import Logo from '../../img/logo.png';
 
 const Sidebar = ({role}) => {
   let SidabarData = null;
@@ -30,7 +31,9 @@ const Sidebar = ({role}) => {
           <Box as="button" onClick={onClose} position="absolute" top="1rem" right="1rem" bg="transparent" border="none" outline="none">
               <FontAwesomeIcon icon={faCaretLeft} size="lg" />
             </Box>            
-            <DrawerHeader align="center">Medical Support</DrawerHeader>
+            <DrawerHeader align="center">
+              <Image src={Logo} />
+            </DrawerHeader>
 
             <DrawerBody>
               <Stack spacing={10} align="center">

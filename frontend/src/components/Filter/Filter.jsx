@@ -8,6 +8,7 @@ import {
     MenuGroup,
     MenuOptionGroup,
     MenuDivider,
+    Checkbox,
   } from '@chakra-ui/react'
 
 import {
@@ -27,9 +28,10 @@ import { IoChevronDown } from "react-icons/io5";
 import { Radio, RadioGroup } from '@chakra-ui/react'
 import { Stack } from "@chakra-ui/react";
 const Filter = (props) => {
+    
     return (
-        <Menu closeOnSelect={false} direction="rtl">
-            <MenuButton bgColor={'#3E36B0'} color={'#fff'} as={Button} rightIcon={<IoChevronDown/>}>
+        <Menu flip={true} closeOnSelect={false} direction="ltr">
+            <MenuButton width={'80%'} bgColor={'#3E36B0'} color={'#fff'} as={Button} rightIcon={<IoChevronDown/>}>
                 Filter
             </MenuButton>
             <MenuList>
@@ -83,7 +85,32 @@ const Filter = (props) => {
                         </PopoverBody>
                     </PopoverContent>
                 </Popover>
-                <MenuItem onClick={props.onClickRecently} value={'recently'}>Recently</MenuItem>
+                {
+                    props.filterData.map(item => (
+                        <Popover closeOnBlur={false}>
+                            <PopoverTrigger>
+                                <MenuItem>{item.name}</MenuItem>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody maxH={'500px'} mt={2} overflow={'auto'}>
+                                    {
+                                    item.data.map(value => (
+                                        <Stack pl={6} mt={3} spacing={1}>
+                                            <Checkbox value={value}
+                                            onChange={() => {props.setDynamicFilter(item.name, value); props.searchItems()}}
+                                            isChecked={props.dynamicFilter.find(a => a.name === item.name && a.value === value) ? true : false}
+                                            >
+                                                {value}
+                                            </Checkbox>
+                                        </Stack>
+                                    ))}
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover>
+                    ))
+                }
             </MenuList>
         </Menu>
     )
