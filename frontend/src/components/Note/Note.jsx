@@ -12,7 +12,7 @@ import { ChevronDownIcon, ChevronUpIcon, MinusIcon, PlusSquareIcon, TimeIcon } f
 
 import 'reactjs-popup/dist/index.css';
 import Search from "../Search/Search";
-import { Center, Grid, GridItem, Text } from "@chakra-ui/react";
+import { Center, Grid, GridItem, Input, InputGroup, InputLeftAddon, Text } from "@chakra-ui/react";
 import BasicDateTimePicker from "../DateTimePicker/DateTimePicker";
 import dayjs from 'dayjs';
 import { Button } from "bootstrap";
@@ -36,6 +36,7 @@ const Note = (props) => {
     const slicedData = props.data.slice(startIndex, endIndex);
 
     const [showAlert, setShowAlert] = useState(false);
+    const [searchvalue, setSearchvalue] = useState('');
 
     useEffect(() => {
         setShowAlert(true);
@@ -69,7 +70,8 @@ const Note = (props) => {
         <div className="Note">
             <Grid 
                 templateColumns={'repeat(11, 1fr)'}
-                h='40px'
+                templateRows={'repeat(2, 1fr)'}
+                h='80px'
             >
                 <GridItem colSpan={2}>
                     <Text className="header">Note</Text> 
@@ -89,6 +91,12 @@ const Note = (props) => {
                 <GridItem colSpan={4}>
                     <BasicDateTimePicker value={todate} minDateTime={fromdate} onChange={setToDate}/> 
                 </GridItem>
+                <GridItem rowStart={2} colSpan={11}>
+                    <InputGroup size={'sm'} padding={'0 10px'}>
+                        <InputLeftAddon bgColor={'#d9d9d9'} border={'1px solid #d9d9d9'} fontWeight={500} fontSize={'18px'} color={'#111'} borderTopLeftRadius={'10px'} borderBottomLeftRadius={'10px'}>Title</InputLeftAddon>
+                        <Input w={'100%'} display={'block'} border={'1px solid #d9d9d9'} fontSize={'18px'} fontWeight={400} style={{borderTopRightRadius: '10px', borderBottomRightRadius: '10px'}} onChange={(e)=>{setSearchvalue(e.target.value)}}/>
+                    </InputGroup>
+                </GridItem>
             </Grid>
             <div className="NoteList">
                 {props.loading ?(
@@ -101,6 +109,14 @@ const Note = (props) => {
                 <ThemeProvider theme={theme}>
                     <div className="NoteDetail" style={{width: '100%'}}>
                         {
+                            searchvalue!== '' ? 
+                            slicedData.filter((item) => {
+                                const itemValue = String(item.title).toLowerCase();
+                                return itemValue.includes(searchvalue);
+                            }).map(note => (
+                                <MiniNote onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title}/>
+                            ))
+                            :
                             slicedData.map(note => (
                                 <MiniNote onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title}/>
                             ))
