@@ -135,7 +135,9 @@ export default function MyTable2(props) {
               const selectedRowData = rows.filter((row) =>
                 selectedIDs.has(row.id)
               )
-              props.onSelect(selectedRowData[0].text)
+              if (selectedRowData.length > 0) {
+                props.onSelect(selectedRowData[0])
+              }
               // console.log(selectedRowData);
               // console.log(selectedIDs)
             }}

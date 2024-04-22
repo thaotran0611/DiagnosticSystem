@@ -34,6 +34,7 @@ const Patient = () => {
     let ethnicity = [];
     let insurance = [];
     let marital_status = [];
+    let gender = [];
     const [filterData, setfilterData] = useState([]);
 
     useEffect(() => {
@@ -52,11 +53,13 @@ const Patient = () => {
                 ethnicity = _.uniqBy(response.data.data, "ethnicity").map((image) => image.ethnicity);
                 insurance = _.uniqBy(response.data.data, "insurance").map((image) => image.insurance);
                 marital_status = _.uniqBy(response.data.data, "marital_status").map((image) => image.marital_status);
+                gender = _.uniqBy(response.data.data, "gender").map((image) => image.gender);
                 setfilterData([{name: "admission_location", data: admission_location}, 
                                {name: "admission_type", data: admission_type}, 
                                {name:"ethnicity", data: ethnicity}, 
                                {name: "insurance", data: insurance}, 
-                               {name: "marital_status", data: marital_status}]);
+                               {name: "marital_status", data: marital_status},
+                               {name: "gender", data: gender}]);
                 setLoadingPatient(false);
             } catch (error) {
                 setError(error);
@@ -77,29 +80,27 @@ const Patient = () => {
         if (searchInput !== '' && dynamicFilter.length > 0) {
             // const applyFilter = (patientdata, searchInput, dynamicFilter) => {
                 // Convert single searchInput to lowercase
-                const normalizedSearchInput = searchInput.toLowerCase();
-              
-                // Filter based on both searchInput and dynamicFilter criteria
-                const filteredData = patientdata.filter((item) => {
-                    // Check if any property value contains the single searchInput
-                    const includesSearchInput = Object.values(item)
-                        .join('')
-                        .toLowerCase()
-                        .includes(normalizedSearchInput);
-                
-                    // Check if item matches all dynamicFilter criteria
-                    const matchesdynamicFilter = dynamicFilter.every(({ name, value }) => {
-                        const itemValue = String(item[name]).toLowerCase();
-                        return itemValue.includes(String(value).toLowerCase());
-                    });
-                
-                    // Combine both conditions to determine if item should be included in filtered results
-                    return includesSearchInput && matchesdynamicFilter;
+            const normalizedSearchInput = searchInput.toLowerCase();
+            
+            // Filter based on both searchInput and dynamicFilter criteria
+            const filteredData = patientdata.filter((item) => {
+                // Check if any property value contains the single searchInput
+                const includesSearchInput = Object.values(item)
+                    .join('')
+                    .toLowerCase()
+                    .includes(normalizedSearchInput);
+            
+                // Check if item matches all dynamicFilter criteria
+                const matchesdynamicFilter = dynamicFilter.every(({ name, value }) => {
+                    const itemValue = String(item[name]).toLowerCase();
+                    return itemValue.includes(String(value).toLowerCase());
                 });
+            
+                // Combine both conditions to determine if item should be included in filtered results
+                return includesSearchInput && matchesdynamicFilter;
+            });
 
-                return filteredData;
-            // }
-            // setFilteredResults(applyFilter);
+            setFilteredResults(filteredData);
         }
         else if (searchInput !== '') {
             const filterData2 = patientdata.filter((item) => {
@@ -148,7 +149,7 @@ const Patient = () => {
           </Breadcrumb>
         }
         patient={false}>
-            <GridItem bg={'#fff'} area={'main'}>
+            <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
             <Center padding={'1% 4%'}>
                 <SearchAndFilterBar setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
             </Center>

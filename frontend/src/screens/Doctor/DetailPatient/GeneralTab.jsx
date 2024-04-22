@@ -10,7 +10,7 @@ import MyTable from "../../../components/MyTable/MyTable";
 import MyTable2 from "../../../components/MyTable/MyTable2";
 
 const theme = createTheme();
-const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize}) => {
+const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmID, sethadmID}) => {
     const [expandGeneral, setExpandGenaral] = useState(2);
     // const [pageSize, setPageSize] = useState(4);
     const [page, setPage] = useState(1);
@@ -22,6 +22,10 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize}) => {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const slicedData = generalTag.slice(startIndex, endIndex);
+    const handleRecordSelection = (record) => {
+        sethadmID(record.hadm_id);
+        console.log(hadmID)
+    }
     return(
         <Grid gridTemplateRows={expandGeneral === 1 ? '3% 97%':
                                 expandGeneral === 2 ? '25% 3% 72%':
@@ -78,7 +82,8 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize}) => {
             </GridItem>
             {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'8'}>
                 <Box h={'100%'}>
-                    <MyTable2 data = {addmission} height={expandGeneral === 1 ? '620px': '400px'} width={expand ? '1700px' : '1100px'}/>
+                    <MyTable2 data = {addmission} height={expandGeneral === 1 ? '620px': '400px'} width={expand ? '1700px' : '1100px'}
+                    onSelect={handleRecordSelection}/>
                 </Box>
                 </GridItem>}
         </Grid>

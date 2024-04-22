@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DoctorLayout } from "../../../layout/DoctorLayout";
-import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
+import { AbsoluteCenter, Box, Button, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import {
     Breadcrumb,
@@ -23,6 +23,8 @@ import NoteTab from "./NoteTab";
 import DiseasesTab from "./DiseasesTab";
 import ProcedureTab from "./ProcedureTab";
 import { useParams } from 'react-router-dom';
+import { Select } from '@chakra-ui/react'
+import _ from "lodash";
 
 const theme = createTheme();
 
@@ -36,7 +38,8 @@ const DetailPatient = (props) => {
     console.log(patientCode)
     const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
     const [loadingPatient, setLoadingPatient] = useState(true);
-
+    const [hadmID, sethadmID] = useState('All Admission');
+    const [allAdmission, setAllAdmission] = useState(['All Admission']);
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -72,8 +75,9 @@ const DetailPatient = (props) => {
                     }
                 });
                 setAddmission(response.data.admission);
+                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "hadm_id").map((image) => image.hadm_id)));
                 setLoadingAdmission(false);
-                // console.log(addmission)
+                console.log(allAdmission)
             } catch (error) {
                 setError(error);
                 setLoadingAdmission(false);
@@ -267,7 +271,25 @@ const DetailPatient = (props) => {
                     </Grid>
                 </GridItem>
                 <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'20px'} padding={6}>
-                    <Tabs isFitted variant='enclosed' size={'md'} height={'99%'}>
+                <Grid
+                    h='40px'
+                    templateColumns='repeat(6, 1fr)'
+                    gap={4}
+                    >
+                    <GridItem textAlign={'right'} colStart={5} colSpan={1}>
+                        <Text>Hadm_ID</Text>
+                    </GridItem>
+                    <GridItem colStart={6} colSpan={1}>
+                        <Select onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
+                            {
+                                allAdmission.map(item => (
+                                    <option selected={item === hadmID ? true : false} value={item}>{item}</option>
+                                ))
+                            }
+                        </Select>
+                    </GridItem>
+                </Grid>
+                    <Tabs isFitted variant='enclosed' size={'md'} height={'94%'}>
                         <TabList>
                             <Tab fontWeight={'bold'} key={1}>General</Tab>
                             <Tab fontWeight={'bold'} key={2}>Medical Test</Tab>
@@ -278,7 +300,7 @@ const DetailPatient = (props) => {
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'}>
-                                <GeneralTab addmission={addmission} generalTag={generalTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral}/>
+                                <GeneralTab addmission={addmission} generalTag={generalTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral} hadmID={hadmID} sethadmID={sethadmID}/>
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
                                 <MedicalTestTab generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>
@@ -287,10 +309,10 @@ const DetailPatient = (props) => {
                                 <ProcedureTab subject_id={patientCode}/>
                             </TabPanel>
                             <TabPanel key={4} h={'100%'}>
-                                <PrescriptionTab subject_id={patientCode}/>
+                                <PrescriptionTab subject_id={patientCode} hadmID={hadmID}/>
                             </TabPanel>
                             <TabPanel key={5} h={'100%'}>
-                                <NoteTab expand={expand} subject_id={patientCode}/>
+                                <NoteTab hadmID={hadmID} expand={expand} subject_id={patientCode}/>
                             </TabPanel>
                             <TabPanel key={6} h={'100%'}>
                                 <DiseasesTab subject_id={patientCode}/>

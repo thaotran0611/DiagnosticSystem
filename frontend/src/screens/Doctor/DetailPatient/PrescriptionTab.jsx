@@ -34,7 +34,10 @@ const PrescriptionTab = (props) => {
 
     return(
         <Box h={'100%'}>
-            <MyTable2 data={Prescription} height={'620px'}/>
+            <MyTable2 data={props.hadmID === 'All Admission' ? Prescription : Prescription.filter((item) => {
+                        const itemValue = String(item.hadm_id);
+                        return itemValue.includes(props.hadmID);
+                    })} height={'620px'}/>
         </Box>
     )
 }
