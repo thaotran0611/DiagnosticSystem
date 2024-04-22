@@ -211,10 +211,10 @@ const DetailPatient = (props) => {
         <DoctorLayout path={
                 <Breadcrumb>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href='./'>Patient</BreadcrumbLink>
+                        <BreadcrumbLink href='../'>Patient</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem isCurrentPage>
-                        <BreadcrumbLink href="#">10</BreadcrumbLink>
+                        <BreadcrumbLink href="#">{patientCode}</BreadcrumbLink>
                     </BreadcrumbItem>
                 </Breadcrumb>
             }
@@ -277,7 +277,7 @@ const DetailPatient = (props) => {
                     gap={4}
                     >
                     <GridItem textAlign={'right'} colStart={5} colSpan={1}>
-                        <Text>Hadm_ID</Text>
+                        <Text paddingTop={1} fontWeight={600}>Hadm_ID:</Text>
                     </GridItem>
                     <GridItem colStart={6} colSpan={1}>
                         <Select onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>

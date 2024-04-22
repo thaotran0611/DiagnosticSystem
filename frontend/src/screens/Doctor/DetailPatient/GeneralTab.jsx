@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
+import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid, Text } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
@@ -80,9 +80,10 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
                     </AbsoluteCenter>
                 </Center>
             </GridItem>
-            {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'8'}>
-                <Box h={'100%'}>
-                    <MyTable2 data = {addmission} height={expandGeneral === 1 ? '620px': '400px'} width={expand ? '1700px' : '1100px'}
+            {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'2'}>
+                <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}>Table of Admission</Text>
+                <Box h={'92%'}>
+                    <MyTable2 data = {addmission} height={expandGeneral === 1 ? '560px': '380px'} width={expand ? '1700px' : '1100px'}
                     onSelect={handleRecordSelection}/>
                 </Box>
                 </GridItem>}
