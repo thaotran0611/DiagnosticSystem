@@ -12,7 +12,7 @@ import MyTable2 from "../../../components/MyTable/MyTable2";
 import { textData } from "../../../components/Note/NoteData";
 
 const theme = createTheme();
-const NoteTab = ({expand, subject_id, hadmID}) => {
+const NoteTab = (props) => {
     const [expandNote, setExpandNote] = useState(2);
 
     const doctor_code = sessionStorage.getItem('user')
@@ -28,6 +28,8 @@ const NoteTab = ({expand, subject_id, hadmID}) => {
         setSelectedNote(record.text);
         console.log('Selected Note:', record.text); // Add this line to log the selected note
     };
+    const subject_id =  props.subject_id
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -45,8 +47,10 @@ const NoteTab = ({expand, subject_id, hadmID}) => {
                 setLoadingNote(false);
             }
         };
-        fetchData();
-    }, []);
+        if (note.length === 0) {
+            fetchData();
+        }
+    }, [note, doctor_code, subject_id]);
 
 
     return(
@@ -57,11 +61,11 @@ const NoteTab = ({expand, subject_id, hadmID}) => {
             {expandNote === 1 ? null : 
             <GridItem h={'100%'} position={'relative'} >
                 <Box h={'100%'}>
-                    <MyTable2 data={hadmID === 'All Admission' ? note : note.filter((item) => {
+                    <MyTable2 data={props.hadmID === 'All Admission' ? note : note.filter((item) => {
                         const itemValue = String(item.hadm_id);
-                        return itemValue.includes(hadmID);
+                        return itemValue.includes(props.hadmID);
                     })} height={expandNote === 3 ? '600px' : '300px'}
-                              width={expand ? '1700px' : '1100px'} onSelect={handleRecordSelection}/>
+                              width={props.expand ? '1700px' : '1100px'} onSelect={handleRecordSelection}/>
                 </Box>
             </GridItem>}
 

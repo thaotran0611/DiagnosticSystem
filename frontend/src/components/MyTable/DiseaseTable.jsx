@@ -2,9 +2,10 @@ import React from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td, TableCaption, TableContainer } from '@chakra-ui/react';
 import DiseaseCard from '../DiseaseCard/DiseaseCard';
 
-export default function DiseaseTable({ }) {
+export default function DiseaseTable(props) {
   const data = [{'disease_code': 'AA', 'value': false, 'time': '2024-04-18 16:46:59'}
               , {'disease_code': 'CND', 'value': false, 'time': '2024-04-18 16:46:59'}]
+  // console.log(props.data)
   return (
     <TableContainer>
       <Table variant='simple'>
@@ -17,7 +18,7 @@ export default function DiseaseTable({ }) {
           </Tr>
         </Thead>
         <Tbody>
-          {data.map((row, index) => (
+          {props.data.map((row, index) => (
             <Tr key={index}>
               <Td width='50%'><DiseaseCard text={row.disease_code}/></Td> {/* Set width for the Disease column */}
               <Td width='25%'>70% </Td> {/* Set width for the % column */}

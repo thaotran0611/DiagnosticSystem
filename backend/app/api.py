@@ -10,6 +10,7 @@ import random
 import string
 from pyhive import hive
 from decimal import Decimal
+import time
 
 app = FastAPI()
 
@@ -90,7 +91,7 @@ async def login(data: dict, db=Depends(get_db)) -> dict:
     print(response[0])
     if len(df) > 0:
         users_list = ['DOCTOR', 'ADMINISTRATOR','ANALYST','RESEARCHER']
-        code = response[0]["code"]
+        code = response[0]["code"] 
         for user in users_list:
             query = eval(user).select().where(eval(user).columns.code == code)
             result = pd.DataFrame(db.execute(query).fetchall())
@@ -105,6 +106,7 @@ async def login(data: dict, db=Depends(get_db)) -> dict:
 
 @app.get("/patients", response_model=dict, tags=["root"])  
 async def get_patients(doctor_code, db=Depends(get_db)) -> dict: #care x adminssion x patient
+    start = time.time()
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
     subq = sa.select(
         CARE.columns.hadm_id,
@@ -149,6 +151,8 @@ async def get_patients(doctor_code, db=Depends(get_db)) -> dict: #care x adminss
     .where(subq2.columns.max_admittime == ADMISSIONS_CHECKED.columns.admittime)
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
+    end = time.time()
+    print(end-start)
     if len(df)>0:
         transform_timestamp(df,['admittime','dischtime','dob'])
         result = df.to_dict(orient='records')
@@ -159,6 +163,8 @@ async def get_patients(doctor_code, db=Depends(get_db)) -> dict: #care x adminss
 
 @app.get("/patients-overview", response_model=dict, tags=["root"])  
 async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care x adminssion x patient
+    start = time.time()
+
     max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
     subq = sa.select(
         CARE.columns.hadm_id,
@@ -199,8 +205,9 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
     ).select_from(
     sa.join(subq2, ADMISSIONS_CHECKED, subq2.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
     .where(subq2.columns.max_admittime == ADMISSIONS_CHECKED.columns.admittime)
-    
     df = pd.DataFrame(db.execute(stmt).fetchall())
+    end = time.time()
+    print(end-start)
     if len(df)>0:
         transform_timestamp(df,['admittime','dischtime'])
         transform_date(df,['dob'])
@@ -355,13 +362,18 @@ async def get_patients_admission_overview(doctor_code, subject_id, db=Depends(ge
 
     df1 = pd.DataFrame(db.execute(stmt).fetchall())
 
+    infomation_tag = []
+    result1 = []
     if len(df1)>0:
         transform_timestamp(df1,['admittime','dischtime'])
+        infomation_tag.append({"heading":"Number of admission","content": len(pd.unique(df1['hadm_id']))})  
+        infomation_tag.append({"heading":"The Last Admission Time","content": max(df1['admittime'])})
+        infomation_tag.append({"heading":"The Last Discharge Time","content": max(df1['dischtime'])})
         result1 = df1.to_dict(orient='records')
-        
+
     # print(result1)
     
-    return JSONResponse(content={"admission": result1})
+    return JSONResponse(content={"admission": result1, "infomation_tag":infomation_tag})
 
 @app.get("/patients-detail-overview", response_model=dict, tags=["root"])  
 async def get_patients_detail_overview(doctor_code, subject_id, db=Depends(get_db)) -> dict:

@@ -12,13 +12,15 @@ const PrescriptionTab = (props) => {
     const [loadingPrescription, setLoadingPrescription] = useState(true);
     const [error, setError] = useState(null);
 
+    const subject_id =  props.subject_id
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:8000/patients-detail-prescription', {
                     params: {
                         doctor_code: doctor_code,
-                        subject_id: props.subject_id
+                        subject_id: subject_id
                     }
                 });
                 setPrescription(response.data.prescription);
@@ -29,8 +31,10 @@ const PrescriptionTab = (props) => {
                 setLoadingPrescription(false);
             }
         };
-        fetchData();
-    }, []);
+        if (Prescription.length === 0) {
+            fetchData();
+        }    
+    }, [Prescription, doctor_code, subject_id]);
 
     return(
         <Box h={'100%'}>

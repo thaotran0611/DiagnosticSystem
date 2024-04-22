@@ -126,6 +126,7 @@ export default function MyTable2(props) {
   return (
     <div style={{height: props.height, width: props.width}}>
         <ThemeProvider theme={theme}>
+            <h5>Table Name</h5> {/* Add table name here */}
             <DataGrid 
             rows={slicedData}
             columns={columns}

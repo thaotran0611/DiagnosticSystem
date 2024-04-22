@@ -13,13 +13,14 @@ const ProcedureTab = (props) => {
     const [loadingProcedure, setLoadingProcedure] = useState(true);
     const [error, setError] = useState(null);
 
+    const subject_id =  props.subject_id
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:8000/patients-detail-procedure', {
                     params: {
                         doctor_code: doctor_code,
-                        subject_id: props.subject_id
+                        subject_id: subject_id
                     }
                 });
                 setProcedure(response.data.procedure);
@@ -30,12 +31,17 @@ const ProcedureTab = (props) => {
                 setLoadingProcedure(false);
             }
         };
-        fetchData();
-    }, []);
+        if (procedure.length === 0) {
+            fetchData();
+        }
+        }, [procedure, doctor_code, subject_id]);
 
     return(
         <Box h={'100%'}>
-            <MyTable2 data ={procedure} height={'620px'}/>
+            <MyTable2 data={props.hadmID === 'All Admission' ? procedure : procedure.filter((item) => {
+                        const itemValue = String(item.hadm_id);
+                        return itemValue.includes(props.hadmID);
+                    })} height={'620px'}/>
         </Box>
     )
 }

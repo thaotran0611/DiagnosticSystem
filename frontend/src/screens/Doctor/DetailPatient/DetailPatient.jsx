@@ -42,6 +42,8 @@ const DetailPatient = (props) => {
     const [allAdmission, setAllAdmission] = useState(['All Admission']);
     const [error, setError] = useState(null);
 
+    const [infoTag, setInfoTag] = useState([]); // PASS AS PARAMETER
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -77,6 +79,7 @@ const DetailPatient = (props) => {
                 setAddmission(response.data.admission);
                 setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "hadm_id").map((image) => image.hadm_id)));
                 setLoadingAdmission(false);
+                setInfoTag(response.data.infomation_tag)
                 console.log(allAdmission)
             } catch (error) {
                 setError(error);
@@ -111,15 +114,8 @@ const DetailPatient = (props) => {
         // return () => clearInterval(intervalId);
     }, []);
 
+
     const [expand, setExpand] = useState(false);
-    // const data = [ 
-    //     { key: 'Full name', value: 'Lucy Biaca' }, 
-    //     { key: 'Birthday', value: '12/12/2012' }, 
-    //     { key: 'Job', value: 'Teacher' }, 
-    //     { key: 'Gender', value: 'Female' }, 
-    //     { key: 'Address', value: 'London, UK' }, 
-    //     { key: 'Phone', value: '1234658' }, 
-    // ];
     const expandPage = () => {
         setExpand(!expand); 
         setPageSizeGeneral(pageSizeGeneral*4/6);
@@ -207,6 +203,8 @@ const DetailPatient = (props) => {
     
     const [pageSizeGeneral, setPageSizeGeneral] = useState(4);
     const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
+    const [activeTab, setActiveTab] = useState("General");
+
     return(
         <DoctorLayout path={
                 <Breadcrumb>
@@ -270,7 +268,10 @@ const DetailPatient = (props) => {
                         </GridItem>
                     </Grid>
                 </GridItem>
-                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'20px'} padding={6}>
+                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'20px'} padding={6} maxHeight="100vh" overflowY="auto" style={{
+                        scrollbarWidth: 'thin', 
+                        scrollbarColor: '#A0AEC0 #ffffff', 
+                    }}>
                 <Grid
                     h='40px'
                     templateColumns='repeat(6, 1fr)'
@@ -291,31 +292,31 @@ const DetailPatient = (props) => {
                 </Grid>
                     <Tabs isFitted variant='enclosed' size={'md'} height={'94%'}>
                         <TabList>
-                            <Tab fontWeight={'bold'} key={1}>General</Tab>
-                            <Tab fontWeight={'bold'} key={2}>Medical Test</Tab>
-                            <Tab fontWeight={'bold'} key={3}>Procedure</Tab>
-                            <Tab fontWeight={'bold'} key={4}>Prescription</Tab>
-                            <Tab fontWeight={'bold'} key={5}>Note</Tab>
-                            <Tab fontWeight={'bold'} key={6}>Diseases</Tab>
+                            <Tab fontWeight={'bold'} key={1} onClick={() => setActiveTab("General")}>General</Tab>
+                            <Tab fontWeight={'bold'} key={2} onClick={() => setActiveTab("MedicalTest")}>Medical Test</Tab>
+                            <Tab fontWeight={'bold'} key={3} onClick={() => setActiveTab("Procedure")}>Procedure</Tab>
+                            <Tab fontWeight={'bold'} key={4} onClick={() => setActiveTab("Prescription")}>Prescription</Tab>
+                            <Tab fontWeight={'bold'} key={5} onClick={() => setActiveTab("Note")}>Note</Tab>
+                            <Tab fontWeight={'bold'} key={6} onClick={() => setActiveTab("Diseases")}>Diseases</Tab>
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'}>
-                                <GeneralTab addmission={addmission} generalTag={generalTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral} hadmID={hadmID} sethadmID={sethadmID}/>
+                                {activeTab === "General" && <GeneralTab addmission={addmission} generalTag={infoTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral} hadmID={hadmID} sethadmID={sethadmID}/>}
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
-                                <MedicalTestTab generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>
+                                {activeTab === "MedicalTest" && <MedicalTestTab generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>}
                             </TabPanel>
                             <TabPanel key={3} h={'100%'}>
-                                <ProcedureTab subject_id={patientCode}/>
+                                {activeTab === "Procedure" && <ProcedureTab subject_id={patientCode} hadmID={hadmID}/>}
                             </TabPanel>
                             <TabPanel key={4} h={'100%'}>
-                                <PrescriptionTab subject_id={patientCode} hadmID={hadmID}/>
+                                {activeTab === "Prescription" && <PrescriptionTab subject_id={patientCode} hadmID={hadmID}/>}
                             </TabPanel>
                             <TabPanel key={5} h={'100%'}>
-                                <NoteTab hadmID={hadmID} expand={expand} subject_id={patientCode}/>
+                                {activeTab === "Note" && <NoteTab hadmID={hadmID} expand={expand} subject_id={patientCode}/>}
                             </TabPanel>
                             <TabPanel key={6} h={'100%'}>
-                                <DiseasesTab subject_id={patientCode}/>
+                                {activeTab === "Diseases" && <DiseasesTab subject_id={patientCode}/>}
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

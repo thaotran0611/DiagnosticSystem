@@ -25,20 +25,22 @@ const DiseasesTab = (props) => {
                 });
                 setAnnotate(response.data.annotate);
                 setLoadingAnnotate(false);
-                console.log(annotate)
+                // console.log(annotate)
             } catch (error) {
                 setError(error);
                 setLoadingAnnotate(false);
             }
         };
-        fetchData();
-    }, []);
+        if (annotate.length === 0) {
+            fetchData();
+        }
+    }, [annotate, doctor_code, subject_id]);
 
     return(
         
         <Box h={'100%'}>
             {/* <MyTable2 editable={true} height={'680px'}/> */}
-            <DiseaseTable />
+            <DiseaseTable data = {annotate}/>
         </Box>
     )
 }
