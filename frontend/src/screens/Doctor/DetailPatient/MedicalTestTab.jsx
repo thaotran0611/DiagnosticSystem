@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, Select, SimpleGrid, Text } from "@chakra-ui/react";
+import { AbsoluteCenter, Box, Divider, Grid, GridItem, HStack, IconButton, ScaleFade, Select, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
@@ -14,6 +14,7 @@ import BarChart from "../../../components/Chart/BarChart";
 import { LineChart } from "../../../components/Chart/LineChart";
 import axios from 'axios';
 import _ from "lodash";
+import InputColor from "react-input-color";
 
 const theme = createTheme();
 const MedicalTestTab = (props) => {
@@ -31,7 +32,10 @@ const MedicalTestTab = (props) => {
     const [typeoftestmanytime,setTypeoftestmanytime] = useState('');
     const [loadingMedicalTest, setLoadingMedicalTest] = useState(true);
     const [error, setError] = useState(null);
+    const [typeofchart, setTypeofchart] = useState('LineChart');
+    const Allcharts = ['LineChart', 'BarChart'];
     const subject_id = props.subject_id;
+    const [color, setColor] = useState({});
     const isUnique = (arr, item) => {
         // Check if there's only one occurrence of this combination in the array
         return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
@@ -113,7 +117,7 @@ const MedicalTestTab = (props) => {
                     gap={4}
                     >
                         <GridItem colStart={1} colSpan={2}>
-                        <Text color={'#3E36B0'} fontSize={'22px'} fontWeight={600}> Implement-1-time test</Text>
+                        <Text color={'#3E36B0'} fontSize={'20px'} fontWeight={600}> Implement-1-time test</Text>
                     </GridItem>
 
                     <GridItem textAlign={'right'} colStart={5} colSpan={1}>
@@ -182,41 +186,55 @@ const MedicalTestTab = (props) => {
                     {/* <MyTable2 height={expandMedicalTest === 1 ? '620px': '450px'} width={expand ? '1700px' : '1100px'}/> */}
                     <Grid
                         h='40px'
-                        templateColumns='repeat(7, 1fr)'
+                        templateColumns='repeat(11, 1fr)'
                         gap={4}
                         >
-                            <GridItem colStart={1} colSpan={2}>
-                            <Text color={'#3E36B0'} fontSize={'22px'} fontWeight={600}> Implement-many-time test</Text>
+                            <GridItem colStart={1} colSpan={3}>
+                            <Text color={'#3E36B0'} fontSize={'20px'} fontWeight={600}> Implement-many-time test</Text>
                         </GridItem>
-                        <GridItem textAlign={'right'} colStart={3} colSpan={1}>
+                        <GridItem colStart={4} colSpan={1} paddingTop={2}>
+                            <HStack spacing={1}>
+                                <Text fontWeight={600}>Color:</Text>
+                                <InputColor
+                                    initialValue="#5e72e4"
+                                    onChange={setColor}
+                                    placement="right"
+                                />
+                            </HStack>
+                        </GridItem>
+                        <GridItem textAlign={'right'} colStart={5} colSpan={3}>
+                            <HStack spacing={1}>
                             <Text paddingTop={1} fontWeight={600}>Type of chart:</Text>
-                        </GridItem>
-                        <GridItem textAlign={'right'} colStart={4} colSpan={1}>
-                            <Select onChange={(e) => {setTypeoftestmanytime(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={typeoftestmanytime[0]}>
+                            <Select w={'140px'} onChange={(e) => {setTypeofchart(e.target.value); console.log(color.rgba)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={Allcharts[0]}>
                                 {
-                                    typeofmedicaltestmanytime.map(item => (
-                                        <option selected={item === typeoftestmanytime ? true : false} value={item}>{item}</option>
+                                    Allcharts.map(item => (
+                                        <option selected={item === typeofchart ? true : false} value={item}>{item}</option>
                                     ))
                                 }
                             </Select>
+                            </HStack>
                         </GridItem>
-                        <GridItem textAlign={'right'} colStart={5} colSpan={1}>
-                            <Text paddingTop={1} fontWeight={600}>Type of test:</Text>
-                        </GridItem>
-                        
-                        <GridItem colStart={6} colSpan={2}>
-                            <Select onChange={(e) => {setTypeoftestmanytime(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={typeoftestmanytime[0]}>
-                                {
-                                    typeofmedicaltestmanytime.map(item => (
-                                        <option selected={item === typeoftestmanytime ? true : false} value={item}>{item}</option>
-                                    ))
-                                }
-                            </Select>
+                        <GridItem textAlign={'right'} colStart={8} colSpan={4}>
+                            <HStack spacing={1}>
+                                <Text w={'150px'} paddingTop={1} fontWeight={600}>Type of test:</Text>
+                            
+                                <Select  onChange={(e) => {setTypeoftestmanytime(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={typeoftestmanytime[0]}>
+                                    {
+                                        typeofmedicaltestmanytime.map(item => (
+                                            <option selected={item === typeoftestmanytime ? true : false} value={item}>{item}</option>
+                                        ))
+                                    }
+                                </Select>
+                                {/* <Text paddingTop={1} fontWeight={600}>{medicaltestmanytimefilter[0].valueuom}</Text> */}
+                            </HStack>
                         </GridItem>
                     </Grid>
                     <Box h={'90%'} position={'relative'}>
-                        {/* <BarChart/> */}
-                        <LineChart label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/>
+                        {typeofchart === 'LineChart' ? 
+                            <LineChart color={color} dataset={typeoftestmanytime + " " + (medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "")} label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/> 
+                            :
+                            <BarChart color={color} dataset={typeoftestmanytime + " " + (medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")": "")} label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/>
+                        }
                     </Box>
                 </GridItem>}
         </Grid>

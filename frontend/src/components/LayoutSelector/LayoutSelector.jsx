@@ -6,8 +6,9 @@ import React from 'react';
 const LayoutSelector = ({ onChange, selectedLayout }) => { 
   return ( 
     <div class = 'selector'> 
-      <label> 
+      <label className='label'> 
         <input 
+          style={{display: 'none'}}
           type="radio" 
           value="list" 
           checked={selectedLayout === 'list'} 
@@ -15,8 +16,9 @@ const LayoutSelector = ({ onChange, selectedLayout }) => {
         /> 
         <div class = 'icon'> <TfiLayoutListThumb/> </div> 
       </label> 
-      <label> 
+      <label className='label'> 
         <input 
+          style={{display: 'none'}}
           type="radio" 
           value="grid" 
           checked={selectedLayout === 'grid'} 
