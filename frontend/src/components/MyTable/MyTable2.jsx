@@ -4,7 +4,7 @@ import { DataGrid, GridToolbar, useGridApiRef} from '@mui/x-data-grid';
 import { ThemeProvider, createTheme } from '@mui/material';
 import "./MyTable2.css"
 import MyPagination from '../Pagination/Pagination' 
-import { Stack, Flex, Center, Spacer, Box} from '@chakra-ui/react'; 
+import { Stack, Flex, Center, Spacer, Box, Text} from '@chakra-ui/react'; 
 import GoToPage from '../GoToPage/GoToPage';
 
 
@@ -126,7 +126,7 @@ export default function MyTable2(props) {
   return (
     <div style={{height: props.height, width: props.width}}>
         <ThemeProvider theme={theme}>
-            <h5>Table Name</h5> {/* Add table name here */}
+        <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}>{props.tablename}</Text> {/* Add table name here */}
             <DataGrid 
             rows={slicedData}
             columns={columns}

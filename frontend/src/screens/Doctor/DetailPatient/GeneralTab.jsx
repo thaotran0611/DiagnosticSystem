@@ -81,9 +81,9 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
                 </Center>
             </GridItem>
             {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'2'}>
-                <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}>Table of Admission</Text>
+                {/* <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}>Table of Admission</Text> */}
                 <Box h={'92%'}>
-                    <MyTable2 data = {addmission} height={expandGeneral === 1 ? '560px': '380px'} width={expand ? '1700px' : '1100px'}
+                    <MyTable2 tablename='Table of Admission' data = {addmission} height={expandGeneral === 1 ? '560px': '380px'} width={expand ? '1700px' : '1100px'}
                     onSelect={handleRecordSelection}/>
                 </Box>
                 </GridItem>}

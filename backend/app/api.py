@@ -523,6 +523,65 @@ async def get_patients_detail_procedure(doctor_code, subject_id, db=Depends(get_
     # print(result)
     return JSONResponse(content={"procedure": result})
 
+@app.get("/patients-detail-medicaltest", response_model=dict, tags=["root"])
+async def get_patients_detail_medicaltest(doctor_code=14080, subject_id=109, db=Depends(get_db)) -> dict:
+    subject_id = int(subject_id)
+
+    max_admittime = sa.func.max(ADMISSIONS_CHECKED.columns.admittime).label("max_admittime")
+    
+    subq = sa.select(
+        ADMISSIONS_CHECKED.columns.subject_id,
+        max_admittime
+    )\
+    .select_from(sa.join(CARE, ADMISSIONS_CHECKED, CARE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
+    .where(sa.and_(CARE.columns.doctor_code == doctor_code, ADMISSIONS_CHECKED.columns.subject_id == subject_id))\
+    .group_by(ADMISSIONS_CHECKED.columns.subject_id).alias("subq")
+
+    subq_hadm_ids = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,        
+    ).select_from(
+        sa.join(subq, ADMISSIONS_CHECKED, subq.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
+    .where(subq.columns.max_admittime >= ADMISSIONS_CHECKED.columns.admittime).as_scalar()
+
+    # subq_test_1 = sa.select(DO_D_LABITEMS.columns.itemid) \
+    #                 .select_from(sa.join(DO_D_LABITEMS, D_ITEMS, DO_D_LABITEMS.columns.itemid == D_ITEMS.columns.itemid)) \
+    #                 .where(DO_D_LABITEMS.columns.hadm_id.in_(subq_hadm_ids)) \
+    #                 .group_by(DO_D_LABITEMS.columns.itemid) \
+    #                 .having(sa.func.co)
+
+    stmt = sa.select(DO_D_LABITEMS.columns.hadm_id,
+                     DO_D_LABITEMS.columns.charttime,
+                     DO_D_LABITEMS.columns.value,
+                     DO_D_LABITEMS.columns.valueuom,
+                     D_LABITEMS) \
+            .select_from(sa.join(DO_D_LABITEMS, D_LABITEMS, DO_D_LABITEMS.columns.itemid == D_LABITEMS.columns.itemid)) \
+            .where(DO_D_LABITEMS.columns.hadm_id.in_(subq_hadm_ids)) \
+            .order_by(DO_D_LABITEMS.columns.hadm_id, D_LABITEMS.columns.itemid)
+            
+    # stmt = sa.select(DO_D_LABITEMS.columns.hadm_id,
+    #                  DO_D_LABITEMS.columns.itemid,
+    #                  DO_D_LABITEMS.columns.charttime,
+    #                  DO_D_LABITEMS.columns.value,
+    #                  DO_D_LABITEMS.columns.valueuom
+    #                  ) \
+    #         .where(DO_D_LABITEMS.columns.hadm_id.in_(subq_hadm_ids))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        df['value'] = df['value'].apply(lambda x: str(x))
+
+        transform_timestamp(df,['charttime'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"medicaltest": result})
+            
+            
+
 
 
 

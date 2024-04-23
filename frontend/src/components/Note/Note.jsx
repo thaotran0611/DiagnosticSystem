@@ -33,7 +33,7 @@ const Note = (props) => {
     };
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const slicedData = props.data.slice(startIndex, endIndex);
+    const slicedData = props.data ? props.data.slice(startIndex, endIndex) : [];
 
     const [showAlert, setShowAlert] = useState(false);
     const [searchvalue, setSearchvalue] = useState('');
@@ -125,7 +125,7 @@ const Note = (props) => {
                     <div className="pagination-note-container">
                     
                     <Pagination
-                        count={Math.ceil(props.data.length / pageSize)}
+                        count={Math.ceil(props.data ? props.data.length / pageSize: 0)}
                         page={page}
                         onChange={handleChangePage}
                         shape="rounded"

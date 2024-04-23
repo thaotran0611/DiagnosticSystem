@@ -60,11 +60,11 @@ const NoteTab = (props) => {
                 h='100%'>
             {expandNote === 1 ? null : 
             <GridItem h={'100%'} position={'relative'} >
-                <Box h={'100%'}>
-                    <MyTable2 data={props.hadmID === 'All Admission' ? note : note.filter((item) => {
+                <Box h={'98%'}>
+                    <MyTable2 tablename='Table of Note events' data={props.hadmID === 'All Admission' ? note : note.filter((item) => {
                         const itemValue = String(item.hadm_id);
                         return itemValue.includes(props.hadmID);
-                    })} height={expandNote === 3 ? '600px' : '300px'}
+                    })} height={expandNote === 3 ? '560px' : '260px'}
                               width={props.expand ? '1700px' : '1100px'} onSelect={handleRecordSelection}/>
                 </Box>
             </GridItem>}

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, Select, SimpleGrid, Text } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
@@ -12,37 +12,136 @@ import { HorizontalChart } from "../../../components/Chart/HorizontalChart";
 import ChartEvents from "../../../components/Chart/ChartEvents";
 import BarChart from "../../../components/Chart/BarChart";
 import { LineChart } from "../../../components/Chart/LineChart";
+import axios from 'axios';
+import _ from "lodash";
 
 const theme = createTheme();
-const MedicalTestTab = ({generalTag, expand, pageSize, setPageSize}) => {
+const MedicalTestTab = (props) => {
+
+    const doctor_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+
+    const [medicaltest, setMedicalTest] = useState([]); // PASS AS PARAMETER
+    const [medicaltest1time, setMedicalTest1time] = useState([]); // PASS AS PARAMETER
+    const [medicaltestmanytime, setMedicaltestmanytime] = useState([]);
+    const [typeofmedicaltest1time, setTypeofmedicaltest1time] = useState([]);
+    const [typeofmedicaltestmanytime, setTypeofmedicaltestmanytime] = useState([]);
+    const [typeoftest1time,setTypeoftest1time] = useState('');
+    const [typeoftestmanytime,setTypeoftestmanytime] = useState('');
+    const [loadingMedicalTest, setLoadingMedicalTest] = useState(true);
+    const [error, setError] = useState(null);
+    const subject_id = props.subject_id;
+    const isUnique = (arr, item) => {
+        // Check if there's only one occurrence of this combination in the array
+        return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
+      };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-medicaltest', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: subject_id
+                    }
+                });
+                setMedicalTest(response.data.medicaltest);
+                setMedicalTest1time(response.data.medicaltest.filter((item, index, array) => {
+                    return isUnique(array, item);
+                  })
+                )
+                setMedicaltestmanytime(response.data.medicaltest.filter((item, index, array) => {
+                    return !isUnique(array, item);
+                  })
+                )
+                setTypeofmedicaltest1time(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
+                    return isUnique(array, item);
+                }), "fluid").map((image) => image.fluid))
+                setTypeofmedicaltestmanytime(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
+                    return !isUnique(array, item);
+                }), "label").map((image) => image.label))
+                setLoadingMedicalTest(false);
+                console.log(response.data.medicaltest.filter((item, index, array) => {
+                    return !isUnique(array, item);
+                  })
+                )
+            } catch (error) {
+                setError(error);
+                setLoadingMedicalTest(false);
+            }
+        };
+        if (medicaltest.length === 0) {
+            fetchData();
+        }
+        }, [medicaltest, doctor_code, subject_id]);
     const [expandMedicalTest, setExpandMedicalTest] = useState(2);
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
     
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const slicedData = generalTag.slice(startIndex, endIndex);
+    const startIndex = (page - 1) * props.pageSize;
+    const endIndex = startIndex + props.pageSize;
+    let medicaltest1timefilter = props.hadmID === 'All Admission' ? medicaltest1time.filter((item) => {
+            const itemValue = String(item.fluid);
+            return itemValue.includes(typeoftest1time);
+        }) : medicaltest1time.filter((item) => {
+            const itemValue = String(item.hadm_id);
+            return itemValue.includes(props.hadmID);
+        }).filter((item) => {
+            const itemValue = String(item.fluid);
+            return itemValue.includes(typeoftest1time);
+        })
+    let medicaltestmanytimefilter = props.hadmID === 'All Admission' ? [] : medicaltestmanytime.filter((item) => {
+        const itemValue = String(item.label);
+        return itemValue.includes(typeoftestmanytime);
+    })
+    let slicedData = medicaltest1timefilter.slice(startIndex, endIndex)
+    // props.generalTag.slice(startIndex, endIndex);
     return(
         <Grid gridTemplateRows={expandMedicalTest === 1 ? '3% 97%':
-                                expandMedicalTest === 2 ? '25% 3% 72%':
+                                expandMedicalTest === 2 ? '35% 3% 62%':
                                                         '97% 3%'}
                 h='100%'>
             {expandMedicalTest === 1 ? null : 
+
             <GridItem position={'relative'}>
+                <Grid
+                    h='40px'
+                    templateColumns='repeat(6, 1fr)'
+                    gap={4}
+                    >
+                        <GridItem colStart={1} colSpan={2}>
+                        <Text color={'#3E36B0'} fontSize={'22px'} fontWeight={600}> Implement-1-time test</Text>
+                    </GridItem>
+
+                    <GridItem textAlign={'right'} colStart={5} colSpan={1}>
+                        <Text paddingTop={1} fontWeight={600}>Type of test:</Text>
+                    </GridItem>
+                    
+                    <GridItem colStart={6} colSpan={1}>
+                        <Select onChange={(e) => {setTypeoftest1time(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={typeofmedicaltest1time[0]}>
+                            {
+                                typeofmedicaltest1time.map(item => (
+                                    <option selected={item === typeoftest1time ? true : false} value={item}>{item}</option>
+                                ))
+                            }
+                        </Select>
+                    </GridItem>
+                </Grid>
                 <ThemeProvider theme={theme}>
-                    <SimpleGrid h={'80%'} columns={expand ? 6 : 4} spacing={8}>
+                    <SimpleGrid marginTop={1} h={expandMedicalTest === 2 ? '65%' : '80%'} columns={props.expand ? 6 : 4} spacing={8}>
                         {
                             slicedData.map(infor => (
-                                <GeneralCard heading = {infor.heading} content={infor.content}/>
+                                <GeneralCard heading = {infor.label} content={infor.value + (infor.valueuom !== null ? "   " +infor.valueuom : "")} footer={infor.charttime}/>
                             ))
                         }
                     </SimpleGrid>
                 
                     <Center>
                         <MyPagination
-                            count={Math.ceil(generalTag.length / pageSize)}
+                            count={Math.ceil(medicaltest1timefilter.length / props.pageSize)}
                             page={page}
                             onChange={handleChangePage}
                         />
@@ -62,7 +161,7 @@ const MedicalTestTab = ({generalTag, expand, pageSize, setPageSize}) => {
                                     icon={<ChevronDownIcon/>}
                                     bg={'#3E36B0'}
                                     color={'white'}
-                                    onClick={expandMedicalTest === 2 ? ()=>{setExpandMedicalTest(expandMedicalTest + 1); setPageSize(pageSize*3)}: ()=>{setExpandMedicalTest(expandMedicalTest + 1)}}
+                                    onClick={expandMedicalTest === 2 ? ()=>{setExpandMedicalTest(expandMedicalTest + 1); props.setPageSize(props.pageSize*3)}: ()=>{setExpandMedicalTest(expandMedicalTest + 1)}}
                                 />
                                 <IconButton
                                     marginLeft={2}
@@ -71,7 +170,7 @@ const MedicalTestTab = ({generalTag, expand, pageSize, setPageSize}) => {
                                     icon={<ChevronUpIcon/>}
                                     bg={'#3E36B0'}
                                     color={'white'}
-                                    onClick={expandMedicalTest === 3 ? ()=>{setExpandMedicalTest(expandMedicalTest - 1); setPageSize(pageSize/3)}: ()=>{setExpandMedicalTest(expandMedicalTest - 1)}}
+                                    onClick={expandMedicalTest === 3 ? ()=>{setExpandMedicalTest(expandMedicalTest - 1); props.setPageSize(props.pageSize/3)}: ()=>{setExpandMedicalTest(expandMedicalTest - 1)}}
                                 />
                             </Center>
                         </Box>
@@ -81,9 +180,43 @@ const MedicalTestTab = ({generalTag, expand, pageSize, setPageSize}) => {
             {expandMedicalTest === 3 ? null : <GridItem position={'relative'} paddingTop={'8'} overflow={'hidden'}>
                 {/* <MyTable/> */}
                     {/* <MyTable2 height={expandMedicalTest === 1 ? '620px': '450px'} width={expand ? '1700px' : '1100px'}/> */}
-                    <Box h={'92%'} position={'relative'}>
+                    <Grid
+                        h='40px'
+                        templateColumns='repeat(7, 1fr)'
+                        gap={4}
+                        >
+                            <GridItem colStart={1} colSpan={2}>
+                            <Text color={'#3E36B0'} fontSize={'22px'} fontWeight={600}> Implement-many-time test</Text>
+                        </GridItem>
+                        <GridItem textAlign={'right'} colStart={3} colSpan={1}>
+                            <Text paddingTop={1} fontWeight={600}>Type of chart:</Text>
+                        </GridItem>
+                        <GridItem textAlign={'right'} colStart={4} colSpan={1}>
+                            <Select onChange={(e) => {setTypeoftestmanytime(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={typeoftestmanytime[0]}>
+                                {
+                                    typeofmedicaltestmanytime.map(item => (
+                                        <option selected={item === typeoftestmanytime ? true : false} value={item}>{item}</option>
+                                    ))
+                                }
+                            </Select>
+                        </GridItem>
+                        <GridItem textAlign={'right'} colStart={5} colSpan={1}>
+                            <Text paddingTop={1} fontWeight={600}>Type of test:</Text>
+                        </GridItem>
+                        
+                        <GridItem colStart={6} colSpan={2}>
+                            <Select onChange={(e) => {setTypeoftestmanytime(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={typeoftestmanytime[0]}>
+                                {
+                                    typeofmedicaltestmanytime.map(item => (
+                                        <option selected={item === typeoftestmanytime ? true : false} value={item}>{item}</option>
+                                    ))
+                                }
+                            </Select>
+                        </GridItem>
+                    </Grid>
+                    <Box h={'90%'} position={'relative'}>
                         {/* <BarChart/> */}
-                        <LineChart/>
+                        <LineChart label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/>
                     </Box>
                 </GridItem>}
         </Grid>

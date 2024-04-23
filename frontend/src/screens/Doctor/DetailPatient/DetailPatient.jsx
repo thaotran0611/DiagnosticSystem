@@ -304,7 +304,7 @@ const DetailPatient = (props) => {
                                 {activeTab === "General" && <GeneralTab addmission={addmission} generalTag={infoTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral} hadmID={hadmID} sethadmID={sethadmID}/>}
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
-                                {activeTab === "MedicalTest" && <MedicalTestTab generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>}
+                                {activeTab === "MedicalTest" && <MedicalTestTab subject_id={patientCode} hadmID={hadmID} generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>}
                             </TabPanel>
                             <TabPanel key={3} h={'100%'}>
                                 {activeTab === "Procedure" && <ProcedureTab subject_id={patientCode} hadmID={hadmID}/>}

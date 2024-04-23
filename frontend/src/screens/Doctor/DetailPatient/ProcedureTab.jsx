@@ -37,11 +37,11 @@ const ProcedureTab = (props) => {
         }, [procedure, doctor_code, subject_id]);
 
     return(
-        <Box h={'100%'}>
-            <MyTable2 data={props.hadmID === 'All Admission' ? procedure : procedure.filter((item) => {
+        <Box h={'98%'}>
+            <MyTable2 tablename='Table of procedure' data={props.hadmID === 'All Admission' ? procedure : procedure.filter((item) => {
                         const itemValue = String(item.hadm_id);
                         return itemValue.includes(props.hadmID);
-                    })} height={'620px'}/>
+                    })} height={'580px'}/>
         </Box>
     )
 }
