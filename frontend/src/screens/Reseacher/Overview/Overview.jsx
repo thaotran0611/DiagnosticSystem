@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import OveralTag from "../../../components/OveralTag/OveralTag";
 import Note from "../../../components/Note/Note";
-import PatientList from "../../../components/PatientList/PatientList";
-import PatientInfor from "../../../components/PatientInfor/PatientInfor";
+import axios from 'axios';
 import { Box, Center } from "@chakra-ui/react";
 import {
     Breadcrumb,
@@ -10,13 +9,49 @@ import {
     BreadcrumbLink,
     BreadcrumbSeparator,
   } from '@chakra-ui/react'
-import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { useNavigate } from "react-router-dom";
 import { Grid, GridItem,Text } from '@chakra-ui/react'
 import { ResearcherLayout } from "../../../layout/ResearcherLayout";
 import DiseaseList from "../../../components/DiseaseCard/DiseaseList";
 const OverviewResearcher = () => {
     const navigate = useNavigate();
+    const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
+    const [tagData, setTagData] = useState([]);
+    const [loadingPatient, setLoadingPatient] = useState(true);
+    const [error, setError] = useState(null);
+    const researcher_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    const researcher_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '0';
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/researcher-overview-patient', {
+                    params: {
+                        researcher_code: researcher_code
+                    }
+                });
+                setPatientData(response.data.patient);
+                setTagData([{id: 1, title: 'Male patients', value: response.data.patient.filter((item) => {
+                                const itemValue = item.gender;
+                                return itemValue === 'M';
+                            }).length},
+                            {id: 2, title: 'Female patients', value: response.data.patient.filter((item) => {
+                                const itemValue = item.gender;
+                                return itemValue === 'F';
+                            }).length}
+                        ])
+                setLoadingPatient(false);
+            } catch (error) {
+                setError(error);
+                setLoadingPatient(false);
+            }
+        };
+    
+        fetchData();
+    }, []);
     return(
         <ResearcherLayout path={
             <Breadcrumb fontSize="xl">
@@ -34,7 +69,7 @@ const OverviewResearcher = () => {
                           h='100%'>
                         <GridItem area={'overal'}>
                             <Center h={'100%'} position={'relative'}>
-                                <OveralTag title = "Number of patients" value = "10567"/>
+                                <OveralTag title = "Number of patients" value = {patientdata.length} tagData={tagData}/>
                             </Center>
                         </GridItem>
                         <GridItem area={'note'} position={'relative'}>
@@ -43,7 +78,6 @@ const OverviewResearcher = () => {
                             </Center>
                         </GridItem>
                         <GridItem h={'100%'} area={'list'} bg={'#fff'} borderRadius={'20px'} overflow={'auto'} position={'relative'}>
-                                {/* <PatientList/> */}
                             <Box position={'relative'} borderRadius={'20px'} overflow={'auto'}>
                                 <DiseaseList/>
                             </Box>

@@ -556,7 +556,7 @@ async def get_patients_detail_medicaltest(doctor_code=14080, subject_id=109, db=
                      D_LABITEMS) \
             .select_from(sa.join(DO_D_LABITEMS, D_LABITEMS, DO_D_LABITEMS.columns.itemid == D_LABITEMS.columns.itemid)) \
             .where(DO_D_LABITEMS.columns.hadm_id.in_(subq_hadm_ids)) \
-            .order_by(DO_D_LABITEMS.columns.hadm_id, D_LABITEMS.columns.itemid)
+            .order_by(DO_D_LABITEMS.columns.hadm_id, D_LABITEMS.columns.itemid, DO_D_LABITEMS.columns.charttime)
             
     # stmt = sa.select(DO_D_LABITEMS.columns.hadm_id,
     #                  DO_D_LABITEMS.columns.itemid,
@@ -579,6 +579,25 @@ async def get_patients_detail_medicaltest(doctor_code=14080, subject_id=109, db=
         result = []
     # print(result)
     return JSONResponse(content={"medicaltest": result})
+
+@app.get("/researcher-overview-patient", response_model=dict, tags=["root"])
+async def get_patients_detail_medicaltest(researcher_code=14080, db=Depends(get_db)) -> dict:
+    stmt = sa.select(PATIENTS_CHECKED.columns.name,
+                     PATIENTS_CHECKED.columns.gender)
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        # transform_timestamp(df,['DOB', 'DOD', 'DOD_HOSP', 'SSN'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"patient": result})
+
             
             
 

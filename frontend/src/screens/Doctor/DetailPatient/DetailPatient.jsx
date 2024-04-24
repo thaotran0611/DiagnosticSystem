@@ -34,6 +34,9 @@ const DetailPatient = (props) => {
     const doctor_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
+    const doctor_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '';
     const { patientCode } = useParams();
     console.log(patientCode)
     const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
@@ -217,7 +220,7 @@ const DetailPatient = (props) => {
                 </Breadcrumb>
             }
             patient={true}
-            
+            name={doctor_name}
             expand={expand}>
                 <GridItem position={'relative'} marginLeft={4} pl='2' area={'nav'}>
                     <Grid

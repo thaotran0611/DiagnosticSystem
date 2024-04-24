@@ -12,6 +12,18 @@ const OveralTag = (props) => {
                 {
                     // props.data ? 
                     // props.data.map(infor => (
+                    props.tagData ? 
+                    props.tagData.map(infor => (
+                        infor.id === 1 ?
+                        <div style={{ width: 'fit-content', position: 'absolute', bottom: '5%'}}>
+                            <InformationTag title={infor.title} value={infor.value}/>
+                        </div> 
+                        : 
+                        <div style={{ width: 'fit-content', position: 'absolute', bottom: '5%', left: '25%'}}>
+                        <InformationTag title={infor.title} value={infor.value}/>
+                    </div>
+                    ))
+                    :
                     TagData ?
                     TagData.map(infor => (
                         infor.id === 1 ?
