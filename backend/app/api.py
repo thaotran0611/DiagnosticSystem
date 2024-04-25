@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, get_db
 from construct import * 
 import sqlalchemy as sa
+from sqlalchemy import text
 import pandas as pd
 import json
 import random
@@ -581,7 +582,7 @@ async def get_patients_detail_medicaltest(doctor_code=14080, subject_id=109, db=
     return JSONResponse(content={"medicaltest": result})
 
 @app.get("/researcher-overview-patient", response_model=dict, tags=["root"])
-async def get_patients_detail_medicaltest(researcher_code=14080, db=Depends(get_db)) -> dict:
+async def get_patients_detail_medicaltest(researcher_code, db=Depends(get_db)) -> dict:
     stmt = sa.select(PATIENTS_CHECKED.columns.name,
                      PATIENTS_CHECKED.columns.gender)
     df = pd.DataFrame(db.execute(stmt).fetchall())
@@ -597,6 +598,93 @@ async def get_patients_detail_medicaltest(researcher_code=14080, db=Depends(get_
         result = []
     # print(result)
     return JSONResponse(content={"patient": result})
+
+@app.get("/researcher-overview-disease", response_model=dict, tags=["root"])
+async def get_patients_detail_medicaltest(researcher_code, db=Depends(get_db)) -> dict:
+    sum_female = sa.select(ANNOTATE.columns.disease_code,
+                           sa.func.count(PATIENTS_CHECKED.columns.gender).label('sum_of_female')) \
+                .select_from(sa.join(sa.join(ANNOTATE, ADMISSIONS_CHECKED, ANNOTATE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id), PATIENTS_CHECKED, ADMISSIONS_CHECKED.columns.subject_id==PATIENTS_CHECKED.columns.subject_id)) \
+                .where(sa.and_(ANNOTATE.columns.value == 1, PATIENTS_CHECKED.columns.gender == 'F')) \
+                .group_by(ANNOTATE.columns.disease_code)
+    
+    sum_male = sa.select(ANNOTATE.columns.disease_code,
+                           sa.func.count(PATIENTS_CHECKED.columns.gender).label('sum_of_male')) \
+                .select_from(sa.join(sa.join(ANNOTATE, ADMISSIONS_CHECKED, ANNOTATE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id), PATIENTS_CHECKED, ADMISSIONS_CHECKED.columns.subject_id==PATIENTS_CHECKED.columns.subject_id)) \
+                .where(sa.and_(ANNOTATE.columns.value == 1, PATIENTS_CHECKED.columns.gender == 'M')) \
+                .group_by(ANNOTATE.columns.disease_code)
+    
+    sum_hadm_id = sa.select(ANNOTATE.columns.disease_code,
+                     sa.func.count(ANNOTATE.columns.value).label('sum_of_admission'))\
+            .where(ANNOTATE.columns.value == 1) \
+            .group_by(ANNOTATE.columns.disease_code)
+    
+    stmt = sa.select(sum_hadm_id.columns.disease_code,
+                     sum_hadm_id.columns.sum_of_admission,
+                     sum_male.columns.sum_of_male,
+                     sum_female.columns.sum_of_female) \
+            .select_from(sa.join(sa.join(sum_hadm_id, sum_male, sum_hadm_id.columns.disease_code == sum_male.columns.disease_code), sum_female, sum_female.columns.disease_code == sum_hadm_id.columns.disease_code))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        # transform_timestamp(df,['DOB', 'DOD', 'DOD_HOSP', 'SSN'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"diseases": result})
+
+@app.get("/researcher-overview-drug", response_model=dict, tags=["root"])
+async def get_patients_detail_medicaltest(researcher_code = 10040, db=Depends(get_db)) -> dict:
+    stmt = text('''
+                    SELECT
+                        d.drug,
+                        d.drug_name_poe,
+                        d.drug_type,
+                        d.formulary_drug_cd,
+                        COUNT(CASE WHEN c.gender = 'F' THEN 1 ELSE NULL END) AS sum_of_female,
+                        COUNT(CASE WHEN c.gender = 'M' THEN 1 ELSE NULL END) AS sum_of_male,
+                        COUNT(a.hadm_id) AS sum_of_admission
+                    FROM
+                        drug d
+                    LEFT OUTER JOIN
+                        prescriptions a
+                    ON
+                        d.drug = a.drug
+                        AND d.drug_name_poe = a.drug_name_poe
+                        AND d.drug_type = a.drug_type
+                        AND d.formulary_drug_cd = a.formulary_drug_cd
+                    LEFT OUTER JOIN
+                        admissions_checked b
+                    ON
+                        a.HADM_ID = b.HADM_ID
+                    LEFT OUTER JOIN
+                        patients_checked c
+                    ON
+                        b.SUBJECT_ID = c.SUBJECT_ID
+                    GROUP BY
+                        d.drug,
+                        d.drug_name_poe,
+                        d.drug_type,
+                        d.formulary_drug_cd
+            ''')
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        # transform_timestamp(df,['DOB', 'DOD', 'DOD_HOSP', 'SSN'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"drugs": result})
 
             
             
