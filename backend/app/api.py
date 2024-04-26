@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from database import engine, get_db
 from construct import * 
 import sqlalchemy as sa
@@ -11,6 +12,12 @@ import string
 from pyhive import hive
 from decimal import Decimal
 import time
+import logging
+from middleware import db_logging
+import sys
+sys.path.append("..")
+
+from Model import predict
 
 app = FastAPI()
 
@@ -26,40 +33,44 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+# app.middleware('http')(db_logging)
+app.add_middleware(BaseHTTPMiddleware, dispatch=db_logging)
+
+
 def mapping_column(col):
-    dic = {"admittime":"", 
-           "admission_type":"",
-           "admission_location":"",
-           "dischtime":"",
-           "ethnicity":"",
-           "marital_status":"",
-           "gender":"",
-           "dob":"",
-           "dod":"",
-           "dod_hosp":"",
-           "dod_ssn":"",
-           "expire_flag":"",
-           "hadm_id":"",
-           "discharge_location":"",
-           "startdate":"",
-           "enddate":"",
-           "drug_type":"",
-           "drug":"",
-           "drug_name_poe":"",
-           "drug_name_generic":"",
-           "formulary_drug_cd":"",
-           "gsn":"",
-           "dnc":"",
-           "prod_strength":"",
-           "dose_val_rx":"",
-           "dose_unit_rx":"",
-           "form_val_disp":"",
-           "form_unit_disp":"",
-           "route":"",
-           "chartdate":"",
-           "category":"",
-           "description":"",
-           "text":""}
+    dic = {"admittime":"Admission Time", 
+           "admission_type":"Admission Type",
+           "admission_location":"Admission Location",
+           "dischtime":"Discharge Time",
+           "ethnicity":"Ethnicity",
+           "marital_status":"Marital Status",
+           "gender":"Gender",
+           "dob":"Date of Birth",
+           "dod":"Date of Deadth",
+           "dod_hosp":"DOD at Hospital",
+           "dod_ssn":"dod_ssn",
+           "expire_flag":"Expire Flag",
+           "hadm_id":"Admission ID",
+           "discharge_location":"Discharge Location",
+           "startdate":"Start Date",
+           "enddate":"End Date",
+           "drug_type":"Drug Type",
+           "drug":"Drug",
+           "drug_name_poe":"Drug Name",
+           "drug_name_generic":"drug_name_generic",
+           "formulary_drug_cd":"formulary_drug_cd",
+           "gsn":"gsn",
+           "dnc":"dnc",
+           "prod_strength":"prod_strength",
+           "dose_val_rx":"dose_val_rx",
+           "dose_unit_rx":"dose_unit_rx",
+           "form_val_disp":"form_val_disp",
+           "form_unit_disp":"form_unit_disp",
+           "route":"Route",
+           "chartdate":"Chart Date",
+           "category":"Category",
+           "description":"Description",
+           "text":"Text"}
 
 def transform_timestamp(df,col_list):
     for col in col_list:
@@ -82,13 +93,14 @@ async def read_root() -> dict:
 
 @app.put("/auth", tags=["root"])
 async def login(data: dict, db=Depends(get_db)) -> dict:
+    print("Login: ", data)
     username = data.get("username")
     password = data.get("password")
     query = USERS.select().where(sa.and_(USERS.columns.username == username, USERS.columns.password == password))
     result = db.execute(query).fetchall()
     df = pd.DataFrame(result)
     response = df.to_dict(orient='records')
-    print(response[0])
+    # print(response[0])
     if len(df) > 0:
         users_list = ['DOCTOR', 'ADMINISTRATOR','ANALYST','RESEARCHER']
         code = response[0]["code"] 
@@ -230,7 +242,7 @@ async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
     conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
     # Create cursor
     cursor = conn.cursor()
-    insert_query = """INSERT INTO TABLE note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
+    insert_query = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
     # Define data to be inserted
     data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
 
@@ -246,10 +258,63 @@ async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
 
     return {"message": "Note inserted successfully"}
 
+@app.post("/update-self-note", tags=["root"])
+async def update_self_note(data:dict, db=Depends(get_db)) -> dict:
+    # print(data)
+    note_id = data.get("note_id")
+    priority = data.get("priority")
+    title = data.get("title")
+    content = data.get("content")
+    created_at = data.get("created_at")
+    user_code = data.get("user_code")
+    # Establish connection to Hive
+    conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    # Create cursor
+    cursor = conn.cursor()
+    
+    update_query = """UPDATE transactional_note SET active = 0 WHERE note_id = %s"""
+    cursor.execute(update_query, (note_id,))
+    conn.commit()
+    
+    insert_query = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
+    # Define data to be inserted
+    data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
+    cursor.execute(insert_query, data)
+    conn.commit()
+
+    # Close cursor and connection
+    cursor.close()
+    conn.close()
+
+    return {"message": "Note inserted successfully"}
+
+@app.post("/delete-self-note", tags=["root"])
+async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
+    # print(data)
+    note_id = data.get("note_id")
+    
+    # Establish connection to Hive
+    conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    # Create cursor
+    cursor = conn.cursor()
+    delete_query = """DELETE FROM transactional_note WHERE note_id = %s"""
+
+    # Execute the delete query with the parameter
+    cursor.execute(delete_query, (note_id,))
+
+    # Commit the transaction
+    conn.commit()
+
+    # Close cursor and connection
+    cursor.close()
+    conn.close()
+
+    return {"message": "Note inserted successfully"}
+
 @app.post("/insert-patient-note", tags=["root"])
 async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
-    # print(data)
-    # note_id = generate_random_string(random.randint(4, 9))
+    print("Insert Patient Note: ", data)
+    note_id = generate_random_string(random.randint(4, 9))
     priority = data.get("priority")
     title = data.get("title")
     content = data.get("content")
@@ -261,14 +326,46 @@ async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
     conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
     # Create cursor
     cursor = conn.cursor()
-    insert_query = """INSERT INTO TABLE patient_note VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+    insert_query = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
     # Define data to be inserted
-    data = (user_code,subject_id, created_at, created_at, content, priority, title)
-
+    data_insert = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
     # Execute INSERT statement
-    cursor.execute(insert_query, data)
+    cursor.execute(insert_query, data_insert)
 
     # Commit transaction
+    conn.commit()
+
+    # Close cursor and connection
+    cursor.close()
+    conn.close()
+    print("Insert patient note successfully")
+    return {"message": "Note inserted successfully"}
+
+@app.post("/update-patient-note", tags=["root"])
+async def update_patient_note(data:dict, db=Depends(get_db)) -> dict:
+    # print(data)
+    note_id = data.get("note_id")
+    priority = data.get("priority")
+    title = data.get("title")
+    content = data.get("content")
+    created_at = data.get("created_at")
+    user_code = data.get("user_code")
+    subject_id = data.get("subject_id")
+
+    # Establish connection to Hive
+    conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    # Create cursor
+    cursor = conn.cursor()
+    
+    update_query = """UPDATE transactional_patient_note SET active = 0 WHERE note_id = %s"""
+    cursor.execute(update_query, (note_id,))
+    conn.commit()
+    
+    insert_query = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+    # Define data to be inserted
+    data = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
+
+    cursor.execute(insert_query, data)
     conn.commit()
 
     # Close cursor and connection
@@ -277,20 +374,20 @@ async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
 
     return {"message": "Note inserted successfully"}
 
-@app.post("/delete-self-note", tags=["root"])
-async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
-    print(data)
+@app.post("/delete-patient-note", tags=["root"])
+async def delete_patient_note(data:dict, db=Depends(get_db)) -> dict:
     note_id = data.get("note_id")
     
     # Establish connection to Hive
     conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
     # Create cursor
     cursor = conn.cursor()
-    query = f"""DELETE FROM note where note_id={note_id}"""
-    # Execute INSERT statement
-    cursor.execute(query)
+    delete_query = """DELETE FROM transactional_patient_note WHERE note_id = %s"""
 
-    # Commit transaction
+    # Execute the delete query with the parameter
+    cursor.execute(delete_query, (note_id,))
+
+    # Commit the transaction
     conn.commit()
 
     # Close cursor and connection
@@ -298,6 +395,7 @@ async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
     conn.close()
 
     return {"message": "Note inserted successfully"}
+
 
 @app.get("/self-notes", response_model=dict, tags=["root"]) 
 async def get_self_note(doctor_code, db=Depends(get_db)) -> dict:
@@ -316,7 +414,8 @@ async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
     subject_id = int(subject_id)
     # print(subject_id)
     # doctor_code = int(doctor_code)
-    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.subject_id == subject_id))\
+    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.subject_id == subject_id, 
+                                               PATIENT_NOTE.columns.active == True ))\
         .order_by(sa.desc(PATIENT_NOTE.columns.updated_at))
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
@@ -469,6 +568,8 @@ async def get_patients_detail_note(doctor_code, subject_id, db=Depends(get_db)) 
 async def get_patients_annotate(doctor_code, subject_id, db=Depends(get_db)) -> dict: #update this by adding parameter hadm_id
     subject_id = int(subject_id)
     stmt = sa.select(ANNOTATE.columns.disease_code,
+                     ANNOTATE.columns.hadm_id,
+                    ANNOTATE.columns.doctor_code,
                      ANNOTATE.columns.value,
                      ANNOTATE.columns.time) \
             .select_from(sa.join(ANNOTATE, ADMISSIONS_CHECKED, ANNOTATE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
@@ -579,6 +680,67 @@ async def get_patients_detail_medicaltest(doctor_code=14080, subject_id=109, db=
         result = []
     # print(result)
     return JSONResponse(content={"medicaltest": result})
+
+@app.get("/predict", response_model=dict, tags=["root"])
+async def get_predict(hadm_id, db=Depends(get_db)) -> dict:
+    hadm_id = int(hadm_id)
+    subq = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,
+    ).select_from(ADMISSIONS_CHECKED) \
+    .where(ADMISSIONS_CHECKED.columns.admittime == sa.select(ADMISSIONS_CHECKED.columns.admittime)
+           .where(ADMISSIONS_CHECKED.columns.hadm_id == hadm_id) 
+           .as_scalar()) \
+    .as_scalar()
+    
+    stmt = sa.select(
+        NOTEEVENTS.columns.text
+    ).select_from(NOTEEVENTS) \
+    .where(sa.and_(NOTEEVENTS.columns.hadm_id.in_(subq),NOTEEVENTS.columns.category == 'Discharge summary'))
+
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    text = ''
+    if len(df):
+        text = df['text'].str.cat(sep='\n')
+    # print("Text: ", text)
+    result = predict.predict(text)
+    
+    df_predict = pd.DataFrame(list(result.items()), columns=['disease_code', 'predict_value'])
+
+    # print(result)
+    stmt = sa.select( CARE.columns.doctor_code) \
+            .select_from(CARE) \
+            .where(sa.and_(CARE.columns.hadm_id == hadm_id, CARE.columns.charge_of == True))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    doctor_code = df.iloc[0, 0]
+    print(doctor_code)
+    
+    stmt = sa.select(ANNOTATE.columns.disease_code,
+                    ANNOTATE.columns.hadm_id,
+                    ANNOTATE.columns.doctor_code,
+                    ANNOTATE.columns.value,
+                    ANNOTATE.columns.time) \
+            .select_from(ANNOTATE) \
+            .where(ANNOTATE.columns.hadm_id == hadm_id)
+            
+    df_annotate = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df_annotate) == 0:
+        columns = ['disease_code','hadm_id','doctor_code','value','time']
+        df_annotate = pd.DataFrame(columns = columns )
+    
+    df = pd.merge(df_annotate, df_predict, how="outer", on=["disease_code","disease_code"])
+    # print(df)
+    if len(df)>0:
+        transform_timestamp(df,['time'])
+        result = df.to_dict(orient='records')
+    else:
+        result = []
+        
+    return JSONResponse(content={"annotate": result, "doctor": doctor_code})
+ 
+
+
+
             
             
 

@@ -110,8 +110,8 @@ const DetailPatient = (props) => {
             }
         };
         fetchData();
-        // const intervalId = setInterval(fetchData, 5000);
-        // return () => clearInterval(intervalId);
+        const intervalId = setInterval(fetchData, 5000);
+        return () => clearInterval(intervalId);
     }, []);
 
 
@@ -316,7 +316,7 @@ const DetailPatient = (props) => {
                                 {activeTab === "Note" && <NoteTab hadmID={hadmID} expand={expand} subject_id={patientCode}/>}
                             </TabPanel>
                             <TabPanel key={6} h={'100%'}>
-                                {activeTab === "Diseases" && <DiseasesTab subject_id={patientCode}/>}
+                                {activeTab === "Diseases" && <DiseasesTab subject_id={patientCode} allAdmission={allAdmission}/>}
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

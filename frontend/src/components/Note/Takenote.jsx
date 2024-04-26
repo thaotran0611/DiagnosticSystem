@@ -34,14 +34,43 @@ const Takenote = (props) => {
             setPriority(1);
         }
     };
-    
-    const url = props.type == "self-note" ? 'http://localhost:8000/insert-self-note': 'http://localhost:8000/insert-patient-note';
     const submit = () => {
+        const url = props.type == "self-note" ? 'http://localhost:8000/insert-self-note': 'http://localhost:8000/insert-patient-note';
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         axios({
             method: 'post',
             url: url,
             data: {
+                priority: priority,
+                title: title,
+                content: message,
+                created_at:currentDate,
+                user_code: user_code,
+                subject_id: props.subject_id
+            },
+          })
+            .then((res) => {
+              console.log(res)
+              setInsertSuccess(true);
+            })
+            .catch((res) => {
+              console.log(res);
+              setInsertSuccess(false);
+            });
+        setTimeout(() => {
+            props.onSubmit();
+        }, 1000);
+    }
+
+    const change = () => {
+        const url = props.type == "self-note" ? 'http://localhost:8000/update-self-note': 'http://localhost:8000/update-patient-note';
+        const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        console.log(props.type)
+        axios({
+            method: 'post',
+            url: url,
+            data: {
+                note_id: props.note_id,
                 priority: priority,
                 title: title,
                 content: message,
@@ -74,7 +103,7 @@ const Takenote = (props) => {
             <textarea id="title" value={title} onChange={handleTitleChange} placeholder="Enter title" name="title" />
             <textarea id="takenote" value={message} onChange={handleTakenote} placeholder="Write your note here!" name="takenote" />
             <div className="submit-btn">
-                {props.new ? <Submit_button text = "Submit" onClick = {submit} />: <Submit_button text = "Change" onClick = {submit} /> }
+                {props.new ? <Submit_button text = "Submit" onClick = {submit} />: <Submit_button text = "Change" onClick = {change} /> }
                 {/* {
                     insertSuccess && <Alert status='success'> <AlertIcon /> Insert New Note ! </Alert>
                 } */}
