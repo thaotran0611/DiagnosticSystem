@@ -399,8 +399,8 @@ async def delete_patient_note(data:dict, db=Depends(get_db)) -> dict:
 
 
 @app.get("/self-notes", response_model=dict, tags=["root"]) 
-async def get_self_note(doctor_code, db=Depends(get_db)) -> dict:
-    stmt = NOTE.select().where(sa.and_(NOTE.columns.user_code == doctor_code, NOTE.columns.active == True)).order_by(sa.desc(NOTE.columns.updated_at))
+async def get_self_note(user_code, db=Depends(get_db)) -> dict:
+    stmt = NOTE.select().where(sa.and_(NOTE.columns.user_code == user_code, NOTE.columns.active == True)).order_by(sa.desc(NOTE.columns.updated_at))
     df = pd.DataFrame(db.execute(stmt).fetchall())
     if len(df)>0:
         transform_timestamp(df,['created_at','updated_at'])

@@ -35,7 +35,7 @@ const Overview = () => {
             try {
                 const response = await axios.get('http://localhost:8000/self-notes', {
                     params: {
-                        doctor_code: doctor_code
+                        user_code: doctor_code
                     }
                 });
                 console.log(response)

@@ -114,7 +114,7 @@ const OverviewResearcher = () => {
             try {
                 const response = await axios.get('http://localhost:8000/self-notes', {
                     params: {
-                        researcher_code: researcher_code
+                        user_code: researcher_code
                     }
                 });
                 setNote(response.data.data);
@@ -126,8 +126,8 @@ const OverviewResearcher = () => {
         };
     
         fetchData();
-        // const intervalId = setInterval(fetchData, 5000);
-        // return () => clearInterval(intervalId);
+        const intervalId = setInterval(fetchData, 5000);
+        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
