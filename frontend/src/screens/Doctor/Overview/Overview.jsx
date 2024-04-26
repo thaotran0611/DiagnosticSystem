@@ -19,7 +19,9 @@ const Overview = () => {
     const doctor_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
-
+    const doctor_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '0';
     const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
     const [loadingPatient, setLoadingPatient] = useState(true);
     const [error, setError] = useState(null);
@@ -85,7 +87,9 @@ const Overview = () => {
                 </BreadcrumbItem>
             </Breadcrumb>
             }
-            patient={false}>
+            patient={false}
+            name={doctor_name}
+            >
                 <GridItem position={'relative'} marginLeft={4} pl='2' area={'main'} gap={'1%'}>
                     <Grid templateAreas={`"overal note"
                                           "list infor"`}          

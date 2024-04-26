@@ -2,19 +2,17 @@
 .selector { 
   display: flex; 
 } 
-input {
-display: none;
-}
-label { 
+
+.label { 
   display: flex; 
   cursor: pointer; 
   padding: 5px; 
 } 
-label:hover{ 
+.label:hover{ 
   background-color: #e2dfdf; 
   border-radius: 5px; 
 } 
-label input[type="radio"]:checked + .icon { 
+.label input[type="radio"]:checked + .icon { 
   background-color: #d7d6eb;
   border-radius: 10px;
 } 

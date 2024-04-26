@@ -6,14 +6,14 @@ import { Image, Text, Stack } from '@chakra-ui/react'
 
 const UserTag = (props) => {
     return (
-    <Stack spacing={8} direction='row' border='1px solid rgba(17,17,17,0.2)' borderRadius='10px' height={50}>
+    <Stack spacing={1} direction='row' border='1px solid rgba(17,17,17,0.2)' borderRadius='10px' height={50}>
         <Image
             boxSize='100px'
             objectFit='cover'
             src={props.img}
-            alt='Avatar'
+            // alt='Avatar'
         />
-        <Text>{props.name}</Text>
+        <Text paddingTop={1} w={'200px'}>{props.name}</Text>
         </Stack>
     )
     

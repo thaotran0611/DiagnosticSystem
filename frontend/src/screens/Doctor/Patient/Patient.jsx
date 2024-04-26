@@ -23,7 +23,9 @@ const Patient = () => {
     const doctor_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
-
+    const doctor_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '0';
     const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
     const [loadingPatient, setLoadingPatient] = useState(true);
     const [error, setError] = useState(null);
@@ -148,7 +150,9 @@ const Patient = () => {
               </BreadcrumbItem>
           </Breadcrumb>
         }
-        patient={false}>
+        patient={false}
+        name={doctor_name}
+        >
             <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
             <Center padding={'1% 4%'}>
                 <SearchAndFilterBar setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>

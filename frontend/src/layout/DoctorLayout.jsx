@@ -10,7 +10,7 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import Sidebar from "../components/Sidebar/Sidebar";
 
-export const DoctorLayout = ({children, path, expand, patient}) => {
+export const DoctorLayout = ({children, path, expand, patient, name}) => {
     const navigate = useNavigate();
     return(
         <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0', overflow: 'auto'}}>
@@ -34,11 +34,11 @@ export const DoctorLayout = ({children, path, expand, patient}) => {
                         <GridItem colSpan={6} colStart={2}>
                             {path}
                         </GridItem>
-                        <GridItem colStart={18} colSpan={1} marginLeft={'auto'} marginRight={6}>
+                        <GridItem colStart={17} colSpan={1} marginLeft={'auto'} marginRight={6}>
                                 <BellIcon cursor={'pointer'} marginTop={3} boxSize={'1.8em'} color={'#716F6F'}/>
                         </GridItem>
-                        <GridItem colSpan={1} colStart={19}>
-                            <UserTag img={AccountCircleOutlinedIcon} name={'Dr.Kim'}/>
+                        <GridItem colSpan={2} colStart={18}>
+                            <UserTag img={AccountCircleOutlinedIcon} name={name}/>
                         </GridItem>
                         <GridItem colSpan={1} colStart={20} marginLeft={'auto'} marginRight={6}>
                             <Icon onClick={()=>{navigate('/login')}} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>
