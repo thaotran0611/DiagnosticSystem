@@ -117,6 +117,54 @@ const DetailPatient = (props) => {
         return () => clearInterval(intervalId);
     }, []);
 
+    const [procedure, setProcedure] = useState([]); // PASS AS PARAMETER
+    const [loadingProcedure, setLoadingProcedure] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-procedure', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                setProcedure(response.data.procedure);
+                setLoadingProcedure(false);
+                // console.log(procedure)
+            } catch (error) {
+                // setError(error);
+                setLoadingProcedure(false);
+            }
+        };
+        if (procedure.length === 0) {
+            fetchData();
+        }
+        }, []);
+
+    const [Prescription, setPrescription] = useState([]); // PASS AS PARAMETER
+    const [loadingPrescription, setLoadingPrescription] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-prescription', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                setPrescription(response.data.prescription);
+                setLoadingPrescription(false);
+                console.log(Prescription)
+            } catch (error) {
+                setError(error);
+                setLoadingPrescription(false);
+            }
+        };
+        if (Prescription.length === 0) {
+            fetchData();
+        }    
+    }, []);
 
     const [expand, setExpand] = useState(false);
     const expandPage = () => {
@@ -129,80 +177,6 @@ const DetailPatient = (props) => {
         setPageSizeGeneral(pageSizeGeneral*6/4);
         setPageSizeMedicalTest(pageSizeMedicalTest*6/4);
     };
-    const generalTag = [
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission lalalalaal',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        }
-    ];
     
     const [pageSizeGeneral, setPageSizeGeneral] = useState(4);
     const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
@@ -307,13 +281,13 @@ const DetailPatient = (props) => {
                                 {activeTab === "General" && <GeneralTab addmission={addmission} generalTag={infoTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral} hadmID={hadmID} sethadmID={sethadmID}/>}
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
-                                {activeTab === "MedicalTest" && <MedicalTestTab subject_id={patientCode} hadmID={hadmID} generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>}
+                                {activeTab === "MedicalTest" && <MedicalTestTab subject_id={patientCode} hadmID={hadmID} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>}
                             </TabPanel>
                             <TabPanel key={3} h={'100%'}>
-                                {activeTab === "Procedure" && <ProcedureTab subject_id={patientCode} hadmID={hadmID}/>}
+                                <ProcedureTab subject_id={patientCode} hadmID={hadmID} procedure={procedure} loadingProcedure={loadingProcedure}/>
                             </TabPanel>
                             <TabPanel key={4} h={'100%'}>
-                                {activeTab === "Prescription" && <PrescriptionTab subject_id={patientCode} hadmID={hadmID}/>}
+                                <PrescriptionTab subject_id={patientCode} hadmID={hadmID} Prescription={Prescription} loadingPrescription={loadingPrescription}/>
                             </TabPanel>
                             <TabPanel key={5} h={'100%'}>
                                 {activeTab === "Note" && <NoteTab hadmID={hadmID} expand={expand} subject_id={patientCode}/>}

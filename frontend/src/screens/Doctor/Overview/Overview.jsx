@@ -103,7 +103,7 @@ const Overview = () => {
                         </GridItem>
                         <GridItem area={'note'} position={'relative'}>
                             <Center position={'relative'} height={'100%'}>
-                                <Note loading ={loadingNote} pageSize={2} data={note} type={"self-note"} subject_id={""} />
+                                <Note loading ={loadingNote} setNote={setNote} pageSize={2} data={note} type={"self-note"} subject_id={""} />
                             </Center>
                         </GridItem>
                         {loadingPatient ? (
@@ -114,7 +114,7 @@ const Overview = () => {
                             </GridItem>
                         ) : (
                             <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
-                                <PatientList data={patientdata} onPatientSelect={handlePatientSelect}/>
+                                <PatientList data={patientdata} onPatientSelect={handlePatientSelect} selectedPatient={selectedPatient}/>
                             </GridItem>
                         )}
                         <GridItem area={'infor'}>

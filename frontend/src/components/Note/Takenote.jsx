@@ -24,7 +24,15 @@ const Takenote = (props) => {
     const [priority, setPriority] = useState(0)
     const [insertSuccess, setInsertSuccess] = useState(false);
 
-
+    const generateRandomString = (length) => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
     const handleImportant = () => {
         if (important === "important") {
             setImportant("non-important");
@@ -37,17 +45,29 @@ const Takenote = (props) => {
     const submit = () => {
         const url = props.type == "self-note" ? 'http://localhost:8000/insert-self-note': 'http://localhost:8000/insert-patient-note';
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+
+        const newNoteData = {
+            note_id: generateRandomString(5),
+            priority: priority,
+            title: title,
+            content: message,
+            created_at: currentDate,
+            user_code: user_code,
+            subject_id: props.subject_id
+        };
+        props.setNote([newNoteData,...props.data]); 
         axios({
             method: 'post',
             url: url,
-            data: {
-                priority: priority,
-                title: title,
-                content: message,
-                created_at:currentDate,
-                user_code: user_code,
-                subject_id: props.subject_id
-            },
+            data: newNoteData,
+            // {
+            //     priority: priority,
+            //     title: title,
+            //     content: message,
+            //     created_at:currentDate,
+            //     user_code: user_code,
+            //     subject_id: props.subject_id
+            // },
           })
             .then((res) => {
               console.log(res)
@@ -59,25 +79,43 @@ const Takenote = (props) => {
             });
         setTimeout(() => {
             props.onSubmit();
-        }, 1000);
+        }, 500);
     }
 
     const change = () => {
         const url = props.type == "self-note" ? 'http://localhost:8000/update-self-note': 'http://localhost:8000/update-patient-note';
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-        console.log(props.type)
+        const updatedNoteData = {
+            note_id: props.note_id,
+            priority: priority,
+            title: title,
+            content: message,
+            created_at: currentDate,
+            user_code: user_code,
+            subject_id: props.subject_id
+        };
+        const updatedNotes = props.data.map(note => {
+            if (note.note_id === props.note_id) {
+                return updatedNoteData; // Update the specific note
+            } else {
+                return note; // Keep other notes unchanged
+            }
+        });
+        props.setNote(updatedNotes);
         axios({
             method: 'post',
             url: url,
-            data: {
-                note_id: props.note_id,
-                priority: priority,
-                title: title,
-                content: message,
-                created_at:currentDate,
-                user_code: user_code,
-                subject_id: props.subject_id
-            },
+            data: updatedNoteData
+            // {
+            //     note_id: props.note_id,
+            //     priority: priority,
+            //     title: title,
+            //     content: message,
+            //     created_at:currentDate,
+            //     user_code: user_code,
+            //     subject_id: props.subject_id
+            // },
+            ,
           })
             .then((res) => {
               console.log(res)
@@ -89,7 +127,7 @@ const Takenote = (props) => {
             });
         setTimeout(() => {
             props.onSubmit();
-        }, 1000);
+        }, 500);
     }
     const handleTitleChange = event => {
         setTitle(event.target.value);
@@ -102,7 +140,7 @@ const Takenote = (props) => {
             <p style={{display: 'inline', paddingLeft: '55%', fontSize: '14px'}}>{props.created_at  ? props.created_at : format(new Date(), 'dd-MMM-yyyy hh:mm:ss a')}</p>
             <textarea id="title" value={title} onChange={handleTitleChange} placeholder="Enter title" name="title" />
             <textarea id="takenote" value={message} onChange={handleTakenote} placeholder="Write your note here!" name="takenote" />
-            <div className="submit-btn">
+            <div className="submit-btn" style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '10px' }}>
                 {props.new ? <Submit_button text = "Submit" onClick = {submit} />: <Submit_button text = "Change" onClick = {change} /> }
                 {/* {
                     insertSuccess && <Alert status='success'> <AlertIcon /> Insert New Note ! </Alert>
