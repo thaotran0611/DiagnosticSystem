@@ -6,6 +6,8 @@ import "./MyTable2.css"
 import MyPagination from '../Pagination/Pagination' 
 import { Stack, Flex, Center, Spacer, Box, Text} from '@chakra-ui/react'; 
 import GoToPage from '../GoToPage/GoToPage';
+import { alpha, styled } from '@mui/material/styles';
+import { gridClasses } from '@mui/x-data-grid';
 
 
 const theme = createTheme({ 
@@ -16,61 +18,44 @@ const theme = createTheme({
     }, 
   }); 
 
+  const ODD_OPACITY = 0.2;
+
+const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
+  [`& .${gridClasses.row}.even`]: {
+    backgroundColor: theme.palette.grey[200],
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.primary.main, ODD_OPACITY),
+      '@media (hover: none)': {
+        backgroundColor: 'transparent',
+      },
+    },
+    '&.Mui-selected': {
+      backgroundColor: alpha(
+        theme.palette.primary.main,
+        ODD_OPACITY + theme.palette.action.selectedOpacity,
+      ),
+      '&:hover': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          ODD_OPACITY +
+            theme.palette.action.selectedOpacity +
+            theme.palette.action.hoverOpacity,
+        ),
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            ODD_OPACITY + theme.palette.action.selectedOpacity,
+          ),
+        },
+      },
+    },
+  },
+}));
+
 export default function MyTable2(props) {
   const apiRef = useGridApiRef();
-  // console.log(props.data)
-  // const columns = [
-  //   { field: 'id', headerName: 'ID', width: 90 },
-  //   {
-  //     field: 'firstName',
-  //     headerName: 'First name',
-  //     width: 150,
-  //     editable: true,
-  //   },
-  //   {
-  //     field: 'lastName',
-  //     headerName: 'Last name',
-  //     width: 150,
-  //     editable: true,
-  //   },
-  //   {
-  //     field: 'age',
-  //     headerName: 'Age',
-  //     type: 'number',
-  //     width: 110,
-  //     editable: true,
-  //   },
-    // {
-    //   field: 'fullName',
-    //   headerName: 'Full name',
-    //   description: 'This column has a value getter and is not sortable.',
-    //   sortable: false,
-    //   width: 160,
-    //   valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-    // },
-  // ];
   
-  // const data = [
-  //   { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  //   { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  //   { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  //   { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  //   { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  //   { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-  //   { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  //   { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  //   { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  //   { id: 10, lastName: 'Snow', firstName: 'Jon', age: 14 },
-  //   { id: 12, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-  //   { id: 13, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-  //   { id: 14, lastName: 'Stark', firstName: 'Arya', age: 11 },
-  //   { id: 15, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-  //   { id: 16, lastName: 'Melisandre', firstName: null, age: 150 },
-  //   { id: 17, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-  //   { id: 18, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-  //   { id: 19, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-  // ];
-
   const data = props.data || [];
   const columnNames = data.length > 0 ? Object.keys(data[0]) : [];
 
@@ -87,19 +72,6 @@ export default function MyTable2(props) {
     ...row,
   }));
 
-
-  const [selectedRow, setSelectedRow] = useState(null);
-
-  // Event handler for row selection change
-  const handleRowSelectionChange = (selection) => {
-    setSelectedRow(selection[0] !== undefined ? rows[selection[0].index] : null); // Update selectedRow based on the index of the selection
-    if (props.onSelect && selection[0] !== undefined) {
-      const selectedRowIndex = selection[0].index;
-      console.log(rows[selectedRowIndex])
-      const selectedRowText = rows[selectedRowIndex].text; // Assuming 'text' is the field containing the note text
-      props.onSelect(selectedRowText);
-    }
-  };
 
   const [page, setPage] = useState(1);
   const pageSizeList = [10, 20, 30];
@@ -127,7 +99,7 @@ export default function MyTable2(props) {
     <div style={{height: props.height, width: props.width}}>
         <ThemeProvider theme={theme}>
         <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}>{props.tablename}</Text> {/* Add table name here */}
-            <DataGrid 
+            <StripedDataGrid 
             rows={slicedData}
             columns={columns}
             // loading={loading} 
@@ -142,8 +114,12 @@ export default function MyTable2(props) {
               // console.log(selectedRowData);
               // console.log(selectedIDs)
             }}
+            getRowClassName={(params) =>
+              params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
+            }
             slots={{ toolbar: GridToolbar }} 
             hideFooter
+            className="striped-table" 
             />
             <Flex justifyContent="flex-end" alignItems="center" marginTop={3} marginBottom={2}>
               <Spacer/>
@@ -164,6 +140,17 @@ export default function MyTable2(props) {
               /> 
             </Flex>
         </ThemeProvider>
+        <style>
+        {`
+          .even-row {
+            background-color: #f0f8ff; /* Specify your desired color for even rows */
+          }
+
+          .odd-row {
+            background-color: #ffffff; /* Specify your desired color for odd rows */
+          }
+        `}
+      </style>
     </div>
   );
 }

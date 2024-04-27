@@ -22,115 +22,115 @@ const Disease = () => {
     const [data, setData] = useState([
         {
             name: "Advanced lung",
-            type: "Lungs",
+            type: "LD",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         },
         {
             name: "Advanced cancer",
-            type: "Cancer",
+            type: "MC",
             quantity: 500,
             percent: '30%'
         }
@@ -156,7 +156,7 @@ const Disease = () => {
         disease={false}>
                 <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
                 <Center padding={'1% 4%'}>
-                    <SearchAndFilterBar/>
+                    {/* <SearchAndFilterBar/> */}
                 </Center>
                     <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
                         <ThemeProvider theme={theme}>

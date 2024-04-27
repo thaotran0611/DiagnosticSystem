@@ -1,3 +1,11 @@
 p{
     margin: 5px !important
 }
+
+.even-row {
+    background-color: #f0f8ff; /* Specify your desired color for even rows */
+  }
+  
+  .odd-row {
+    background-color: #ffffff; /* Specify your desired color for odd rows */
+  }

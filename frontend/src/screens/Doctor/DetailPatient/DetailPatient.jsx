@@ -28,6 +28,7 @@ import _ from "lodash";
 
 const theme = createTheme();
 
+
 const DetailPatient = (props) => {
     const navigate = useNavigate();
 
@@ -46,6 +47,11 @@ const DetailPatient = (props) => {
     const [error, setError] = useState(null);
 
     const [infoTag, setInfoTag] = useState([]); // PASS AS PARAMETER
+
+
+    const [pageSizeGeneral, setPageSizeGeneral] = useState(4);
+    const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
+    const [activeTab, setActiveTab] = useState("General");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -89,7 +95,9 @@ const DetailPatient = (props) => {
                 setLoadingAdmission(false);
             }
         };
-        fetchData();
+        if (addmission.length == 0){
+            fetchData();
+        }
     }, []);
 
     const [note, setNote] = useState([])
@@ -113,10 +121,145 @@ const DetailPatient = (props) => {
             }
         };
         fetchData();
-        const intervalId = setInterval(fetchData, 5000);
-        return () => clearInterval(intervalId);
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
     }, []);
 
+    const [procedure, setProcedure] = useState([]); // PASS AS PARAMETER
+    const [loadingProcedure, setLoadingProcedure] = useState(true);
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-procedure', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                setProcedure(response.data.procedure);
+                setLoadingProcedure(false);
+                // console.log(procedure)
+            } catch (error) {
+                setError(error);
+                setLoadingProcedure(false);
+            }
+        };
+        if (procedure.length === 0 && activeTab === "Procedure") {
+            fetchData();
+        }
+        }, [activeTab]);
+    
+    const [Prescription, setPrescription] = useState([]); // PASS AS PARAMETER
+    const [loadingPrescription, setLoadingPrescription] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-prescription', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                setPrescription(response.data.prescription);
+                setLoadingPrescription(false);
+                console.log(Prescription)
+            } catch (error) {
+                setError(error);
+                setLoadingPrescription(false);
+            }
+        };
+        if (Prescription.length === 0  && activeTab === "Prescription") {
+            fetchData();
+        }    
+    }, [activeTab]);
+
+
+    const [note_event, setNoteEvent] = useState([]); // PASS AS PARAMETER
+    const [loadingNoteEvent, setLoadingNoteEvent] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-note', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                setNoteEvent(response.data.note);
+                setLoadingNoteEvent(false);
+                // console.log(note)
+            } catch (error) {
+                setError(error);
+                setLoadingNoteEvent(false);
+            }
+        };
+        if (note_event.length === 0 && activeTab === "Note") {
+            fetchData();
+        }
+    }, [activeTab]);
+
+
+    const [medicaltest, setMedicalTest] = useState([]); // PASS AS PARAMETER
+    const [medicaltest1time, setMedicalTest1time] = useState([]); // PASS AS PARAMETER
+    const [medicaltestmanytime, setMedicaltestmanytime] = useState([]);
+    const [typeofmedicaltest1time, setTypeofmedicaltest1time] = useState([]);
+    const [typeofmedicaltestmanytime, setTypeofmedicaltestmanytime] = useState([]);
+    const [loadingMedicalTest, setLoadingMedicalTest] = useState(true);
+    const isUnique = (arr, item) => {
+        // Check if there's only one occurrence of this combination in the array
+        return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
+      };
+    function sortByDatetimeAscending(a, b) {
+        const dateA = new Date(a.charttime);
+        const dateB = new Date(b.charttime);
+        
+        if (dateA < dateB) {
+            return -1;
+        }
+        if (dateA > dateB) {
+            return 1;
+        }
+        return 0;
+    }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/patients-detail-medicaltest', {
+                    params: {
+                        doctor_code: doctor_code,
+                        subject_id: patientCode
+                    }
+                });
+                setMedicalTest(response.data.medicaltest);
+                setMedicalTest1time(response.data.medicaltest.filter((item, index, array) => {
+                    return isUnique(array, item);
+                  })
+                )
+                setMedicaltestmanytime(response.data.medicaltest.filter((item, index, array) => {
+                    return !isUnique(array, item);
+                  }).sort(sortByDatetimeAscending)
+                )
+                setTypeofmedicaltest1time(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
+                    return isUnique(array, item);
+                }), item => `${item.hadm_id}-${item.fluid}`).map(image => ({hadm_id: image.hadm_id, fluid: image.fluid})))
+                setTypeofmedicaltestmanytime(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
+                    return !isUnique(array, item);
+                }), item => `${item.hadm_id}-${item.label}`).map(image => ({hadm_id: image.hadm_id, label: image.label})))
+                setLoadingMedicalTest(false);
+            } catch (error) {
+                setError(error);
+                setLoadingMedicalTest(false);
+            }
+        };
+        if (medicaltest.length === 0 && activeTab === "MedicalTest") {
+            fetchData();
+        }
+        }, [activeTab]);
+
+
+    
 
     const [expand, setExpand] = useState(false);
     const expandPage = () => {
@@ -129,84 +272,7 @@ const DetailPatient = (props) => {
         setPageSizeGeneral(pageSizeGeneral*6/4);
         setPageSizeMedicalTest(pageSizeMedicalTest*6/4);
     };
-    const generalTag = [
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission lalalalaal',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        },
-        {
-            heading: 'Number of addmission',
-            content: '4'
-        }
-    ];
     
-    const [pageSizeGeneral, setPageSizeGeneral] = useState(4);
-    const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
-    const [activeTab, setActiveTab] = useState("General");
 
     return(
         <DoctorLayout path={
@@ -307,16 +373,20 @@ const DetailPatient = (props) => {
                                 {activeTab === "General" && <GeneralTab addmission={addmission} generalTag={infoTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral} hadmID={hadmID} sethadmID={sethadmID}/>}
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
-                                {activeTab === "MedicalTest" && <MedicalTestTab subject_id={patientCode} hadmID={hadmID} generalTag={generalTag} expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}/>}
+                                {activeTab === "MedicalTest" 
+                                && <MedicalTestTab subject_id={patientCode} hadmID={hadmID} 
+                                expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}
+                                medicaltest={medicaltest} medicaltest1time={medicaltest1time} medicaltestmanytime={medicaltestmanytime}
+                                typeofmedicaltest1time={typeofmedicaltest1time} typeofmedicaltestmanytime={typeofmedicaltestmanytime}/>}
                             </TabPanel>
                             <TabPanel key={3} h={'100%'}>
-                                {activeTab === "Procedure" && <ProcedureTab subject_id={patientCode} hadmID={hadmID}/>}
+                                {activeTab === "Procedure" && <ProcedureTab procedure={procedure} subject_id={patientCode} hadmID={hadmID}/>}
                             </TabPanel>
                             <TabPanel key={4} h={'100%'}>
-                                {activeTab === "Prescription" && <PrescriptionTab subject_id={patientCode} hadmID={hadmID}/>}
+                                {activeTab === "Prescription" && <PrescriptionTab Prescription={Prescription} subject_id={patientCode} hadmID={hadmID}/>}
                             </TabPanel>
                             <TabPanel key={5} h={'100%'}>
-                                {activeTab === "Note" && <NoteTab hadmID={hadmID} expand={expand} subject_id={patientCode}/>}
+                                {activeTab === "Note" && <NoteTab note={note_event} hadmID={hadmID} expand={expand} subject_id={patientCode}/>}
                             </TabPanel>
                             <TabPanel key={6} h={'100%'}>
                                 {activeTab === "Diseases" && <DiseasesTab subject_id={patientCode} allAdmission={allAdmission}/>}

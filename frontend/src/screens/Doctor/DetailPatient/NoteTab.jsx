@@ -19,38 +19,38 @@ const NoteTab = (props) => {
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
 
-    const [note, setNote] = useState([]); // PASS AS PARAMETER
-    const [loadingNote, setLoadingNote] = useState(true);
+    // const [note, setNote] = useState([]); // PASS AS PARAMETER
+    // const [loadingNote, setLoadingNote] = useState(true);
     const [error, setError] = useState(null);
-
-    const [selectedNote, setSelectedNote] = useState(null); // PASS AS PARAMETER
+    const note = props.note;
+    const [selectedNote, setSelectedNote] = useState(props.note[0]); // PASS AS PARAMETER
     const handleRecordSelection = (record) => {
         setSelectedNote(record);
         console.log('Selected Note:', record.text); // Add this line to log the selected note
     };
     const subject_id =  props.subject_id
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/patients-detail-note', {
-                    params: {
-                        doctor_code: doctor_code,
-                        subject_id: subject_id
-                    }
-                });
-                setNote(response.data.note);
-                setLoadingNote(false);
-                // console.log(note)
-            } catch (error) {
-                setError(error);
-                setLoadingNote(false);
-            }
-        };
-        if (note.length === 0) {
-            fetchData();
-        }
-    }, [note, doctor_code, subject_id]);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:8000/patients-detail-note', {
+    //                 params: {
+    //                     doctor_code: doctor_code,
+    //                     subject_id: subject_id
+    //                 }
+    //             });
+    //             setNote(response.data.note);
+    //             setLoadingNote(false);
+    //             // console.log(note)
+    //         } catch (error) {
+    //             setError(error);
+    //             setLoadingNote(false);
+    //         }
+    //     };
+    //     if (note.length === 0) {
+    //         fetchData();
+    //     }
+    // }, [note, doctor_code, subject_id]);
 
 
     return(

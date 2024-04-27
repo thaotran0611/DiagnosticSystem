@@ -2,6 +2,7 @@ version: "3"
 
 services:
   metastore:
+    user: root
     container_name: metastore
     image: hive-mysql
     restart: always
@@ -21,6 +22,7 @@ services:
     networks:
       - electron
   hiveserver:
+    user: root
     container_name: hiveserver
     image: apache/hive:4.0.0
     restart: always

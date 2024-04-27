@@ -52,8 +52,9 @@ const Note = (props) => {
 
     }
     const onDelete = (note_id) =>{
+        const updatedNotes = props.data.filter(note => note.note_id !== note_id);
+        props.setNote(updatedNotes);
         const url = props.type == "self-note" ? 'http://localhost:8000/delete-self-note': 'http://localhost:8000/delete-patient-note';
-
         axios({
             method: 'post',
             url: url,
@@ -79,7 +80,7 @@ const Note = (props) => {
                     <Text className="header">Note</Text> 
                     <Popup trigger={<PlusSquareIcon marginBottom={1} boxSize={'1.2em'} className="icon-add"/>}
                         nested modal contentStyle={{background: 'none', border: 'none'}}>
-                        {close => <Takenote onSubmit={close} new={true} type={props.type} subject_id={props.subject_id}/>}
+                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id}/>}
                     </Popup>
                 </GridItem>
                 <GridItem colSpan={4} rowSpan={1}>
@@ -116,11 +117,11 @@ const Note = (props) => {
                                 const itemValue = String(item.title).toLowerCase();
                                 return itemValue.includes(searchvalue);
                             }).map(note => (
-                                <MiniNote type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
                             ))
                             :
                             slicedData.map(note => (
-                                <MiniNote type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
                             ))
                         }
                     </div>

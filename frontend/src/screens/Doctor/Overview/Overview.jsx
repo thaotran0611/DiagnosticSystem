@@ -48,8 +48,8 @@ const Overview = () => {
         };
     
         fetchData();
-        const intervalId = setInterval(fetchData, 5000);
-        return () => clearInterval(intervalId);
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
     }, []);
     
     useEffect(() => {
@@ -103,7 +103,7 @@ const Overview = () => {
                         </GridItem>
                         <GridItem area={'note'} position={'relative'}>
                             <Center position={'relative'} height={'100%'}>
-                                <Note loading ={loadingNote} pageSize={2} data={note} type={"self-note"} subject_id={""} />
+                                <Note loading ={loadingNote} pageSize={2} setNote={setNote} data={note} type={"self-note"} subject_id={""} />
                             </Center>
                         </GridItem>
                         {loadingPatient ? (

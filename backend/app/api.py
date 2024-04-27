@@ -221,6 +221,20 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
     df = pd.DataFrame(db.execute(stmt).fetchall())
     end = time.time()
     print(end-start)
+    # male = ((df['gender'] == 'M') & df['dischtime'].isnull()).sum()
+    # female = ((df['gender'] == 'F') & df['dischtime'].isnull()).sum()
+    # gender_data =[
+    #     {
+    #     'id': 1,
+    #     'title': 'Male patients',
+    #     'value': male
+    #     },
+    #     {
+    #     'id': 1,
+    #     'title': 'Female patients',
+    #     'value': female
+    #     }
+    # ]
     if len(df)>0:
         transform_timestamp(df,['admittime','dischtime'])
         transform_date(df,['dob'])
@@ -233,7 +247,8 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
 @app.post("/insert-self-note", tags=["root"])
 async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
     # print(data)
-    note_id = generate_random_string(random.randint(4, 9))
+    # note_id = generate_random_string(random.randint(4, 9))
+    note_id = data.get('note_id')
     priority = data.get("priority")
     title = data.get("title")
     content = data.get("content")
@@ -315,7 +330,8 @@ async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
 @app.post("/insert-patient-note", tags=["root"])
 async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
     print("Insert Patient Note: ", data)
-    note_id = generate_random_string(random.randint(4, 9))
+    # note_id = generate_random_string(random.randint(4, 9))
+    note_id = data.get('note_id')
     priority = data.get("priority")
     title = data.get("title")
     content = data.get("content")
@@ -842,7 +858,7 @@ async def get_predict(hadm_id, db=Depends(get_db)) -> dict:
         result = df.to_dict(orient='records')
     else:
         result = []
-        
+    print({"annotate": result, "doctor": doctor_code})
     return JSONResponse(content={"annotate": result, "doctor": doctor_code})
  
 

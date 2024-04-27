@@ -54,10 +54,10 @@ export default function DiseaseTable(props) {
         <Table key={index} variant="simple">
           <Thead>
             <Tr>
-              <Th width="25%">HADM ID</Th>
-              <Th width="25%">Disease</Th>
-              <Th width="25%">Prediction</Th>
-              <Th width="25%">Diagnose</Th>
+              <Th width="25%" fontSize="xl" fontWeight="bold">HADM ID</Th>
+              <Th width="25%" fontSize="xl" fontWeight="bold">Disease</Th>
+              <Th width="25%" fontSize="xl" fontWeight="bold">Prediction</Th>
+              <Th width="25%" fontSize="xl" fontWeight="bold">Diagnose</Th>
             </Tr>
           </Thead>
           <Tbody>

@@ -23,14 +23,22 @@ const MedicalTestTab = (props) => {
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
 
-    const [medicaltest, setMedicalTest] = useState([]); // PASS AS PARAMETER
-    const [medicaltest1time, setMedicalTest1time] = useState([]); // PASS AS PARAMETER
-    const [medicaltestmanytime, setMedicaltestmanytime] = useState([]);
-    const [typeofmedicaltest1time, setTypeofmedicaltest1time] = useState([]);
-    const [typeofmedicaltestmanytime, setTypeofmedicaltestmanytime] = useState([]);
+    // const [medicaltest, setMedicalTest] = useState([]); // PASS AS PARAMETER
+    // const [medicaltest1time, setMedicalTest1time] = useState([]); // PASS AS PARAMETER
+    // const [medicaltestmanytime, setMedicaltestmanytime] = useState([]);
+    // const [typeofmedicaltest1time, setTypeofmedicaltest1time] = useState([]);
+    // const [typeofmedicaltestmanytime, setTypeofmedicaltestmanytime] = useState([]);
+    // const [loadingMedicalTest, setLoadingMedicalTest] = useState(true);
+    
+    const medicaltest = props.medicaltest;
+    const medicaltest1time = props.medicaltest1time;
+    const medicaltestmanytime = props.medicaltestmanytime;
+    const typeofmedicaltest1time = props.typeofmedicaltest1time;
+    const typeofmedicaltestmanytime = props.typeofmedicaltestmanytime;
+
+
     const [typeoftest1time,setTypeoftest1time] = useState('');
     const [typeoftestmanytime,setTypeoftestmanytime] = useState('');
-    const [loadingMedicalTest, setLoadingMedicalTest] = useState(true);
     const [error, setError] = useState(null);
     const [typeofchart, setTypeofchart] = useState('LineChart');
     const Allcharts = ['LineChart', 'BarChart', 'Table'];
@@ -38,58 +46,58 @@ const MedicalTestTab = (props) => {
     const [color, setColor] = useState({});
     const [drillup, setDrillup] = useState('Default');
     const AllDrillup = ['Default', 'date', 'month', 'year'];
-    const isUnique = (arr, item) => {
-        // Check if there's only one occurrence of this combination in the array
-        return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
-      };
+    // const isUnique = (arr, item) => {
+    //     // Check if there's only one occurrence of this combination in the array
+    //     return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
+    //   };
 
-    function sortByDatetimeAscending(a, b) {
-        const dateA = new Date(a.charttime);
-        const dateB = new Date(b.charttime);
+    // function sortByDatetimeAscending(a, b) {
+    //     const dateA = new Date(a.charttime);
+    //     const dateB = new Date(b.charttime);
         
-        if (dateA < dateB) {
-            return -1;
-        }
-        if (dateA > dateB) {
-            return 1;
-        }
-        return 0;
-    }
+    //     if (dateA < dateB) {
+    //         return -1;
+    //     }
+    //     if (dateA > dateB) {
+    //         return 1;
+    //     }
+    //     return 0;
+    // }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/patients-detail-medicaltest', {
-                    params: {
-                        doctor_code: doctor_code,
-                        subject_id: subject_id
-                    }
-                });
-                setMedicalTest(response.data.medicaltest);
-                setMedicalTest1time(response.data.medicaltest.filter((item, index, array) => {
-                    return isUnique(array, item);
-                  })
-                )
-                setMedicaltestmanytime(response.data.medicaltest.filter((item, index, array) => {
-                    return !isUnique(array, item);
-                  }).sort(sortByDatetimeAscending)
-                )
-                setTypeofmedicaltest1time(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
-                    return isUnique(array, item);
-                }), item => `${item.hadm_id}-${item.fluid}`).map(image => ({hadm_id: image.hadm_id, fluid: image.fluid})))
-                setTypeofmedicaltestmanytime(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
-                    return !isUnique(array, item);
-                }), item => `${item.hadm_id}-${item.label}`).map(image => ({hadm_id: image.hadm_id, label: image.label})))
-                setLoadingMedicalTest(false);
-            } catch (error) {
-                setError(error);
-                setLoadingMedicalTest(false);
-            }
-        };
-        if (medicaltest.length === 0) {
-            fetchData();
-        }
-        }, [medicaltest, doctor_code, subject_id]);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:8000/patients-detail-medicaltest', {
+    //                 params: {
+    //                     doctor_code: doctor_code,
+    //                     subject_id: subject_id
+    //                 }
+    //             });
+    //             setMedicalTest(response.data.medicaltest);
+    //             setMedicalTest1time(response.data.medicaltest.filter((item, index, array) => {
+    //                 return isUnique(array, item);
+    //               })
+    //             )
+    //             setMedicaltestmanytime(response.data.medicaltest.filter((item, index, array) => {
+    //                 return !isUnique(array, item);
+    //               }).sort(sortByDatetimeAscending)
+    //             )
+    //             setTypeofmedicaltest1time(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
+    //                 return isUnique(array, item);
+    //             }), item => `${item.hadm_id}-${item.fluid}`).map(image => ({hadm_id: image.hadm_id, fluid: image.fluid})))
+    //             setTypeofmedicaltestmanytime(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
+    //                 return !isUnique(array, item);
+    //             }), item => `${item.hadm_id}-${item.label}`).map(image => ({hadm_id: image.hadm_id, label: image.label})))
+    //             setLoadingMedicalTest(false);
+    //         } catch (error) {
+    //             setError(error);
+    //             setLoadingMedicalTest(false);
+    //         }
+    //     };
+    //     if (medicaltest.length === 0) {
+    //         fetchData();
+    //     }
+    //     }, [medicaltest, doctor_code, subject_id]);
     const [expandMedicalTest, setExpandMedicalTest] = useState(2);
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
