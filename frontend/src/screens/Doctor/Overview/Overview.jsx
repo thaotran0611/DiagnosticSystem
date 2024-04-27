@@ -51,7 +51,8 @@ const Overview = () => {
         // const intervalId = setInterval(fetchData, 5000);
         // return () => clearInterval(intervalId);
     }, []);
-    
+    const [tagData, setTagData] = useState([]); // PASS AS PARAMETER
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -62,10 +63,12 @@ const Overview = () => {
                 });
                 console.log(response)
                 setPatientData(response.data.data);
+                setTagData(response.data.genderData)
                 if (response.data.data.length > 0) {
                     setSelectedPatient(response.data.data[0]);
                 }
                 setLoadingPatient(false);
+                console.log(tagData)
             } catch (error) {
                 setError(error);
                 setLoadingPatient(false);
@@ -98,7 +101,7 @@ const Overview = () => {
                           h='100%'>
                         <GridItem area={'overal'}>
                             <Center h={'100%'} position={'relative'}>
-                                <OveralTag title = "Visit for today" value = "50"/>
+                                <OveralTag tagData={tagData} title = "Visit for today" value = {tagData.reduce((total, item) => total + item.value, 0)}/>
                             </Center>
                         </GridItem>
                         <GridItem area={'note'} position={'relative'}>

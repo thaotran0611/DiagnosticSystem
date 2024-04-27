@@ -209,32 +209,38 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
         subq2.columns.name,
         subq2.columns.gender,
         subq2.columns.dob,
-        ADMISSIONS_CHECKED.columns.admittime,
-        ADMISSIONS_CHECKED.columns.admission_type,
         ADMISSIONS_CHECKED.columns.admission_location,
+        ADMISSIONS_CHECKED.columns.admission_type,
+        ADMISSIONS_CHECKED.columns.admittime,
         ADMISSIONS_CHECKED.columns.dischtime, 
         ADMISSIONS_CHECKED.columns.ethnicity,
+        ADMISSIONS_CHECKED.columns.insurance,
         ADMISSIONS_CHECKED.columns.marital_status,
+        ADMISSIONS_CHECKED.columns.diagnosis,
     ).select_from(
     sa.join(subq2, ADMISSIONS_CHECKED, subq2.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
     .where(subq2.columns.max_admittime == ADMISSIONS_CHECKED.columns.admittime)
+    
     df = pd.DataFrame(db.execute(stmt).fetchall())
     end = time.time()
     print(end-start)
     # male = ((df['gender'] == 'M') & df['dischtime'].isnull()).sum()
     # female = ((df['gender'] == 'F') & df['dischtime'].isnull()).sum()
-    # gender_data =[
-    #     {
-    #     'id': 1,
-    #     'title': 'Male patients',
-    #     'value': male
-    #     },
-    #     {
-    #     'id': 1,
-    #     'title': 'Female patients',
-    #     'value': female
-    #     }
-    # ]
+    
+    male = ((df['gender'] == 'M') ).sum()
+    female = ((df['gender'] == 'F') ).sum()
+    gender_data =[
+        {
+        'id': 1,
+        'title': 'Male patients',
+        'value': int(male)
+        },
+        {
+        'id': 2,
+        'title': 'Female patients',
+        'value': int(female)
+        }
+    ]
     if len(df)>0:
         transform_timestamp(df,['admittime','dischtime'])
         transform_date(df,['dob'])
@@ -242,7 +248,7 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
         # print(result)
     else:
         result = []
-    return JSONResponse(content={"data": result})
+    return JSONResponse(content={"data": result, "genderData":gender_data})
 
 @app.post("/insert-self-note", tags=["root"])
 async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
@@ -423,7 +429,8 @@ async def get_self_note(user_code, db=Depends(get_db)) -> dict:
         result = df.to_dict(orient='records')
     else:
         result = []
-    # print(result)
+    print(result)
+    
     return JSONResponse(content={"data": result})
 
 @app.get("/patient-notes", response_model=dict, tags=["root"]) 
