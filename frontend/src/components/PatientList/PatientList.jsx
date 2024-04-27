@@ -32,7 +32,7 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
     setGoToPage(newPage.toString()); // Update the input field when page changes
   };
 
-  const [selectedCardId, setSelectedCardId] = useState(selectedPatient.subject_id);
+  const [selectedCardId, setSelectedCardId] = useState(selectedPatient ? selectedPatient.subject_id : null);
   const handleCardClickhighlight = (cardId) => {
     setSelectedCardId(cardId === selectedCardId ? null : cardId);
   };
