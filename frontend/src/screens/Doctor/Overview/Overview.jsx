@@ -114,7 +114,7 @@ const Overview = () => {
                             </GridItem>
                         ) : (
                             <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
-                                <PatientList data={patientdata} onPatientSelect={handlePatientSelect}/>
+                                <PatientList data={patientdata} onPatientSelect={handlePatientSelect} selectedPatient={selectedPatient}/>
                             </GridItem>
                         )}
                         <GridItem area={'infor'}>

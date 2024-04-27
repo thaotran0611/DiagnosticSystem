@@ -45,17 +45,6 @@ const Takenote = (props) => {
     const submit = () => {
         const url = props.type == "self-note" ? 'http://localhost:8000/insert-self-note': 'http://localhost:8000/insert-patient-note';
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-
-        const newNoteData = {
-            note_id: generateRandomString(5),
-            priority: priority,
-            title: title,
-            content: message,
-            created_at: currentDate,
-            user_code: user_code,
-            subject_id: props.subject_id
-        };
-        props.setNote([...props.data, newNoteData]); 
         axios({
             method: 'post',
             url: url,

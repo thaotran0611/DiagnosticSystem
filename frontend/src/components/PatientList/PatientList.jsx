@@ -7,9 +7,10 @@ import LayoutSelector from '../LayoutSelector/LayoutSelector';
 import { Text, Center, SimpleGrid, Stack, Flex, Box,  Button, Spacer } from '@chakra-ui/react';
 import {TextField} from '@mui/material';
 import GoToPage from '../GoToPage/GoToPage';
+import { ArrowDownIcon, ArrowUpIcon } from '@chakra-ui/icons';
 
 
-const PatientList = ({ size, data, onPatientSelect }) => {
+const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
   const theme = createTheme({
     sizes: {
       container: size || '800px',
@@ -31,6 +32,11 @@ const PatientList = ({ size, data, onPatientSelect }) => {
     setGoToPage(newPage.toString()); // Update the input field when page changes
   };
 
+  const [selectedCardId, setSelectedCardId] = useState(selectedPatient.subject_id);
+  const handleCardClickhighlight = (cardId) => {
+    setSelectedCardId(cardId === selectedCardId ? null : cardId);
+  };
+
   const handleGoToPage = () => {
     const pageNumber = parseInt(goToPage);
     if (pageNumber >= 1 && pageNumber <= Math.ceil(data.length / pageSize)) {
@@ -39,12 +45,18 @@ const PatientList = ({ size, data, onPatientSelect }) => {
       alert(`Page number should be between 1 and ${Math.ceil(data.length / pageSize)}`);
     }
   };
+  const [ascendding, setAscending] = useState(true);
+  const [sortby, setSortby] = useState('no sort');
+  // const [sortResult, setSortresult] = useState(data)
+  let sortResult = sortby !== 'no sort' ? ascendding ? [...data].sort((a, b) => {return a[sortby].toString().localeCompare(b[sortby].toString());}) : [...data].sort((a, b) => {return b[sortby].toString().localeCompare(a[sortby].toString());}) : data;
+  let startIndex = (page - 1) * pageSize;
+  let endIndex = startIndex + pageSize;
+  let slicedData = sortResult.slice(startIndex, endIndex);
 
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const slicedData = data.slice(startIndex, endIndex);
-
-  const midIndex = Math.ceil(slicedData.length / 2);
+  let midIndex = Math.ceil(slicedData.length / 2);
+  // const sort = (field) => {
+  //   if ()
+  // }
 
   // if (loading) {
   //   return <p>Loading...</p>;
@@ -59,6 +71,18 @@ const PatientList = ({ size, data, onPatientSelect }) => {
       <Flex justifyContent="flex-end">
         <Text pl="5" pt="2" fontSize={35} fontWeight="bold" marginRight="auto">Patient List</Text>
         <Stack direction="row" spacing="4" p="2" m='0' marginLeft="auto" mr={5}>
+            <Text paddingTop={3}>Sort: </Text>
+            <select onClick={(e) => {setSortby(e.target.value)}} style={{cursor: 'pointer'}}>
+              <option value="no sort">no sort</option>
+              <option value={"name"}>name</option>
+              <option value={"subject_id"}>subject id</option>
+              <option value={"dob"}>birthday</option>
+            </select>
+            {ascendding ? 
+            <ArrowDownIcon onClick={() => {setAscending(!ascendding)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={5} boxSize={5}/>
+            :
+            <ArrowUpIcon onClick={() => {setAscending(!ascendding)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={5} boxSize={5}/>
+            }
             <GoToPage handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage ={setGoToPage}/>
             <LayoutSelector
               onChange={handleLayoutChange}
@@ -79,12 +103,12 @@ const PatientList = ({ size, data, onPatientSelect }) => {
           }}>
           {selectedLayout === 'list' ?
           (<SimpleGrid mt={5} columns={1} spacing={2}>
-            <PatientCard w={750} patientList={slicedData} onClick={onPatientSelect} />
+            <PatientCard selectedCardId={selectedCardId} handleCardClickhighlight={handleCardClickhighlight} w={750} patientList={slicedData} onClick={onPatientSelect} />
           </SimpleGrid>)
           :
           (
             <SimpleGrid mt={5} columns={2} spacing={2}>
-              <PatientCard w={800} patientList={slicedData} onClick={onPatientSelect} />
+              <PatientCard selectedCardId={selectedCardId} handleCardClickhighlight={handleCardClickhighlight} w={800} patientList={slicedData} onClick={onPatientSelect} />
             </SimpleGrid>
           )}
       </Box>

@@ -115,12 +115,16 @@ const Note = (props) => {
                             searchvalue!== '' ? 
                             slicedData.filter((item) => {
                                 const itemValue = String(item.title).toLowerCase();
-                                return itemValue.includes(searchvalue);
+                                const timeValue = dayjs(item.created_at).toDate();
+                                return itemValue.includes(searchvalue) && timeValue >= fromdate && timeValue <= todate;
                             }).map(note => (
                                 <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
                             ))
                             :
-                            slicedData.map(note => (
+                            slicedData.filter((item) => {
+                                const timeValue = dayjs(item.created_at).toDate();
+                                return timeValue >= fromdate && timeValue <= todate;
+                            }).map(note => (
                                 <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
                             ))
                         }
@@ -128,7 +132,15 @@ const Note = (props) => {
                     <div className="pagination-note-container">
                     
                     <Pagination
-                        count={Math.ceil(props.data ? props.data.length / pageSize: 0)}
+                        count={Math.ceil(props.data ? searchvalue!== '' ? 
+                         props.data.filter((item) => {
+                            const itemValue = String(item.title).toLowerCase();
+                            const timeValue = dayjs(item.created_at).toDate();
+                            return itemValue.includes(searchvalue) && timeValue >= fromdate && timeValue <= todate;
+                        }).length / pageSize: props.data.filter((item) => {
+                            const timeValue = dayjs(item.created_at).toDate();
+                            return timeValue >= fromdate && timeValue <= todate;
+                        }).length /pageSize: 0)}
                         page={page}
                         onChange={handleChangePage}
                         shape="rounded"
