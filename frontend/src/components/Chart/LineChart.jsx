@@ -63,6 +63,7 @@ export function LineChart(props) {
     maintainAspectRatio: false,
     plugins: {
       legend: {
+        display: false,
         position: 'top'
       }
     },

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Checkbox, Grid, GridItem, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, Spacer, Stack } from '@chakra-ui/react'
+import { Checkbox, Flex, Grid, GridItem, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, Spacer, Stack } from '@chakra-ui/react'
 import Search from "../Search/Search";
 import Filter from "../Filter/Filter";
 import { format } from 'date-fns'
@@ -42,15 +42,16 @@ const SearchAndFilterBar = (props) => {
     return(
         <div style={{width: '100%'}}>
             <Grid
-                h='150px'
+                h='180px'
                 templateRows='repeat(2, 1fr)'
                 templateColumns='repeat(10, 1fr)'
-                gap={4}
+                gap={1}
                 >
                 <GridItem rowSpan={1} colSpan={9}>
                     <Search setSearchInput={props.setSearchInput} onClick={props.onClick} onChange={props.onChange}/>
                 </GridItem>
-                <GridItem rowSpan={1}colSpan={1}>
+                <GridItem  rowSpan={1} colSpan={1}>
+                    <Flex justifyContent={'flex-end'}>
                     <Filter
                         adms={adms}
                         onChangeAdms={setAdms}
@@ -64,8 +65,18 @@ const SearchAndFilterBar = (props) => {
                         dynamicFilter = {props.dynamicFilter}
                         searchItems = {props.searchItems}
                         />
+                    </Flex>
                 </GridItem>
-                <GridItem rowSpan={1} colSpan={9}>
+                <GridItem rowSpan={1} colSpan={10}  overflowX="scroll" sx={{
+                    '&::-webkit-scrollbar': {
+                    width: '1px', // Set the width of the scrollbar
+                    height: '5px'
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'gray.400', // Set the color of the scrollbar thumb
+                    borderRadius: 'full', // Set the border radius of the thumb to make it round
+                    },
+                }}>
                     <HStack spacing={4}>
                         {
                             adms ? <FilterTag name={'admission date'} key={'adms'} onClick={() => {setAdms(null)}} text={'Admission from ' + format(adms, 'dd-MMM-yyyy')} /> : null

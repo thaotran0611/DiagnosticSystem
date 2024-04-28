@@ -13,7 +13,7 @@ import Sidebar from "../components/Sidebar/Sidebar";
 export const DoctorLayout = ({children, path, expand, patient, name}) => {
     const navigate = useNavigate();
     return(
-        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0', overflow: 'auto'}}>
+        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0'}}>
             <Grid
             templateAreas={patient ? `"header header"
                                       "nav main"` :

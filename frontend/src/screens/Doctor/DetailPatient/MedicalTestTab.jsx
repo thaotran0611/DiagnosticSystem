@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { AbsoluteCenter, Box, Divider, Grid, GridItem, HStack, IconButton, ScaleFade, Select, SimpleGrid, Stack, Text } from "@chakra-ui/react";
+import React, { useEffect, useRef, useState } from "react";
+import { AbsoluteCenter, Box, Button, Divider, Grid, GridItem, HStack, IconButton, ScaleFade, Select, SimpleGrid, Stack, Text, position } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
@@ -15,6 +15,9 @@ import { LineChart } from "../../../components/Chart/LineChart";
 import axios from 'axios';
 import _ from "lodash";
 import InputColor from "react-input-color";
+import MedicalTestChart from "../../../components/Chart/MedicalTestChart";
+import Scrollspy from 'react-scrollspy'
+
 
 const theme = createTheme();
 const MedicalTestTab = (props) => {
@@ -46,6 +49,15 @@ const MedicalTestTab = (props) => {
     const [color, setColor] = useState({});
     const [drillup, setDrillup] = useState('Default');
     const AllDrillup = ['Default', 'date', 'month', 'year'];
+    // const [componentChart, setComponentChart] = useState([1]);
+    const addComponentChart = () => {
+        props.setComponentChart([...props.componentChart, props.componentChart.length > 0 ? props.componentChart[props.componentChart.length - 1] + 1 : 1]); // You can use any unique identifier here
+    };
+   
+    const deleteComponentChart = (index) => {
+        console.log(props.componentChart);
+        props.setComponentChart(props.componentChart.filter((_, i) => i !== index));
+    };
     // const isUnique = (arr, item) => {
     //     // Check if there's only one occurrence of this combination in the array
     //     return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
@@ -142,7 +154,7 @@ const MedicalTestTab = (props) => {
                     gap={4}
                     >
                         <GridItem colStart={1} colSpan={2}>
-                        <Text color={'#3E36B0'} fontSize={'20px'} fontWeight={600}> Implement-1-time test</Text>
+                        <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}> One-time test</Text>
                     </GridItem>
 
                     <GridItem textAlign={'right'} colStart={5} colSpan={1}>
@@ -221,16 +233,17 @@ const MedicalTestTab = (props) => {
                     </AbsoluteCenter>
                 </Center>
             </GridItem>
-            {expandMedicalTest === 3 ? null : <GridItem position={'relative'} paddingTop={'8'} overflow={'hidden'}>
+            {expandMedicalTest === 3 ? null : <GridItem position={'relative'} paddingTop={'2'} overflow={'auto'}>
+                <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}> Many-time test</Text>
                 {/* <MyTable/> */}
                     {/* <MyTable2 height={expandMedicalTest === 1 ? '620px': '450px'} width={expand ? '1700px' : '1100px'}/> */}
-                    <Grid
+                    {/* <Grid
                         h='40px'
                         templateColumns='repeat(12, 1fr)'
                         gap={4}
                         >
-                            <GridItem colStart={1} colSpan={4}>
-                            <Text color={'#3E36B0'} fontSize={'20px'} fontWeight={600}> Implement-many-time test</Text>
+                        <GridItem colStart={1} colSpan={4}>
+                            <Text color={'#3E36B0'} fontSize={'20px'} fontWeight={600}> many-time test</Text>
                         </GridItem>
                         <GridItem colStart={5} colSpan={1} paddingTop={2}>
                             <HStack textAlign={'left'} spacing={1}>
@@ -257,7 +270,7 @@ const MedicalTestTab = (props) => {
                         </GridItem>
                         <GridItem colStart={8} colSpan={2}>
                             <HStack spacing={1}>
-                                <Text w={'110px'} paddingTop={1} fontWeight={600}>Drill up:</Text>
+                                <Text w={'110px'} paddingTop={1} fontWeight={600}>Roll up:</Text>
                                 <Select disabled={typeofchart === 'Table'? true : false} onChange={(e) => {setDrillup(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={AllDrillup[0]}>
                                 {
                                     AllDrillup.map(item => (
@@ -291,7 +304,6 @@ const MedicalTestTab = (props) => {
                                         ))
                                     }
                                 </Select>
-                                {/* <Text paddingTop={1} fontWeight={600}>{medicaltestmanytimefilter[0].valueuom}</Text> */}
                             </HStack>
                         </GridItem>
                     </Grid>
@@ -304,7 +316,18 @@ const MedicalTestTab = (props) => {
                             <MyTable2 data={medicaltestmanytimefilter} height={expandMedicalTest === 1 ? '560px' : '260px'}
                             width={props.expand ? '1700px' : '1100px'} onSelect={()=>{}}/>
                         }
-                    </Box>
+                    </Box> */}
+                    {props.componentChart.map((item, index) => (
+                        <div key={item} style={{height: '95%', position:'relative'}}>
+                            <MedicalTestChart onClose={()=>{deleteComponentChart(index)}} hadmID = {props.hadmID} medicaltestmanytime={medicaltestmanytime} typeofmedicaltestmanytime={typeofmedicaltestmanytime} expandMedicalTest={expandMedicalTest} expand={props.expand}/> 
+                        </div>
+                    ))}
+                    <Scrollspy style={{margin: '0', padding: '0'}} currentClassName="active" items={['end']}>
+                        <a style={{textDecoration: 'none'}} href="#end" ><Button id="end" onClick={addComponentChart}>Add Chart +</Button></a>
+                    </Scrollspy>
+                    {/* <div id="end" /> Ref to the end of the components list */}
+                    {/* <MedicalTestChart hadmID = {props.hadmID} medicaltestmanytime={medicaltestmanytime} typeofmedicaltestmanytime={typeofmedicaltestmanytime} expandMedicalTest={expandMedicalTest} expand={props.expand}/> */}
+
                 </GridItem>}
         </Grid>
     )

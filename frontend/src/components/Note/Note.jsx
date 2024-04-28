@@ -20,11 +20,12 @@ import {Spinner } from "@chakra-ui/react";
 
 
 const theme = createTheme();
-
 const Note = (props) => {
-
-    const [fromdate, setFromDate] = useState(dayjs(new Date()));
-    const [todate, setToDate] = useState(fromdate)
+console.log(props.data)
+    // const date = dayjs(props.data[0]['created_at']).toDate()
+    // console.log('day la ngay', date)
+    const [fromdate, setFromDate] = useState (props.data.length > 0? dayjs(new Date(props.data[props.data.length - 1].created_at)) : dayjs(new Date()));
+    const [todate, setToDate] = useState(dayjs(new Date()))
     const pageSize = props.pageSize;
     const [page, setPage] = useState(1);
     

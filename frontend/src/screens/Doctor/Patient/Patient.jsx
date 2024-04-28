@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SearchAndFilterBar from "../../../components/SearchAndFilterBar/SearchAndFilterBar";
-import { Center, Slider, Divider, SimpleGrid, Icon  } from "@chakra-ui/react";
+import { Center, Slider, Divider, SimpleGrid, Icon, Box  } from "@chakra-ui/react";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -153,34 +153,38 @@ const Patient = () => {
         patient={false}
         name={doctor_name}
         >
-            <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
+            <GridItem h={'100%'} bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
             <Center padding={'1% 4%'}>
                 <SearchAndFilterBar setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
             </Center>
                 <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
-                {loadingPatient ?(
-                    <Center h={'100%'} bg={'#fff'} borderRadius={'20px'}>
-                        <Spinner size="xl" />
-                    </Center>
-                    ) :
-                    <ThemeProvider theme={theme}>
-                        <Center>
-                            <SimpleGrid mt={0} columns={2} spacing={1}>
-                                {
-                                    slicedData.map(item => (
-                                        <PatientGridCard data={item} onClick={handleClick}/>
-                                    ))
-                                }
-                            </SimpleGrid>
+                <Box h={'100%'} position={'relative'}>
+
+                    {loadingPatient ?(
+                        <Center h={'100%'} bg={'#fff'} borderRadius={'20px'}>
+                            <Spinner size="xl" />
                         </Center>
-                        <Center mt={3} mb={3}>
-                            <MyPagination 
-                                count={Math.ceil(filteredResults.length / pageSize)} 
-                                page = {page} 
-                                onChange = {handleChangePage}/>
-                        </Center>
-                    </ThemeProvider>
-                }
+                        ) :
+                        <ThemeProvider theme={theme}>
+                            <Center>
+                                <SimpleGrid mt={0} columns={2} spacing={1}>
+                                    {
+                                        slicedData.map(item => (
+                                            <PatientGridCard data={item} onClick={handleClick}/>
+                                        ))
+                                    }
+                                </SimpleGrid>
+                            </Center>
+                            <Center mt={3} mb={3}>
+                                <MyPagination 
+                                    count={Math.ceil(filteredResults.length / pageSize)} 
+                                    page = {page} 
+                                    onChange = {handleChangePage}/>
+                            </Center>
+                        </ThemeProvider>
+                    }
+                </Box>
+
             </GridItem>
         </DoctorLayout>
     )
