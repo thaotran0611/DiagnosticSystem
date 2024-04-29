@@ -5,10 +5,13 @@ import Filter from "../Filter/Filter";
 import { format } from 'date-fns'
 import FilterTag from "../Filter/FilterTag";
 import { HStack } from "@chakra-ui/react";
+import CalendarCustomize from "../Calendar/Calendar";
+import Calendar from "react-calendar";
 
 const SearchAndFilterBar = (props) => {
-    const [adms, setAdms] = useState(null);
-    const [disc, setDisc] = useState(null);
+    // const [props.adms, props.setAdms] = useState(null);
+    // const [props.disc, props.setprops.disc] = useState(null);
+
     const [gender, setGender] = useState(0);
     const AddFilter = (name, value) => {
         // Dynamically set a property in the object
@@ -53,13 +56,11 @@ const SearchAndFilterBar = (props) => {
                 <GridItem  rowSpan={1} colSpan={1}>
                     <Flex justifyContent={'flex-end'}>
                     <Filter
-                        adms={adms}
-                        onChangeAdms={setAdms}
-                        disc={disc}
-                        onChangeDisc={setDisc}
-                        onChangeFemale={(e) => {setGender(e.target.value)}}
-                        onChangeMale={(e) => {setGender(e.target.value)}}
-                        onChangeAll={(e) => {setGender(e.target.value)}}
+                        adms={props.patient ? props.adms: null}
+                        setAdms={props.patient ? props.setAdms: null}
+                        disc={props.patient ? props.disc : null}
+                        setDisc={props.patient ? props.setDisc : null}
+                        patient={props.patient ? props.patient : null}
                         filterData = {props.filterData}
                         setDynamicFilter = {AddFilter}
                         dynamicFilter = {props.dynamicFilter}
@@ -79,14 +80,34 @@ const SearchAndFilterBar = (props) => {
                 }}>
                     <HStack spacing={4}>
                         {
-                            adms ? <FilterTag name={'admission date'} key={'adms'} onClick={() => {setAdms(null)}} text={'Admission from ' + format(adms, 'dd-MMM-yyyy')} /> : null
+                            props.adms ?
+                            <Popover closeOnBlur={true}> 
+                                <FilterTag name={'Admission date'} key={'adms'} onClick={() => props.setAdms(null)} text={'Admission from ' + format(props.adms, 'dd-MMM-yyyy')} /> 
+                                <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                        <PopoverBody maxH={'500px'} mt={2} overflow={'auto'}>
+                                            <Calendar value={props.adms} onChange={props.setAdms} />
+                                        </PopoverBody>
+                                </PopoverContent>
+                            </Popover> : null
                         }
                         {
-                            disc ? <FilterTag name={'discharge date'} key={'disc'} onClick={() => {setDisc(null)}} text={'Discharge from ' + format(disc, 'dd-MMM-yyyy')} /> : null
+                            props.disc ?
+                            <Popover closeOnBlur={true}> 
+                                <FilterTag name={'Discharge date'} key={'disc'} onClick={() => props.setDisc(null)} text={'Discharge from ' + format(props.disc, 'dd-MMM-yyyy')} />
+                                <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                        <PopoverBody maxH={'500px'} mt={2} overflow={'auto'}>
+                                            <Calendar value={props.disc} onChange={props.setDisc} />
+                                        </PopoverBody>
+                                </PopoverContent>
+                            </Popover> : null
                         }
-                        {
+                        {/* {
                             gender ? <FilterTag name={'gender'} key={'gender'} onClick={() => {setGender(null)}} text={gender == 1 ? 'Female' : gender == 2 ? 'Male' : gender == 3 ? 'All' : null} /> : null
-                        }
+                        } */}
                         {
                             props.dynamicFilter.map(item => (
                                 <Popover closeOnBlur={true}>

@@ -18,7 +18,7 @@ const imagePaths = {
 
 const DiseaseStatistic = (props) => {
   return (
-    <Stack w={'800px'} direction="row" spacing="20" align="center" border={'1px solid #ccc'} borderRadius={'20px'} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}}>
+    <Stack w={props.width} direction="row" spacing="20" align="center" border={'1px solid #ccc'} borderRadius={'20px'} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}}>
       <Stack direction="column" align="center" mb="2">
         <Box>
             <Image src={imagePaths[props.disease_name]} alt={`Card Image for ${props.disease_name}`} boxSize="70px"/>

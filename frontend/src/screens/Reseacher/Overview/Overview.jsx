@@ -118,7 +118,6 @@ const OverviewResearcher = () => {
                     }
                 });
                 setNote(response.data.data);
-                alert('hello')
                 setLoadingNote(false);
             } catch (error) {
                 setError(error);

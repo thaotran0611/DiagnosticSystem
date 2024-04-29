@@ -15,6 +15,7 @@ import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { Grid, GridItem, Spinner } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
+import dayjs from 'dayjs';
 
 const theme = createTheme();
 
@@ -76,7 +77,8 @@ const Patient = () => {
     };
 
     const [searchInput, setSearchInput] = useState('');
-
+    const [adms, setAdms] = useState(null);
+    const [disc, setDisc] = useState(null);
     const searchItems = () => {
         // setSearchInput(searchValue)
         if (searchInput !== '' && dynamicFilter.length > 0) {
@@ -93,40 +95,111 @@ const Patient = () => {
                     .includes(normalizedSearchInput);
             
                 // Check if item matches all dynamicFilter criteria
-                const matchesdynamicFilter = dynamicFilter.every(({ name, value }) => {
-                    const itemValue = String(item[name]).toLowerCase();
-                    return itemValue.includes(String(value).toLowerCase());
-                });
-            
-                // Combine both conditions to determine if item should be included in filtered results
-                return includesSearchInput && matchesdynamicFilter;
+                const uniqueFilter = _.uniqBy(dynamicFilter, 'name').map((item) => item.name);
+                console.log(uniqueFilter)
+                const uniquematchesdynamicFilter = uniqueFilter.every((name) => {
+                    const matchesdynamicFilter = dynamicFilter.filter((item) => {return item.name === name}).some(({name, value}) => {
+                        const itemValue = String(item[name]).toLowerCase();
+                        return itemValue.includes(String(value).toLowerCase());
+                    })
+                    return matchesdynamicFilter;
+                })
+                return includesSearchInput && uniquematchesdynamicFilter;
             });
-
-            setFilteredResults(filteredData);
+            if(adms!== null && disc!==null) {
+                setFilteredResults(filteredData.filter((item) => {
+                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                }))
+            }
+            else if(adms!==null){
+                setFilteredResults(filteredData.filter((item) => {
+                    return new Date(item.admittime) >= adms;
+                }))
+            }
+            else if(disc!==null){
+                setFilteredResults(filteredData.filter((item) => {
+                    return new Date(item.dischtime) <= disc;
+                }))
+            }
+            else{
+                setFilteredResults(filteredData);
+            }
         }
         else if (searchInput !== '') {
             const filterData2 = patientdata.filter((item) => {
                 return Object.values(item).join('').toLowerCase().includes(searchInput.toLowerCase())
             })
-            setFilteredResults(filterData2)
+            if(adms!== null && disc!==null) {
+                setFilteredResults(filterData2.filter((item) => {
+                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                }))
+            }
+            else if(adms!==null){
+                setFilteredResults(filterData2.filter((item) => {
+                    return new Date(item.admittime) >= adms;
+                }))
+            }
+            else if(disc!==null){
+                setFilteredResults(filterData2.filter((item) => {
+                    return new Date(item.dischtime) <= disc;
+                }))
+            }
+            else{
+                setFilteredResults(filterData2)
+            }
         }
         else if (dynamicFilter.length > 0) {
             const filterData2 = patientdata.filter((item) => {
                 // Check if item matches all search criteria
-                return dynamicFilter.every(({ name, value }) => {
-                    console.log({ name, value })
-                  // Convert item property value to lowercase string
-                  const itemValue = String(item[name]).toLowerCase();
-                  // Convert search value to lowercase string
-                  const searchValue = String(value).toLowerCase();
-                  // Check if item property value includes search value
-                  return itemValue.includes(searchValue);
-                });
+                const uniqueFilter = _.uniqBy(dynamicFilter, 'name').map((item) => item.name);
+                console.log(uniqueFilter)
+                const uniquematchesdynamicFilter = uniqueFilter.every((name) => {
+                    const matchesdynamicFilter = dynamicFilter.filter((item) => {return item.name === name}).some(({name, value}) => {
+                        const itemValue = String(item[name]).toLowerCase();
+                        return itemValue.includes(String(value).toLowerCase());
+                    })
+                    return matchesdynamicFilter;
+                })
+                return uniquematchesdynamicFilter;
             });
-            setFilteredResults(filterData2)
+            if(adms!== null && disc!== null) {
+                setFilteredResults(filterData2.filter((item) => {
+                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                }))
+            }
+            else if(adms!==null){
+                setFilteredResults(filterData2.filter((item) => {
+                    return new Date(item.admittime) >= adms;
+                }))
+            }
+            else if(disc!==null){
+                setFilteredResults(filterData2.filter((item) => {
+                    return new Date(item.dischtime) <= disc;
+                }))
+            }
+            else{
+                setFilteredResults(filterData2);
+            }
         }
         else{
+            if(adms!== null && disc!== null) {
+                setFilteredResults(patientdata.filter((item) => {
+                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                }));
+            }
+            else if(adms!== null){
+                setFilteredResults(patientdata.filter((item) => {
+                    return new Date(item.admittime) >= adms;
+                }));
+            }
+            else if(disc!== null){
+                setFilteredResults(patientdata.filter((item) => {
+                    return new Date(item.dischtime) <= disc;
+                }));
+            }
+            else{
             setFilteredResults(patientdata)
+            }
         }
         // console.log(filterData.find(item => item.name === 'admission_location'))
     }
@@ -155,7 +228,7 @@ const Patient = () => {
         >
             <GridItem h={'100%'} bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
             <Center padding={'1% 4%'}>
-                <SearchAndFilterBar setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
+                <SearchAndFilterBar patient={true} adms={adms} disc={disc} setAdms={setAdms} setDisc={setDisc} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
             </Center>
                 <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
                 <Box h={'100%'} position={'relative'}>
