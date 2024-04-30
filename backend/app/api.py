@@ -7,6 +7,7 @@ from construct import *
 import sqlalchemy as sa
 from sqlalchemy import text
 import pandas as pd
+import numpy as np
 import json
 import random
 import string
@@ -15,6 +16,7 @@ from decimal import Decimal
 import time
 import logging
 from middleware import db_logging
+import datetime
 import sys
 sys.path.append("..")
 
@@ -39,7 +41,8 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=db_logging)
 
 
 def mapping_column(col):
-    dic = {"admittime":"Admission Time", 
+    dic = {
+            "admittime":"Admission Time", 
            "admission_type":"Admission Type",
            "admission_location":"Admission Location",
            "dischtime":"Discharge Time",
@@ -71,7 +74,11 @@ def mapping_column(col):
            "chartdate":"Chart Date",
            "category":"Category",
            "description":"Description",
-           "text":"Text"}
+           "text":"Text",
+           "diagnosis":"Diagnosis",
+           "insurance":"Insurance"}
+    mapped_cols = [dic.get(column, column) for column in col]
+    return mapped_cols
 
 def transform_timestamp(df,col_list):
     for col in col_list:
@@ -168,6 +175,7 @@ async def get_patients(doctor_code, db=Depends(get_db)) -> dict: #care x adminss
     print(end-start)
     if len(df)>0:
         transform_timestamp(df,['admittime','dischtime','dob'])
+        df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
         # print(result)
     else:
@@ -221,9 +229,26 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
     sa.join(subq2, ADMISSIONS_CHECKED, subq2.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
     .where(subq2.columns.max_admittime == ADMISSIONS_CHECKED.columns.admittime)
     
+    
+    stmt2 = sa.select(
+        ANNOTATE.columns.hadm_id,
+        ANNOTATE.columns.disease_code,
+        sa.func.max(ANNOTATE.columns.time).label('max_time')
+    ). select_from(ANNOTATE).where(sa.and_(ANNOTATE.columns.hadm_id.in_(subq_hadm_ids), ANNOTATE.columns.value == True)) \
+    .group_by(
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.hadm_id,
+    ) 
+    
     df = pd.DataFrame(db.execute(stmt).fetchall())
-    end = time.time()
-    print(end-start)
+    df2 = pd.DataFrame(db.execute(stmt2).fetchall())
+    df2 = df2.groupby('hadm_id')['disease_code'].agg(lambda x: ','.join(x)).reset_index()
+    df_result = pd.merge(df,df2, how="left", on=["hadm_id","hadm_id"])
+    print(df_result)
+    print(df)
+
+    # end = time.time()
+    # print(end-start)
     # male = ((df['gender'] == 'M') & df['dischtime'].isnull()).sum()
     # female = ((df['gender'] == 'F') & df['dischtime'].isnull()).sum()
     
@@ -241,10 +266,13 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
         'value': int(female)
         }
     ]
-    if len(df)>0:
-        transform_timestamp(df,['admittime','dischtime'])
-        transform_date(df,['dob'])
-        result = df.to_dict(orient='records')
+    if len(df_result)>0:
+        transform_timestamp(df_result,['admittime','dischtime'])
+        transform_date(df_result,['dob'])
+        df_result.columns = mapping_column(df_result.columns)
+        df_result.fillna(value=np.nan, inplace=True)
+        df_result.replace({np.nan: None}, inplace=True)
+        result = df_result.to_dict(orient='records')
         # print(result)
     else:
         result = []
@@ -483,16 +511,17 @@ async def get_patients_admission_overview(doctor_code, subject_id, db=Depends(ge
         sa.join(subq, ADMISSIONS_CHECKED, subq.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id)) \
     .where(subq.columns.max_admittime >= ADMISSIONS_CHECKED.columns.admittime)
 
-    df1 = pd.DataFrame(db.execute(stmt).fetchall())
+    df = pd.DataFrame(db.execute(stmt).fetchall())
 
     infomation_tag = []
     result1 = []
-    if len(df1)>0:
-        transform_timestamp(df1,['admittime','dischtime'])
-        infomation_tag.append({"heading":"Number of admission","content": len(pd.unique(df1['hadm_id']))})  
-        infomation_tag.append({"heading":"The Last Admission Time","content": max(df1['admittime'])})
-        infomation_tag.append({"heading":"The Last Discharge Time","content": max(df1['dischtime'])})
-        result1 = df1.to_dict(orient='records')
+    if len(df)>0:
+        transform_timestamp(df,['admittime','dischtime'])
+        infomation_tag.append({"heading":"Number of admission","content": len(pd.unique(df['hadm_id']))})  
+        infomation_tag.append({"heading":"The Last Admission Time","content": max(df['admittime'])})
+        infomation_tag.append({"heading":"The Last Discharge Time","content": max(df['dischtime'])})
+        df.columns = mapping_column(df.columns)
+        result1 = df.to_dict(orient='records')
 
     # print(result1)
     
@@ -541,6 +570,7 @@ async def get_patients_detail_prescription(doctor_code, subject_id, db=Depends(g
 
     if len(df)>0:
         transform_timestamp(df,['startdate','enddate'])
+        df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
         # print(result)
     else:
@@ -581,7 +611,9 @@ async def get_patients_detail_note(doctor_code, subject_id, db=Depends(get_db)) 
     if len(df)>0:
         # transform_timestamp(df,['charttime','storetime'])
         transform_date(df,['chartdate'])
+        df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
+
         # print(result)
     else:
         result = []
@@ -634,13 +666,14 @@ async def get_patients_detail_procedure(doctor_code, subject_id, db=Depends(get_
     stmt = sa.select(PROCEDURE) \
             .where(PROCEDURE.columns.hadm_id.in_(subq_hadm_ids))
     
-    df = pd.DataFrame(db.execute(stmt).fetchall())
+    df = pd.DataFrame(db.execute(stmt).fetchall()).drop(columns=['row_id','subject_id'])
 
     if len(df)>0:
         df['value'] = df['value'].apply(lambda x: float(x))
 
         transform_timestamp(df,['starttime','endtime','storetime','comments_date'])
         # transform_date(df,['chartdate'])
+        df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
         # print(result)
     else:
@@ -815,13 +848,18 @@ async def get_patients_detail_medicaltest(researcher_code = 10040, db=Depends(ge
 async def get_predict(hadm_id, db=Depends(get_db)) -> dict:
     hadm_id = int(hadm_id)
     subq = sa.select(
-        ADMISSIONS_CHECKED.columns.hadm_id,
+        [ADMISSIONS_CHECKED.columns.hadm_id]
     ).select_from(ADMISSIONS_CHECKED) \
-    .where(ADMISSIONS_CHECKED.columns.admittime == sa.select(ADMISSIONS_CHECKED.columns.admittime)
-           .where(ADMISSIONS_CHECKED.columns.hadm_id == hadm_id) 
-           .as_scalar()) \
+    .where(sa.and_(
+        ADMISSIONS_CHECKED.columns.subject_id == sa.select([ADMISSIONS_CHECKED.columns.subject_id])
+            .where(ADMISSIONS_CHECKED.columns.hadm_id == hadm_id),
+        ADMISSIONS_CHECKED.columns.admittime < sa.select([ADMISSIONS_CHECKED.columns.admittime])
+            .where(ADMISSIONS_CHECKED.columns.hadm_id == hadm_id)
+    )) \
+    .order_by(ADMISSIONS_CHECKED.columns.admittime.desc()) \
+    .limit(1) \
     .as_scalar()
-    
+    # print(subq)
     stmt = sa.select(
         NOTEEVENTS.columns.text
     ).select_from(NOTEEVENTS) \
@@ -845,28 +883,97 @@ async def get_predict(hadm_id, db=Depends(get_db)) -> dict:
     doctor_code = df.iloc[0, 0]
     print(doctor_code)
     
+#     subq = sa.select(
+#         ANNOTATE.columns.disease_code,
+#         ANNOTATE.columns.hadm_id,
+#         func.max(ANNOTATE.columns.time).label('max_time')
+#     ) \
+#     .select_from(ANNOTATE) \
+#     .where(ANNOTATE.columns.hadm_id == hadm_id) \
+#     .group_by(
+#         ANNOTATE.columns.disease_code,
+#         ANNOTATE.columns.hadm_id,
+#     ) \
+#     .alias()
+
+# # Main query to retrieve the record with the maximum time based on other attributes
+#     stmt = sa.select(
+#         ANNOTATE.columns.disease_code,
+#         ANNOTATE.columns.value,
+#         ANNOTATE.columns.note,
+#         ANNOTATE.columns.time
+#     ) \
+#     .select_from(ANNOTATE) \
+#     .join(
+#         subq,
+#         sa.and_(
+#             ANNOTATE.columns.disease_code == subq.c.disease_code,
+#             ANNOTATE.columns.hadm_id == subq.c.hadm_id,
+#             ANNOTATE.columns.time == subq.c.max_time
+#         )
+#     )
     stmt = sa.select(ANNOTATE.columns.disease_code,
-                    ANNOTATE.columns.hadm_id,
                     ANNOTATE.columns.doctor_code,
                     ANNOTATE.columns.value,
+                    ANNOTATE.columns.note,
                     ANNOTATE.columns.time) \
             .select_from(ANNOTATE) \
             .where(ANNOTATE.columns.hadm_id == hadm_id)
             
-    df_annotate = pd.DataFrame(db.execute(stmt).fetchall())
+    df_annotate = pd.DataFrame(db.execute(stmt).fetchall()).drop_duplicates()
     if len(df_annotate) == 0:
-        columns = ['disease_code','hadm_id','doctor_code','value','time']
+        columns = ['disease_code','doctor_code','value','note','time']
         df_annotate = pd.DataFrame(columns = columns )
     
     df = pd.merge(df_annotate, df_predict, how="outer", on=["disease_code","disease_code"])
     # print(df)
     if len(df)>0:
         transform_timestamp(df,['time'])
+        df.fillna(value=np.nan, inplace=True)
+        df.replace({np.nan: None}, inplace=True)
+        print(df)
         result = df.to_dict(orient='records')
     else:
         result = []
     print({"annotate": result, "doctor": doctor_code})
     return JSONResponse(content={"annotate": result, "doctor": doctor_code})
+
+@app.post("/update-annotate", response_model=dict, tags=["root"])
+async def update_annotate(data:dict, db=Depends(get_db)) -> dict:
+    doctor_code = data.get("doctor_code")
+    hadm_id = int(data.get("hadm_id"))
+    df_data = data.get("data")
+    df = pd.DataFrame(df_data)
+    df['doctor_code'] = doctor_code
+    df['hadm_id'] = hadm_id
+    df['time'] = pd.to_datetime(df['time'], format='%Y-%m-%d %H:%M:%S')
+    df = df[df['time'].dt.date == datetime.datetime.now().date()]
+    # df['time'] = pd.to_datetime(df['time'], format='%Y-%m-%d %H:%M:%S')
+
+    df.drop(columns='predict_value',inplace = True)
+    columns = df.columns
+
+    # print(df)
+    # print(columns)
+
+    insert_query = f"""
+        INSERT INTO TABLE annotate ({', '.join([f'`{col}`' for col in columns])})
+        VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+        """
+    
+    print(insert_query)
+    data_tuples = [tuple(row) for row in df.to_numpy()]
+    # data_tuples = [('AA', '14080', False, 'Need to do the medical test', None, 164029)]
+    conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    cursor = conn.cursor()
+    # Insert data into Hive table using executemany
+    # cursor.executemany(insert_query, data_tuples)
+    # Commit changes and close cursor
+    conn.commit()
+    cursor.close()
+
+    return JSONResponse(content={"result": "successfully"})
+
  
 
 

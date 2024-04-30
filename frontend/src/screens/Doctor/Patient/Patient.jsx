@@ -42,7 +42,7 @@ const Patient = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients', {
+                const response = await axios.get('http://localhost:8000/patients-overview', {
                     params: {
                         doctor_code: doctor_code
                     }
@@ -72,7 +72,7 @@ const Patient = () => {
     }, []);
     
     const handleClick = (patientCode) => {
-        navigate(`detailpatient/${patientCode}`); // Assuming the URL pattern is '/patient/:patientCode'
+        navigate(`detailpatient/${patientCode}`, { state: { patient_Data: patientdata }} ); // Assuming the URL pattern is '/patient/:patientCode'
     };
 
     const [searchInput, setSearchInput] = useState('');

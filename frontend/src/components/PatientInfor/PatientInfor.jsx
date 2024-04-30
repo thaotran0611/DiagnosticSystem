@@ -13,21 +13,25 @@ const PatientInfor = (data) => {
     //     { key: 'Addmission type', value: 'Emergency' }, 
     //     { key: 'Addmission location', value: 'EMERGENCY ROOM ADMIT' }, 
     //   ]; 
-
+    const keysToExtract = ['Admission Location', 'Admission Type', 'Admission Time','Discharge Time']; // List of keys to extract
     let keyValueList = []; // Initialize keyValueList as an empty array
+    let diseaseList = []; 
     console.log(data.data)
     if (data.data !== null) {
-      keyValueList = Object.entries(data.data).slice(5).map(([key, value]) => {
-        return { key: key, value: value };
+      keyValueList = Object.entries(data.data)
+                    .filter(([key, value]) => keysToExtract.includes(key))
+                    .map(([key, value]) => { return { key: key, value: value };
       });
+      if (data.data.disease_code){
+        diseaseList = data.data.disease_code.split(',');
+      }
     }
     
   const navigate = useNavigate();
   
   const handleClick = () => {
-    navigate(`/doctor/patient/detailpatient/${data.data.subject_id}`); // Assuming the URL pattern is '/patient/:patientCode'
-};
-  const diseaseList = ['LD','HD']
+    navigate(`/doctor/patient/detailpatient/${data.data.subject_id}`, { state: { patient_Data: data.data } });
+  };  
   return (data.data !== null ? ( 
     <Card width={'98%'} h={'100%'} borderRadius="20px" border="none"> 
       <CardHeader paddingBottom={0}>
@@ -47,21 +51,29 @@ const PatientInfor = (data) => {
           }}> 
         <Stack divider={<StackDivider />} spacing="1"> 
           <Flex> 
-                <CircleComponent gender = {data.data.gender} /> 
+                <CircleComponent gender = {data.data.Gender} /> 
                 <Flex ml = {2} direction="column"> 
                     <Text margin={0} fontWeight="bold" >{data.data.subject_id} - {data.data.name}</Text> 
-                    <Text margin={0}>{data.data.dob}</Text> 
+                    <Text margin={0}>{data.data['Date of Birth']}</Text> 
                 </Flex> 
                 <Box ml="auto">
                   <Button bg="#3E36B0" color="white" fontSize={20} fontWeight={600} ml={2} onClick={handleClick}>...</Button>
                 </Box>
           </Flex> 
 
-          <Stack direction="row" spacing="4" m='0'>
-            {diseaseList.map((disease, index) => (
-              <DiseaseCard key={index} text={disease} />
-            ))}
-          </Stack>
+          <Center> {/* Centering the content horizontally */}
+              <Stack direction="row" spacing="4" m='2'>
+                  {diseaseList && diseaseList.length > 0 ? (
+                      diseaseList.map((disease, index) => (
+                          <DiseaseCard key={index} text={disease} />
+                      ))
+                  ) : (
+                      <Text fontSize="xl" fontWeight="bold">
+                          No Disease Detection
+                      </Text>
+                  )}
+              </Stack>
+          </Center>
 
             <SimpleGrid columns={2} spacing={0}> 
                 {keyValueList.map((item, index) => ( 

@@ -25,11 +25,16 @@ import ProcedureTab from "./ProcedureTab";
 import { useParams } from 'react-router-dom';
 import { Select } from '@chakra-ui/react'
 import _ from "lodash";
+import { useLocation } from 'react-router-dom';
 
 const theme = createTheme();
 
 
 const DetailPatient = (props) => {
+    const location = useLocation();
+    const { patient_Data } = location.state;
+    console.log("Navigate data")
+    console.log(patient_Data)
     const navigate = useNavigate();
 
     const doctor_code = sessionStorage.getItem('user')
@@ -53,25 +58,25 @@ const DetailPatient = (props) => {
     const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
     const [activeTab, setActiveTab] = useState("General");
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/patients-detail-overview', {
-                    params: {
-                        doctor_code: doctor_code,
-                        subject_id: patientCode
-                    }
-                });
-                // console.log(response)
-                setPatientData(response.data.patientDetail);
-                setLoadingPatient(false);
-            } catch (error) {
-                setError(error);
-                setLoadingPatient(false);
-            }
-        };
-        fetchData();
-    }, []);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await axios.get('http://localhost:8000/patients-detail-overview', {
+    //                 params: {
+    //                     doctor_code: doctor_code,
+    //                     subject_id: patientCode
+    //                 }
+    //             });
+    //             // console.log(response)
+    //             setPatientData(response.data.patientDetail);
+    //             setLoadingPatient(false);
+    //         } catch (error) {
+    //             setError(error);
+    //             setLoadingPatient(false);
+    //         }
+    //     };
+    //     fetchData();
+    // }, []);
 
     const [addmission, setAddmission] = useState([]); // PASS AS PARAMETER
     const [loadingAdmission, setLoadingAdmission] = useState(true);
@@ -86,7 +91,7 @@ const DetailPatient = (props) => {
                     }
                 });
                 setAddmission(response.data.admission);
-                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "hadm_id").map((image) => image.hadm_id)));
+                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "Admission ID").map((image) => image['Admission ID'])));
                 setLoadingAdmission(false);
                 setInfoTag(response.data.infomation_tag)
                 console.log(allAdmission)
@@ -302,7 +307,7 @@ const DetailPatient = (props) => {
                         {!expand?
                         <GridItem position={'relative'} area={'information'} marginTop={'8%'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <PatientTag data={patientdata} loading={loadingPatient}/>
+                                <PatientTag data={patient_Data} loading={false}/>
                             </ScaleFade>
                         </GridItem> : null }
 

@@ -6,13 +6,18 @@ import { GiMedicines } from "react-icons/gi";
 import { Grid, GridItem, Spinner} from '@chakra-ui/react'
 
 const PatientTag = (props) => { 
-    console.log(props.data)
     let patientDataList = [];
-    if (props.data && props.data.length > 0) {
-        patientDataList = Object.entries(props.data[0]).slice(2).map(([key, value]) => {
-            return { key: key, value: value };
-        });
+    const keysToExtract = ['Gender','Ethnicity','Date of Birth','Marital Status','Admission Time','Discharge Time']; // List of keys to extract
+    if (props.data) {
+        patientDataList = Object.entries(props.data)
+        .filter(([key, value]) => keysToExtract.includes(key))
+        .flatMap(([key, value]) => ({ key, value }));
     }
+    // if (props.data && props.data.length > 0) {
+    //     patientDataList = Object.entries(props.data[0]).slice(2).map(([key, value]) => {
+    //         return { key: key, value: value };
+    //     });
+    // }
     const halfIndex = Math.ceil(patientDataList.length / 2);
     return(
         <Card width={'98%'} shadow={'none'} height={'100%'} borderRadius={'20px'}>
@@ -47,8 +52,8 @@ const PatientTag = (props) => {
             <div> 
             <CardBody paddingTop={2}>
                 <Center marginTop={4} marginBottom={1}>
-                    <Text fontWeight={'500'} fontSize={'22px'}>{props.data[0].subject_id} - </Text>
-                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.data[0].name}</Text>
+                    <Text fontWeight={'500'} fontSize={'22px'}>{props.data.subject_id} - </Text>
+                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.data.name}</Text>
                 </Center>
                 <SimpleGrid columns={3} spacing={2} gridTemplateColumns={'48% 4% 48%'}>
                     <SimpleGrid columns={2} spacing={1}>

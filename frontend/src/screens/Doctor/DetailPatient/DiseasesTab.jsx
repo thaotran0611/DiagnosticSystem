@@ -16,34 +16,17 @@ const DiseasesTab = (props) => {
     const [annotate, setAnnotate] = useState([]); // PASS AS PARAMETER
     const [loadingAnnotate, setLoadingAnnotate] = useState(true);
     const [error, setError] = useState(null);
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await axios.get('http://localhost:8000/patients-annotate', {
-    //                 params: {
-    //                     doctor_code: doctor_code,
-    //                     subject_id: subject_id
-    //                 }
-    //             });
-    //             setAnnotate(response.data.annotate);
-    //             setLoadingAnnotate(false);
-    //             // console.log(annotate)
-    //         } catch (error) {
-    //             setError(error);
-    //             setLoadingAnnotate(false);
-    //         }
-    //     };
-    //     if (annotate.length === 0) {
-    //         fetchData();
-    //     }
-    // }, [annotate, doctor_code, subject_id]);
+    const [backupData, setBackupData] = useState([])
 
     const [shouldRenderTable, setShouldRenderTable] = useState(false); // State variable to track whether the table should be rendered
     const [hadmID, sethadmID] = useState('All Admission');
     const [change, setChange] = useState(false)
-    const [doctor, setDoctor] = useState(false)
-
+    const [doctor, setDoctor] = useState('')
+    const [tableKey, setTableKey] = useState(0);
+    useEffect(() => {
+        // Update tableKey to trigger re-render
+        setTableKey(prevKey => prevKey + 1);
+    }, [annotate]);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -54,6 +37,7 @@ const DiseasesTab = (props) => {
                 });
                 setAnnotate(response.data.annotate);
                 setDoctor(response.data.doctor);
+                setBackupData(response.data.annotate)
                 setLoadingAnnotate(false);
                 console.log(doctor)
             } catch (error) {
@@ -67,8 +51,12 @@ const DiseasesTab = (props) => {
     }, [hadmID]);
     
     const handleHadmIDChange = (e) => {
-        setShouldRenderTable(hadmID !== 'All Admission'); // Set shouldRenderTable to true only if hadmID is different from the new value
+        setShouldRenderTable(hadmID !== 'All Admission'); 
         setChange(e.target.value !== hadmID)
+        if (change){
+            setAnnotate([]);
+            setDoctor('');
+        }
         sethadmID(e.target.value);
     };
     return(
@@ -81,7 +69,7 @@ const DiseasesTab = (props) => {
                 }
             </Select>
             {/* <MyTable2 editable={true} height={'680px'}/> */}
-            {<DiseaseTable data={annotate} doctor={doctor} />} 
+            {<DiseaseTable key={tableKey} backup={backupData} setBackup={setBackupData} setData={setAnnotate} data={annotate} doctor={doctor} hadmID={hadmID}/>} 
         </Box>
     )
 }

@@ -15,20 +15,25 @@ const PatientGridCard = (props) => {
         props.onClick(props.data.subject_id);
     };
   return ( 
-    <Card w={750} onClick={handleClick} height={300} border="1px solid #B9DDDF" borderRadius="20px"> 
+    <Card w={750} onClick={handleClick} height={300} 
+      _hover={{ 
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)', 
+        cursor: 'pointer' // Change cursor style on hover
+      }} 
+      border="1px solid #B9DDDF" borderRadius="20px"> 
       <CardBody  p="4" m='2'  overflowY="auto" style={{
             scrollbarWidth: 'thin', 
             scrollbarColor: '#A0AEC0 #ffffff', 
           }}> 
         <Stack divider={<StackDivider />} spacing="4"> 
           <Flex> 
-                <CircleComponent gender = {props.data.gender} /> 
+                <CircleComponent gender = {props.data.Gender} /> 
                 <Flex ml = {2} direction="column"> 
-                    <Text margin={0} fontWeight="bold" >{props.data.name}</Text> 
-                    <Text margin={0}>{props.data.dob}</Text> 
+                    <Text margin={0} fontWeight="bold" >{props.data.subject_id}-{props.data.name}</Text> 
+                    <Text margin={0}>{props.data['Date of Birth']}</Text> 
                 </Flex>
                 <Spacer />
-                <TypeCard type={props.data.admission_type}/>
+                <TypeCard type={props.data['Admission Type']}/>
             </Flex> 
             
             <Flex> {/* Use Flex container */}

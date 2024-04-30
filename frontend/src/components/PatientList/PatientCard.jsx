@@ -14,10 +14,10 @@ export default function PatientCard({patientList, onClick, selectedCardId, handl
             <CardBody border="1px solid rgba(17, 17, 17, 0.3)" borderRadius="20px" p="2" m='1'> 
                 <Stack divider={<StackDivider />} spacing="2"> 
                     <Flex> 
-                        <CircleComponent gender = {patient.gender[0]} /> 
+                        <CircleComponent gender = {patient.Gender[0]} /> 
                         <Flex ml = {2} direction="column"> 
                             <Text margin={0} fontWeight="bold" > {patient.subject_id} - {patient.name} </Text> 
-                            <Text margin={0}>{patient.dob}</Text> 
+                            <Text margin={0}>{patient['Date of Birth']}</Text> 
                         </Flex>
                         <Spacer />
                         <TypeCard type={patient.Type}/>
