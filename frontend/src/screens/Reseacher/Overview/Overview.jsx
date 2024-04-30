@@ -37,7 +37,7 @@ const OverviewResearcher = () => {
           const matchingItem = arr2.find(item2 => item2[key] === item1[key]);
           return { ...item1, ...matchingItem };
         });
-      };
+    };
     const mappingDiseases = [
         {
             disease_code: 'AA',
@@ -176,6 +176,7 @@ const OverviewResearcher = () => {
                 </BreadcrumbItem>
             </Breadcrumb>
             }
+            name={researcher_name}
             disease={false}>
                 <GridItem position={'relative'} marginLeft={4} pl='2' area={'main'} gap={1}>
                     <Grid templateAreas={`"overal note"
