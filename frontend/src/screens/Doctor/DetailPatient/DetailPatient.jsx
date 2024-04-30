@@ -228,6 +228,7 @@ const DetailPatient = (props) => {
         }
         return 0;
     }
+    const [componentChart, setComponentChart] = useState([1]);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -382,7 +383,8 @@ const DetailPatient = (props) => {
                                 && <MedicalTestTab subject_id={patientCode} hadmID={hadmID} 
                                 expand={expand} pageSize={pageSizeMedicalTest} setPageSize={setPageSizeMedicalTest}
                                 medicaltest={medicaltest} medicaltest1time={medicaltest1time} medicaltestmanytime={medicaltestmanytime}
-                                typeofmedicaltest1time={typeofmedicaltest1time} typeofmedicaltestmanytime={typeofmedicaltestmanytime}/>}
+                                typeofmedicaltest1time={typeofmedicaltest1time} typeofmedicaltestmanytime={typeofmedicaltestmanytime}
+                                componentChart={componentChart} setComponentChart={setComponentChart}/>}
                             </TabPanel>
                             <TabPanel key={3} h={'100%'}>
                                 {activeTab === "Procedure" && <ProcedureTab procedure={procedure} subject_id={patientCode} hadmID={hadmID}/>}

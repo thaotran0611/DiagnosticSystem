@@ -36,56 +36,40 @@ const Filter = (props) => {
                 Filter
             </MenuButton>
             <MenuList>
-                <Popover closeOnBlur={false}>
+                {props.patient ? 
+                <Popover closeOnBlur={true}>
                     <PopoverTrigger>
-                        <MenuItem>Admission from</MenuItem>
+                        <Text padding={2} _hover={{bgColor: '#EDF2F7'}} cursor={'pointer'}>Admission from</Text>
                     </PopoverTrigger>
                     <PopoverContent>
                         <PopoverArrow />
                         <PopoverCloseButton />
                         <PopoverHeader>Date</PopoverHeader>
+                        <MenuItem>
                         <PopoverBody>
-                            <Calendar value={props.adms} onChange={props.onChangeAdms}/>
+                            <Calendar value={props.adms} onChange={props.setAdms}/>
                         </PopoverBody>
+                        </MenuItem>
                     </PopoverContent>
                 </Popover>
-                
+                : null }
+                {props.patient ? 
                 <Popover closeOnBlur={false}>
                     <PopoverTrigger>
-                        <MenuItem>Discharge from</MenuItem>
+                        <Text padding={2} _hover={{bgColor: '#EDF2F7'}} cursor={'pointer'}>Discharge from</Text>
                     </PopoverTrigger>
                     <PopoverContent>
                         <PopoverArrow />
                         <PopoverCloseButton />
                         <PopoverHeader>Date</PopoverHeader>
+                        <MenuItem>
                         <PopoverBody>
-                            <Calendar value={props.disc} onChange={props.onChangeDisc}/>
+                            <Calendar value={props.disc} onChange={props.setDisc}/>
                         </PopoverBody>
+                        </MenuItem>
                     </PopoverContent>
-                </Popover>
-            
-                {/* <Popover closeOnBlur={false}>
-                    <PopoverTrigger>
-                        <MenuItem>Gender</MenuItem>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverBody>
-                        <RadioGroup name="GenderRadius">
-                            <Stack spacing={5} direction='row'>
-                                <Radio colorScheme='red' value='1' onChange={props.onChangeFemale}>
-                                    Female
-                                </Radio>
-                                <Radio colorScheme='green' value='2' onChange={props.onChangeMale}>
-                                    male
-                                </Radio>
-                                <Radio colorScheme="blue" value='3' onChange={props.onChangeAll}>all</Radio>
-                            </Stack>
-                        </RadioGroup>
-                        </PopoverBody>
-                    </PopoverContent>
-                </Popover> */}
+                </Popover> 
+                : null }
                 {
                     props.filterData.map(item => (
                         <Popover closeOnBlur={true}>

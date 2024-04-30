@@ -6,8 +6,11 @@ import LayoutSelector from '../LayoutSelector/LayoutSelector';
 import { Text, Center, SimpleGrid, Stack, Flex, Box,  Button, Spacer, Select } from '@chakra-ui/react';
 import GoToPage from '../GoToPage/GoToPage';
 import DrugStatistic from './DrugStatistic';
+import { ArrowDownIcon, ArrowUpIcon } from '@chakra-ui/icons';
 
 const DiseaseList = (props) => {
+    console.log(props.diseases);
+    console.log(props.drugs);
     const theme = createTheme();
     const getAllFields = (array) => {
       return array.reduce((fields, obj) => {
@@ -55,14 +58,37 @@ const DiseaseList = (props) => {
           }
         }
       };
-    
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const slicedDisease = props.diseases.slice(startIndex, endIndex);
-      const midIndexDisease = Math.ceil(slicedDisease.length / 2);
-      const slicedDrug = props.drugs.slice(startIndex, endIndex);
-      const midIndexDrug = Math.ceil(slicedDrug.length / 2);
-    
+      const [ascendding, setAscending] = useState(true);
+      const [sortDiseaseby, setSortDiseaseby] = useState('no sort');
+      const [sortDrugby, setSortDrugby] = useState('no sort');
+      let sortResultDisease = sortDiseaseby !== 'no sort' ?  ascendding ? [...props.diseases].sort((a, b) => {
+        if (sortDiseaseby === 'sum_of_male' || sortDiseaseby === 'sum_of_female') {
+          return (a[sortDiseaseby]/a['sum_of_admission']).toString().localeCompare((b[sortDiseaseby]/b['sum_of_admission']).toString());
+        } else {
+          return a[sortDiseaseby].toString().localeCompare(b[sortDiseaseby].toString());
+        }}) : [...props.diseases].sort((a, b) => {
+        if (sortDiseaseby === 'sum_of_male' || sortDiseaseby === 'sum_of_female'){
+          return (b[sortDiseaseby]/b['sum_of_admission']).toString().localeCompare((a[sortDiseaseby]/a['sum_of_admission']).toString());
+        } else {
+          return b[sortDiseaseby].toString().localeCompare(a[sortDiseaseby].toString());
+        }}) : props.diseases;
+      let startIndex = (page - 1) * pageSize;
+      let endIndex = startIndex + pageSize;
+      let slicedDisease = sortResultDisease.slice(startIndex, endIndex);
+      let midIndexDisease = Math.ceil(slicedDisease.length / 2);
+      let sortResultDrug = sortDrugby !== 'no sort' ?  ascendding ? [...props.drugs].sort((a, b) => {
+        if (sortDrugby === 'sum_of_male' || sortDrugby === 'sum_of_female') {
+          return (a[sortDrugby]/a['sum_of_admission']).toString().localeCompare((b[sortDrugby]/b['sum_of_admission']).toString());
+        } else {
+          return a[sortDrugby].toString().localeCompare(b[sortDrugby].toString());
+        }}) : [...props.diseases].sort((a, b) => {
+        if (sortDrugby === 'sum_of_male' || sortDrugby === 'sum_of_female'){
+          return (b[sortDrugby]/b['sum_of_admission']).toString().localeCompare((a[sortDrugby]/a['sum_of_admission']).toString());
+        } else {
+          return b[sortDrugby].toString().localeCompare(a[sortDrugby].toString());
+        }}) : props.drugs;
+      let slicedDrug = sortResultDrug.slice(startIndex, endIndex);
+      let midIndexDrug = Math.ceil(slicedDrug.length / 2);
       if (error) {
         return <p>Error: {error.message}</p>;
       }
@@ -70,31 +96,36 @@ const DiseaseList = (props) => {
       return (
         <ThemeProvider theme={theme} >
           <Flex justifyContent="flex-end">
-            <Select onChange={(e) => {setList(e.target.value)}} 
-                    pl="5" pt="2" fontSize={35} fontWeight="bold" marginRight="auto" variant={'outline'}>
+            <Text pl="5" pt="2" fontSize={35} fontWeight="bold" marginRight="auto" variant={'outline'}>
+            <select onChange={(e) => {setList(e.target.value)}}>
               <option value={'Disease List'}>Disease List</option>
               <option value={'Drug List'}>Drug List</option>
-            </Select>
+            </select>
+            </Text>
             <Stack direction="row" spacing="4" p="2" m='0' marginLeft="auto" mr={5}>
                 <Text paddingTop={3}>Sort:</Text>
-                <select paddingTop={4}>
-                  {
-                    list === 'Disease List' ? 
-                      <>
-                        <option value={'disease_name'}>Disease name</option>
-                        <option value={'sum_of_admission'}>Number of patient</option>
-                        <option value={'sum_of_male'}>Number of male patient</option>
-                        <option value={'sum_of_female'}>Number of female patient</option>
-                      </>
-                     : 
-                      <>
-                        <option value={'disease_name'}>Disease name</option>
-                        <option value={'sum_of_admission'}>Number of patient</option>
-                        <option value={'sum_of_male'}>Number of male patient</option>
-                        <option value={'sum_of_female'}>Number of female patient</option>
-                      </>
-                  }
+                {list === 'Disease List' ? 
+                <select paddingTop={4} onClick={(e) => {setSortDiseaseby(e.target.value)}} style={{cursor: 'pointer'}}>
+                  <option value={'no sort'}>No sort</option>
+                  <option value={'disease_name'}>Disease name</option>
+                  <option value={'sum_of_admission'}>Number of patient</option>
+                  <option value={'sum_of_male'}>Percent of male patient</option>
+                  <option value={'sum_of_female'}>Percent of female patient</option>
                 </select>
+                  : 
+                <select paddingTop={4} onClick={(e) => {setSortDrugby(e.target.value)}} style={{cursor: 'pointer'}}>
+                  <option value={'no sort'}>No sort</option>
+                  <option value={'drug_name_poe'}>Drug name</option>
+                  <option value={'sum_of_admission'}>Number of prescription</option>
+                  <option value={'sum_of_male'}>Percent of male prescription</option>
+                  <option value={'sum_of_female'}>Percent of female prescription</option>
+                </select>
+                }
+                {ascendding ? 
+                  <ArrowDownIcon onClick={() => {setAscending(!ascendding)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={5} boxSize={5}/>
+                  :
+                  <ArrowUpIcon onClick={() => {setAscending(!ascendding)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={5} boxSize={5}/>
+                }
                 <GoToPage handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage ={setGoToPage}/>
                 <LayoutSelector
                   onChange={handleLayoutChange}
@@ -120,28 +151,28 @@ const DiseaseList = (props) => {
               
               (<SimpleGrid mt={5} columns={1} spacing={2}>
               {slicedDisease.map((disease, index) => (
-                <DiseaseStatistic key={index} {...disease} />
+                <DiseaseStatistic width={'1600px'} key={index} {...disease} />
               ))}
               </SimpleGrid>)
               :
               (
-                <SimpleGrid mt={5} columns={2} spacingX={40} spacingY={2}>
+                <SimpleGrid mt={5} columns={2} spacingX={20} spacingY={2}>
                   {slicedDisease.map((disease, index) => (
-                    <DiseaseStatistic key={index} {...disease} />
+                    <DiseaseStatistic width={'800px'} key={index} {...disease} />
               ))}
                 </SimpleGrid>
               ) : 
               selectedLayout === 'list' ? 
               (<SimpleGrid mt={5} columns={1} spacing={2}>
                 {slicedDrug.map((disease, index) => (
-                  <DrugStatistic key={index} {...disease} />
+                  <DrugStatistic width={'1600px'} key={index} {...disease} />
                 ))}
                 </SimpleGrid>)
               :
               (
-                <SimpleGrid mt={5} columns={2} spacingX={40} spacingY={2}>
+                <SimpleGrid mt={5} columns={2} spacingX={20} spacingY={2}>
                   {slicedDrug.map((disease, index) => (
-                    <DrugStatistic key={index} {...disease} />
+                    <DrugStatistic width={'800px'} key={index} {...disease} />
                   ))}
                 </SimpleGrid>
               )

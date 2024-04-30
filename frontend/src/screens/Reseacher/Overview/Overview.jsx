@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Grid, GridItem,Text } from '@chakra-ui/react'
 import { ResearcherLayout } from "../../../layout/ResearcherLayout";
 import DiseaseList from "../../../components/DiseaseCard/DiseaseList";
+import dayjs from 'dayjs';
 const OverviewResearcher = () => {
     const navigate = useNavigate();
     const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
@@ -25,7 +26,6 @@ const OverviewResearcher = () => {
     const researcher_name = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).name
     : '0';
-    
     const [note, setNote] = useState([]);
     const [loadingNote, setLoadingNote] = useState(true);
     const [diseases, setDiseases] = useState([]);

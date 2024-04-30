@@ -17,7 +17,7 @@ export const DoctorLayout = ({children, path, expand, patient, name}) => {
         navigate('/login');
     };
     return(
-        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0', overflow: 'auto'}}>
+        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0'}}>
             <Grid
             templateAreas={patient ? `"header header"
                                       "nav main"` :

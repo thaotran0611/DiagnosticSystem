@@ -15,16 +15,22 @@ const PatientGridCard = (props) => {
         props.onClick(props.data.subject_id);
     };
   return ( 
-    <Card w={750} onClick={handleClick} height={300} 
+    <Card w={750} onClick={handleClick} height={250} 
       _hover={{ 
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)', 
         cursor: 'pointer' // Change cursor style on hover
       }} 
       border="1px solid #B9DDDF" borderRadius="20px"> 
-      <CardBody  p="4" m='2'  overflowY="auto" style={{
-            scrollbarWidth: 'thin', 
-            scrollbarColor: '#A0AEC0 #ffffff', 
-          }}> 
+      <CardBody  p="4" m='2'  overflowY="auto" sx={{
+                    '&::-webkit-scrollbar': {
+                    width: '5px', // Set the width of the scrollbar
+                    height: '5px'
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'gray.400', // Set the color of the scrollbar thumb
+                    borderRadius: 'full', // Set the border radius of the thumb to make it round
+                    },
+                }}> 
         <Stack divider={<StackDivider />} spacing="4"> 
           <Flex> 
                 <CircleComponent gender = {props.data.Gender} /> 
