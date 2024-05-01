@@ -110,7 +110,7 @@ async def login(data: dict, db=Depends(get_db)) -> dict:
     response = df.to_dict(orient='records')
     # print(response[0])
     if len(df) > 0:
-        users_list = ['DOCTOR', 'ADMINISTRATOR','ANALYST','RESEARCHER']
+        users_list = ['DOCTOR','RESEARCHER', 'ADMINISTRATOR','ANALYST']
         code = response[0]["code"] 
         for user in users_list:
             query = eval(user).select().where(eval(user).columns.code == code)
@@ -836,6 +836,14 @@ async def get_patients_detail_medicaltest(researcher_code = 10040, db=Depends(ge
     # print(result)
     return JSONResponse(content={"drugs": result})
 
+@app.get("/researcher-disease-all-admission", response_model=dict, tags=["root"])
+async def get_predict(db=Depends(get_db)) -> dict:
+    df = pd.DataFrame(db.query(ANNOTATE.columns.hadm_id).distinct().all())
+    if len(df)>0:
+        result = df.to_dict(orient='records')
+    else:
+        result = []
+    return JSONResponse(content={"admissions": result})
 
 @app.get("/predict", response_model=dict, tags=["root"])
 async def get_predict(hadm_id, db=Depends(get_db)) -> dict:

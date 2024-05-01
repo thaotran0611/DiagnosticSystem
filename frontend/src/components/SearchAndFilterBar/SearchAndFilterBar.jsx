@@ -60,7 +60,7 @@ const SearchAndFilterBar = (props) => {
                         setAdms={props.patient ? props.setAdms: null}
                         disc={props.patient ? props.disc : null}
                         setDisc={props.patient ? props.setDisc : null}
-                        patient={props.patient ? props.patient : null}
+                        patient={props.patient ? props.patient : false}
                         filterData = {props.filterData}
                         setDynamicFilter = {AddFilter}
                         dynamicFilter = {props.dynamicFilter}

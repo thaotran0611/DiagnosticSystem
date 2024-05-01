@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Card, Center, Image, Text } from '@chakra-ui/react';
+import { AbsoluteCenter, Box, Card, Center, Image, Text } from '@chakra-ui/react';
 
 const imagePaths = {
   LD: 'https://cdn-icons-png.flaticon.com/512/508/508778.png',
@@ -31,15 +31,15 @@ const DiseaseCard = ({ text, hidden }) => {
   return (
     <Box boxSize={100} overflow="hidden" w={100}>
       <Box>
-        <Center> 
+        <AbsoluteCenter> 
           <Image src={imagePaths[text]} alt={`Card Image for ${text}`} boxSize="40px"/>
-        </Center>
+        </AbsoluteCenter>
       </Box>
       {hidden ? null : 
         <Box boxSize={100}>
           <Center> 
               <Text fontSize="md" fontWeight="semibold" mb="1" textAlign="center">
-              {mapping_disease[text]}
+                {mapping_disease[text]}
               </Text>
           </Center>
         </Box>

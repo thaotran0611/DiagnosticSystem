@@ -1,3 +1,4 @@
 Model/Result_w2v_200dim_newCNN/
 env/
 .env
+App/_pycache_

@@ -37,7 +37,7 @@ const OverviewResearcher = () => {
           const matchingItem = arr2.find(item2 => item2[key] === item1[key]);
           return { ...item1, ...matchingItem };
         });
-      };
+    };
     const mappingDiseases = [
         {
             disease_code: 'AA',

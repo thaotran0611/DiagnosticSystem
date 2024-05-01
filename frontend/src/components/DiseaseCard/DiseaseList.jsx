@@ -64,11 +64,15 @@ const DiseaseList = (props) => {
       let sortResultDisease = sortDiseaseby !== 'no sort' ?  ascendding ? [...props.diseases].sort((a, b) => {
         if (sortDiseaseby === 'sum_of_male' || sortDiseaseby === 'sum_of_female') {
           return (a[sortDiseaseby]/a['sum_of_admission']).toString().localeCompare((b[sortDiseaseby]/b['sum_of_admission']).toString());
+        } else if(sortDiseaseby === 'sum_of_admission'){
+          return a[sortDiseaseby] - b[sortDiseaseby];
         } else {
           return a[sortDiseaseby].toString().localeCompare(b[sortDiseaseby].toString());
         }}) : [...props.diseases].sort((a, b) => {
         if (sortDiseaseby === 'sum_of_male' || sortDiseaseby === 'sum_of_female'){
           return (b[sortDiseaseby]/b['sum_of_admission']).toString().localeCompare((a[sortDiseaseby]/a['sum_of_admission']).toString());
+        } else if(sortDiseaseby === 'sum_of_admission'){
+          return b[sortDiseaseby] - a[sortDiseaseby];
         } else {
           return b[sortDiseaseby].toString().localeCompare(a[sortDiseaseby].toString());
         }}) : props.diseases;
@@ -79,11 +83,15 @@ const DiseaseList = (props) => {
       let sortResultDrug = sortDrugby !== 'no sort' ?  ascendding ? [...props.drugs].sort((a, b) => {
         if (sortDrugby === 'sum_of_male' || sortDrugby === 'sum_of_female') {
           return (a[sortDrugby]/a['sum_of_admission']).toString().localeCompare((b[sortDrugby]/b['sum_of_admission']).toString());
+        } else if(sortDrugby === 'sum_of_admission'){
+          return a[sortDrugby] - b[sortDrugby];
         } else {
           return a[sortDrugby].toString().localeCompare(b[sortDrugby].toString());
-        }}) : [...props.diseases].sort((a, b) => {
+        }}) : [...props.drugs].sort((a, b) => {
         if (sortDrugby === 'sum_of_male' || sortDrugby === 'sum_of_female'){
           return (b[sortDrugby]/b['sum_of_admission']).toString().localeCompare((a[sortDrugby]/a['sum_of_admission']).toString());
+        } else if(sortDrugby === 'sum_of_admission'){
+          return b[sortDrugby] - a[sortDrugby];
         } else {
           return b[sortDrugby].toString().localeCompare(a[sortDrugby].toString());
         }}) : props.drugs;

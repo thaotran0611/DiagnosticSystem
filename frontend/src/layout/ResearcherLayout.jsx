@@ -43,6 +43,7 @@ export const ResearcherLayout = ({children, path, expand, disease, name}) => {
                         </GridItem> */}
                         <GridItem colSpan={1} colStart={19}>
                             <UserTag img={AccountCircleOutlinedIcon} name={name}/>
+                            <UserTag img={AccountCircleOutlinedIcon} name={name}/>
                         </GridItem>
                         <GridItem colSpan={1} colStart={20} marginLeft={'auto'} marginRight={6}>
                             <Icon onClick={handleLogout} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>
