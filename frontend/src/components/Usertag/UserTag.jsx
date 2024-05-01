@@ -10,7 +10,7 @@ const UserTag = (props) => {
         <Image
             boxSize='100px'
             objectFit='cover'
-            src={props.img}
+            src={'https://img.freepik.com/free-vector/hand-drawn-doc…gesture-character_40876-3115.jpg?size=626&ext=jpg'}
             // alt='Avatar'
         />
         <Text paddingTop={1} w={'200px'}>{props.name}</Text>

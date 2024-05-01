@@ -620,29 +620,6 @@ async def get_patients_detail_note(doctor_code, subject_id, db=Depends(get_db)) 
     # print(result)
     return JSONResponse(content={"note": result})
 
-@app.get("/patients-annotate", response_model=dict, tags=["root"])  
-async def get_patients_annotate(doctor_code, subject_id, db=Depends(get_db)) -> dict: #update this by adding parameter hadm_id
-    subject_id = int(subject_id)
-    stmt = sa.select(ANNOTATE.columns.disease_code,
-                     ANNOTATE.columns.hadm_id,
-                    ANNOTATE.columns.doctor_code,
-                     ANNOTATE.columns.value,
-                     ANNOTATE.columns.time) \
-            .select_from(sa.join(ANNOTATE, ADMISSIONS_CHECKED, ANNOTATE.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id)) \
-            .where(ADMISSIONS_CHECKED.columns.subject_id == subject_id)
-    
-    df = pd.DataFrame(db.execute(stmt).fetchall())
-
-    if len(df)>0:
-        transform_timestamp(df,['time'])
-        # transform_date(df,['chartdate'])
-        result = df.to_dict(orient='records')
-        # print(result)
-    else:
-        result = []
-    print(result)
-    return JSONResponse(content={"annotate": result})
-
 @app.get("/patients-detail-procedure", response_model=dict, tags=["root"])  
 async def get_patients_detail_procedure(doctor_code, subject_id, db=Depends(get_db)) -> dict:
     subject_id = int(subject_id)
@@ -745,10 +722,6 @@ async def get_patients_detail_medicaltest(researcher_code, db=Depends(get_db)) -
     df = pd.DataFrame(db.execute(stmt).fetchall())
 
     if len(df)>0:
-        # df['value'] = df['value'].apply(lambda x: str(x))
-
-        # transform_timestamp(df,['DOB', 'DOD', 'DOD_HOSP', 'SSN'])
-        # transform_date(df,['chartdate'])
         result = df.to_dict(orient='records')
         # print(result)
     else:
@@ -770,11 +743,31 @@ async def get_patients_detail_medicaltest(researcher_code, db=Depends(get_db)) -
                 .where(sa.and_(ANNOTATE.columns.value == 1, PATIENTS_CHECKED.columns.gender == 'M')) \
                 .group_by(ANNOTATE.columns.disease_code)
     
-    sum_hadm_id = sa.select(ANNOTATE.columns.disease_code,
-                     sa.func.count(ANNOTATE.columns.value).label('sum_of_admission'))\
-            .where(ANNOTATE.columns.value == 1) \
-            .group_by(ANNOTATE.columns.disease_code)
+    # sum_hadm_id = sa.select(ANNOTATE.columns.disease_code,
+    #                  sa.func.count(ANNOTATE.columns.hadm_id).label('sum_of_admission'))\
+    #         .where(ANNOTATE.columns.value == 1) \
+    #         .group_by(ANNOTATE.columns.disease_code)
     
+    # Define the subquery
+    subquery = sa.select([
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.hadm_id,
+        sa.func.max(ANNOTATE.columns.time).label('max_time')
+    ]).where(
+        ANNOTATE.columns.value == 1
+    ).group_by(
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.hadm_id
+    ).alias("subquery")
+
+    # Define the outer query
+    sum_hadm_id = sa.select([
+        subquery.columns.disease_code,
+        sa.func.count(subquery.columns.hadm_id).label('sum_of_admission')
+    ]).group_by(
+        subquery.columns.disease_code
+    )
+
     stmt = sa.select(sum_hadm_id.columns.disease_code,
                      sum_hadm_id.columns.sum_of_admission,
                      sum_male.columns.sum_of_male,
@@ -883,42 +876,42 @@ async def get_predict(hadm_id, db=Depends(get_db)) -> dict:
     doctor_code = df.iloc[0, 0]
     print(doctor_code)
     
-#     subq = sa.select(
-#         ANNOTATE.columns.disease_code,
-#         ANNOTATE.columns.hadm_id,
-#         func.max(ANNOTATE.columns.time).label('max_time')
-#     ) \
-#     .select_from(ANNOTATE) \
-#     .where(ANNOTATE.columns.hadm_id == hadm_id) \
-#     .group_by(
-#         ANNOTATE.columns.disease_code,
-#         ANNOTATE.columns.hadm_id,
-#     ) \
-#     .alias()
+    subq = sa.select(
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.hadm_id,
+        sa.func.max(ANNOTATE.columns.time).label('max_time')
+    ) \
+    .select_from(ANNOTATE) \
+    .where(ANNOTATE.columns.hadm_id == hadm_id) \
+    .group_by(
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.hadm_id,
+    ) \
+    .alias()
 
-# # Main query to retrieve the record with the maximum time based on other attributes
-#     stmt = sa.select(
-#         ANNOTATE.columns.disease_code,
-#         ANNOTATE.columns.value,
-#         ANNOTATE.columns.note,
-#         ANNOTATE.columns.time
-#     ) \
-#     .select_from(ANNOTATE) \
-#     .join(
-#         subq,
-#         sa.and_(
-#             ANNOTATE.columns.disease_code == subq.c.disease_code,
-#             ANNOTATE.columns.hadm_id == subq.c.hadm_id,
-#             ANNOTATE.columns.time == subq.c.max_time
-#         )
-#     )
-    stmt = sa.select(ANNOTATE.columns.disease_code,
-                    ANNOTATE.columns.doctor_code,
-                    ANNOTATE.columns.value,
-                    ANNOTATE.columns.note,
-                    ANNOTATE.columns.time) \
-            .select_from(ANNOTATE) \
-            .where(ANNOTATE.columns.hadm_id == hadm_id)
+# Main query to retrieve the record with the maximum time based on other attributes
+    stmt = sa.select(
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.value,
+        ANNOTATE.columns.note,
+        ANNOTATE.columns.time
+    ) \
+    .select_from(ANNOTATE) \
+    .join(
+        subq,
+        sa.and_(
+            ANNOTATE.columns.disease_code == subq.c.disease_code,
+            ANNOTATE.columns.hadm_id == subq.c.hadm_id,
+            ANNOTATE.columns.time == subq.c.max_time
+        )
+    )
+    # stmt = sa.select(ANNOTATE.columns.disease_code,
+    #                 ANNOTATE.columns.doctor_code,
+    #                 ANNOTATE.columns.value,
+    #                 ANNOTATE.columns.note,
+    #                 ANNOTATE.columns.time) \
+    #         .select_from(ANNOTATE) \
+    #         .where(ANNOTATE.columns.hadm_id == hadm_id)
             
     df_annotate = pd.DataFrame(db.execute(stmt).fetchall()).drop_duplicates()
     if len(df_annotate) == 0:

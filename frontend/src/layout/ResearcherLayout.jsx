@@ -10,8 +10,12 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import Sidebar from "../components/Sidebar/Sidebar";
 
-export const ResearcherLayout = ({children, path, expand, disease}) => {
+export const ResearcherLayout = ({children, path, expand, disease, name}) => {
     const navigate = useNavigate();
+    const handleLogout = () => {
+        sessionStorage.removeItem('user');
+        navigate('/login');
+    };
     return(
         <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0'}}>
             <Grid
@@ -34,14 +38,14 @@ export const ResearcherLayout = ({children, path, expand, disease}) => {
                         <GridItem colSpan={6} colStart={2}>
                             {path}
                         </GridItem>
-                        <GridItem colStart={18} colSpan={1} marginLeft={'auto'} marginRight={6}>
+                        {/* <GridItem colStart={18} colSpan={1} marginLeft={'auto'} marginRight={6}>
                                 <BellIcon cursor={'pointer'} marginTop={3} boxSize={'1.8em'} color={'#716F6F'}/>
-                        </GridItem>
+                        </GridItem> */}
                         <GridItem colSpan={1} colStart={19}>
-                            <UserTag img={AccountCircleOutlinedIcon} name={'Dr.Kim'}/>
+                            <UserTag img={AccountCircleOutlinedIcon} name={name}/>
                         </GridItem>
                         <GridItem colSpan={1} colStart={20} marginLeft={'auto'} marginRight={6}>
-                            <Icon onClick={()=>{navigate('/login')}} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>
+                            <Icon onClick={handleLogout} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>
                         </GridItem>
                     </Grid>
                 </GridItem>

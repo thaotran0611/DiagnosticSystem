@@ -124,10 +124,9 @@ const OverviewResearcher = () => {
                 setLoadingNote(false);
             }
         };
-    
         fetchData();
-        const intervalId = setInterval(fetchData, 5000);
-        return () => clearInterval(intervalId);
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {
@@ -176,6 +175,7 @@ const OverviewResearcher = () => {
                 </BreadcrumbItem>
             </Breadcrumb>
             }
+            name={researcher_name}
             disease={false}>
                 <GridItem position={'relative'} marginLeft={4} pl='2' area={'main'} gap={1}>
                     <Grid templateAreas={`"overal note"
