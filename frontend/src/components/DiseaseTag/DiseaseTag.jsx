@@ -3,9 +3,9 @@ import { Card, CardHeader, CardBody, CardFooter, Button, Heading, Image, Stack, 
 import { BellIcon } from "@chakra-ui/icons";
 import DiseaseCard from "../DiseaseCard/DiseaseCard";
 import { GiMedicines } from "react-icons/gi";
-const DiseaseTag = ({data, medicine, sum_of_admission}) => {
+const DiseaseTag = ({data, medicine, sum_of_admission, onClick}) => {
     const handleClick = () => {
-        props.onClick(data.subject_id);
+        onClick(data);
     };
     return(
         <Card

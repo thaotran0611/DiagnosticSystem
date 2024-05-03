@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,6 +22,8 @@ ChartJS.register(
 );
 
 export function LineChart(props) {
+  const [clickedIndex, setClickedIndex] = useState(null);
+  console.log(props.data);
   function extractDate(label, level) {
     const date = new Date(label);
     if (level === 'year') {
@@ -59,6 +61,27 @@ export function LineChart(props) {
   }
   const groupedByMonth = groupDataByDate(props.label, props.data, props.level);
   const options = {
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        const datasetIndex = elements[0].datasetIndex;
+        const value = data.datasets[datasetIndex].data[index];
+        const label = data.labels[index];
+        console.log(`Clicked on data point ${label} with value ${value}`);
+        setClickedIndex(index);
+        if (props.setDecision) {
+          props.setDecision(label);
+        }
+        if (props.setChangeChart) {
+          props.setChangeChart(2);
+        }
+      } else {
+        setClickedIndex(null);
+        if (props.setDecision) {
+          props.setDecision('All');
+        }
+      }
+    },
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -84,10 +107,20 @@ export function LineChart(props) {
       {
         label: props.dataset,
         data: groupedByMonth.averages,
-        borderColor: props.color.rgba,
-        backgroundColor: props.color.rgba,
+        borderColor: props.color ? props.color.rgba : '#ccc',
+        backgroundColor: props.color ? props.color.rgba : '#ccc',
       }
     ]
   };
-  return <Line options={options} data={data} />;
+
+  const customData = {
+    ...data,
+    datasets: data.datasets.map((dataset, datasetIndex) => {
+      return {
+        ...dataset,
+        pointBackgroundColor: dataset.data.map((_, dataIndex) => props.changeChart ? dataIndex === clickedIndex && props.changeChart === 2 ? 'red' : props.color.rgba : props.color.rgba)
+      };
+    })
+  };
+  return <Line options={options} data={customData} />;
 }

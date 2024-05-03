@@ -97,10 +97,8 @@ const Disease = () => {
                 setLoadingDiseases(false);
                 disease_code = joinArrays(response.data.diseases, mappingDiseases, 'disease_code').map((image) => image.disease_code);
                 disease_name = joinArrays(response.data.diseases, mappingDiseases, 'disease_code').map((image) => image.disease_name);
-                // console.log(joinArrays(response.data.diseases, mappingDiseases, 'disease_code'));
-                setSum_of_admission(response.data.diseases.reduce((accumulator, currentValue) => {
-                    return accumulator + currentValue.sum_of_admission;
-                }, 0));
+                console.log(joinArrays(response.data.diseases, mappingDiseases, 'disease_code'));
+                setSum_of_admission(joinArrays(response.data.diseases, mappingDiseases));
                 console.log(response.data.diseases.reduce((accumulator, currentValue) => {
                     return accumulator + currentValue.sum_of_admission;
                 }, 0))
@@ -132,8 +130,8 @@ const Disease = () => {
         fetchData();
     }, []);
 
-    const handleClick = (patientCode) => {
-        navigate(`detailpatient/${patientCode}`); // Assuming the URL pattern is '/patient/:patientCode'
+    const handleClick = (data) => {
+        navigate(`detaildisease/${data.disease_code}`, {state: {data: data}}); // Assuming the URL pattern is '/patient/:patientCode'
     };
 
     const [searchInput, setSearchInput] = useState('');

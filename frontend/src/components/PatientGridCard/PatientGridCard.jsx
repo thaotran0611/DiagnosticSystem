@@ -12,7 +12,7 @@ const PatientGridCard = (props) => {
     }
     const halfIndex = Math.ceil(keyValueList.length / 2);
     const handleClick = () => {
-        props.onClick(props.data.subject_id);
+        props.onClick(props.data);
     };
   return ( 
     <Card w={750} onClick={handleClick} height={250} 

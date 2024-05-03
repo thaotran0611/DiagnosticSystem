@@ -323,7 +323,7 @@ const MedicalTestTab = (props) => {
                         </div>
                     ))}
                     <Scrollspy style={{margin: '0', padding: '0'}} currentClassName="active" items={['end']}>
-                        <a style={{textDecoration: 'none'}} href="#end" ><Button id="end" onClick={addComponentChart}>Add Chart +</Button></a>
+                        <Button id="end" onClick={addComponentChart}>Add Chart +</Button>
                     </Scrollspy>
                     {/* <div id="end" /> Ref to the end of the components list */}
                     {/* <MedicalTestChart hadmID = {props.hadmID} medicaltestmanytime={medicaltestmanytime} typeofmedicaltestmanytime={typeofmedicaltestmanytime} expandMedicalTest={expandMedicalTest} expand={props.expand}/> */}

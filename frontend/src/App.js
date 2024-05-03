@@ -86,7 +86,7 @@ function App() {
         />
         )}
         {role == 'RESEARCHER' && (<Route 
-          path='/researcher/disease/detaildisease'
+          path='/researcher/disease/detaildisease/:diseaseCode'
           element={
             <DetailDisease />
           }
