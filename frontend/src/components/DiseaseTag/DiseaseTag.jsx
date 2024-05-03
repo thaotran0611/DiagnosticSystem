@@ -5,7 +5,7 @@ import DiseaseCard from "../DiseaseCard/DiseaseCard";
 import { GiMedicines } from "react-icons/gi";
 const DiseaseTag = ({data, medicine, sum_of_admission}) => {
     const handleClick = () => {
-        props.onClick(data.subject_id);
+        // props.onClick(data.subject_id);
     };
     return(
         <Card

@@ -107,7 +107,7 @@ export default function DiseaseTable(props) {
     props.setData(updatedData);  }
 
   const canSave = isDoctorAllowed(props.doctor);
-
+    console.log(canSave)
   
   useEffect(() => {
     if (canSave) {

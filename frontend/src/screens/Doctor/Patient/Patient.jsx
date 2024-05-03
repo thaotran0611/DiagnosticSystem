@@ -72,8 +72,8 @@ const Patient = () => {
         fetchData();
     }, []);
     
-    const handleClick = (patientCode) => {
-        navigate(`detailpatient/${patientCode}`, { state: { patient_Data: patientdata }} ); // Assuming the URL pattern is '/patient/:patientCode'
+    const handleClick = (data) => {
+        navigate(`detailpatient/${data.subject_id}`, { state: { patient_Data: data }} ); // Assuming the URL pattern is '/patient/:patientCode'
     };
 
     const [searchInput, setSearchInput] = useState('');

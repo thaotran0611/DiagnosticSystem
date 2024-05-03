@@ -58,58 +58,7 @@ const MedicalTestTab = (props) => {
         console.log(props.componentChart);
         props.setComponentChart(props.componentChart.filter((_, i) => i !== index));
     };
-    // const isUnique = (arr, item) => {
-    //     // Check if there's only one occurrence of this combination in the array
-    //     return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
-    //   };
 
-    // function sortByDatetimeAscending(a, b) {
-    //     const dateA = new Date(a.charttime);
-    //     const dateB = new Date(b.charttime);
-        
-    //     if (dateA < dateB) {
-    //         return -1;
-    //     }
-    //     if (dateA > dateB) {
-    //         return 1;
-    //     }
-    //     return 0;
-    // }
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await axios.get('http://localhost:8000/patients-detail-medicaltest', {
-    //                 params: {
-    //                     doctor_code: doctor_code,
-    //                     subject_id: subject_id
-    //                 }
-    //             });
-    //             setMedicalTest(response.data.medicaltest);
-    //             setMedicalTest1time(response.data.medicaltest.filter((item, index, array) => {
-    //                 return isUnique(array, item);
-    //               })
-    //             )
-    //             setMedicaltestmanytime(response.data.medicaltest.filter((item, index, array) => {
-    //                 return !isUnique(array, item);
-    //               }).sort(sortByDatetimeAscending)
-    //             )
-    //             setTypeofmedicaltest1time(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
-    //                 return isUnique(array, item);
-    //             }), item => `${item.hadm_id}-${item.fluid}`).map(image => ({hadm_id: image.hadm_id, fluid: image.fluid})))
-    //             setTypeofmedicaltestmanytime(_.uniqBy(response.data.medicaltest.filter((item, index, array) => {
-    //                 return !isUnique(array, item);
-    //             }), item => `${item.hadm_id}-${item.label}`).map(image => ({hadm_id: image.hadm_id, label: image.label})))
-    //             setLoadingMedicalTest(false);
-    //         } catch (error) {
-    //             setError(error);
-    //             setLoadingMedicalTest(false);
-    //         }
-    //     };
-    //     if (medicaltest.length === 0) {
-    //         fetchData();
-    //     }
-    //     }, [medicaltest, doctor_code, subject_id]);
     const [expandMedicalTest, setExpandMedicalTest] = useState(2);
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
@@ -323,7 +272,7 @@ const MedicalTestTab = (props) => {
                         </div>
                     ))}
                     <Scrollspy style={{margin: '0', padding: '0'}} currentClassName="active" items={['end']}>
-                        <a style={{textDecoration: 'none'}} href="#end" ><Button id="end" onClick={addComponentChart}>Add Chart +</Button></a>
+                        <Button id="end" onClick={addComponentChart}>Add Chart +</Button>
                     </Scrollspy>
                     {/* <div id="end" /> Ref to the end of the components list */}
                     {/* <MedicalTestChart hadmID = {props.hadmID} medicaltestmanytime={medicaltestmanytime} typeofmedicaltestmanytime={typeofmedicaltestmanytime} expandMedicalTest={expandMedicalTest} expand={props.expand}/> */}

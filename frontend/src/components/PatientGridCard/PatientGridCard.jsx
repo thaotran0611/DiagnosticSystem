@@ -5,14 +5,18 @@ import { Card, CardBody, StackDivider, Stack, Text,SimpleGrid, Spacer, Flex } fr
  
 const PatientGridCard = (props) => { 
     let keyValueList = []; // Initialize keyValueList as an empty array
+    const keysToExtract = ['Admission Time','Discharge Time','Insurance','Diagnosis', 'Ethnicity', 'Marital Status']; // List of keys to extract
+
     if (props.data !== null) {
-      keyValueList = Object.entries(props.data).slice(7).map(([key, value]) => {
+      keyValueList = Object.entries(props.data)
+                .filter(([key, value]) => keysToExtract.includes(key))
+                .map(([key, value]) => {
         return { key: key, value: value };
       });
     }
     const halfIndex = Math.ceil(keyValueList.length / 2);
     const handleClick = () => {
-        props.onClick(props.data.subject_id);
+        props.onClick(props.data);
     };
   return ( 
     <Card w={750} onClick={handleClick} height={250} 

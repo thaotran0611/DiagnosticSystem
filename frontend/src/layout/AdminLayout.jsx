@@ -1,4 +1,6 @@
 import React from "react";
+import axios from 'axios';
+
 import './DoctorLayout.css'
 import { Grid, GridItem } from "@chakra-ui/react";
 
@@ -12,6 +14,26 @@ import Sidebar from "../components/Sidebar/Sidebar";
 
 export const AdminLayout = ({children, path, expand, user}) => {
     const navigate = useNavigate();
+    const handleLogout = () => {
+        const sessionToken = sessionStorage.getItem('user')
+        ? JSON.parse(sessionStorage.getItem('user')).token
+        : '0';
+        console.log(sessionToken)
+        const url = 'http://localhost:8000/auth/logout'
+        sessionStorage.removeItem('user');
+        axios({
+            method: 'delete',
+            url: url,
+            data: { session_token: sessionToken },
+          })
+            .then((res) => {
+              console.log(res)
+            })
+            .catch((res) => {
+              console.log(res);
+            });
+        navigate('/login');
+    };
     return(
         <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0', overflow: 'auto'}}>
             <Grid
@@ -34,14 +56,14 @@ export const AdminLayout = ({children, path, expand, user}) => {
                         <GridItem colSpan={6} colStart={2}>
                             {path}
                         </GridItem>
-                        <GridItem colStart={18} colSpan={1} marginLeft={'auto'} marginRight={6}>
+                        {/* <GridItem colStart={18} colSpan={1} marginLeft={'auto'} marginRight={6}>
                                 <BellIcon cursor={'pointer'} marginTop={3} boxSize={'1.8em'} color={'#716F6F'}/>
-                        </GridItem>
+                        </GridItem> */}
                         <GridItem colSpan={1} colStart={19}>
                             <UserTag img={AccountCircleOutlinedIcon} name={'Dr.Kim'}/>
                         </GridItem>
                         <GridItem colSpan={1} colStart={20} marginLeft={'auto'} marginRight={6}>
-                            <Icon onClick={()=>{navigate('/login')}} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>
+                            <Icon onClick={handleLogout} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>
                         </GridItem>
                     </Grid>
                 </GridItem>

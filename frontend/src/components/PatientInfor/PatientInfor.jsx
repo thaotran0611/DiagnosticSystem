@@ -61,7 +61,7 @@ const PatientInfor = (data) => {
                 </Box>
           </Flex> 
 
-          <Center> {/* Centering the content horizontally */}
+          <Center> 
               <Stack direction="row" spacing="4" m='2'>
                   {diseaseList && diseaseList.length > 0 ? (
                       diseaseList.map((disease, index) => (

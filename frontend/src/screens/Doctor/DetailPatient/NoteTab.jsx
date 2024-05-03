@@ -26,7 +26,7 @@ const NoteTab = (props) => {
     const [selectedNote, setSelectedNote] = useState(props.note[0]); // PASS AS PARAMETER
     const handleRecordSelection = (record) => {
         setSelectedNote(record);
-        console.log('Selected Note:', record.text); // Add this line to log the selected note
+        console.log('Selected Note:', record.Text); // Add this line to log the selected note
     };
     const subject_id =  props.subject_id
 
@@ -98,8 +98,8 @@ const NoteTab = (props) => {
                 </Center>
             </GridItem>
             {expandNote === 3 ? null : <GridItem h={'100%'} position={'relative'} paddingTop={'4'}>
-                {selectedNote ? <Text fontSize={'20px'} fontWeight={500} color={'#3E36B0'}>{selectedNote.hadm_id} - {selectedNote.category} note</Text> : null }
-                {selectedNote ? <Textarea scr borderRadius={20} p={8} value={selectedNote.text} bg={'rgba(17,17,17,0.2)'} h={'90%'} resize={'none'} readOnly placeholder='Here is a sample placeholder' /> : null}
+                {selectedNote ? <Text fontSize={'20px'} fontWeight={500} color={'#3E36B0'}>{selectedNote['Admission ID']} - {selectedNote['Category']} note</Text> : null }
+                {selectedNote ? <Textarea scr borderRadius={20} p={8} value={selectedNote.Text} bg={'rgba(17,17,17,0.2)'} h={'90%'} resize={'none'} readOnly placeholder='Here is a sample placeholder' /> : null}
             </GridItem>}
         </Grid>
     )

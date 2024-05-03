@@ -8,7 +8,7 @@ metadata.reflect(bind=engine)
 
 USERS = sa.Table('users', metadata, autoload=True, autoload_with=engine)  
 DOCTOR = sa.Table('doctor', metadata, autoload=True, autoload_with=engine) 
-ADMINISTRATOR = sa.Table('aministrator', metadata, autoload=True, autoload_with=engine)  
+ADMINISTRATOR = sa.Table('administrator', metadata, autoload=True, autoload_with=engine)  
 ANALYST = sa.Table('analyst', metadata, autoload=True, autoload_with=engine) 
 RESEARCHER = sa.Table('researcher', metadata, autoload=True, autoload_with=engine)  
 ACTION = sa.Table('action', metadata, autoload=True, autoload_with=engine)  

@@ -2,6 +2,7 @@ import { AbsoluteCenter, Box, Card, CardBody, CardFooter, CardHeader, Flex, HSta
 import React from "react";
 import AIlogo from '../../img/Analyst/AIlogo.png'
 
+
 const Tag = ({data}) => {
     return(
         <Card
@@ -26,8 +27,8 @@ const Tag = ({data}) => {
                 <Text fontSize={'24px'} fontWeight={'600'}>{data.name}</Text>
 
                 <Text py='2' color={'rgba(0,0,0,0.3)'} fontWeight={'500'}>
-                    {data.quantity ? data.quantity + ' diseases' : 
-                    data.online ? data.online + ' / ' + data.total + 'online': null }
+                    {data.quantity !== null && data.quantity !== undefined ? data.quantity + ' diseases' : 
+                    data.online !== null && data.online !== undefined ? data.online + ' / ' + data.total + ' online' : null}
                 </Text>
                 </CardBody>
 

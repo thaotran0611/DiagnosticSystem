@@ -49,7 +49,8 @@ const LoginPage = ({ setLoggedIn }) => {
                 mail: res.data.user.mail,
                 name: res.data.user.name,
                 username: res.data.user.username,
-                role: res.data.user.role
+                role: res.data.user.role,
+                token: res.data.user.token
               };
               sessionStorage.setItem('user', JSON.stringify(dataResponse));
             })

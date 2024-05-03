@@ -315,7 +315,7 @@ const DetailPatient = (props) => {
                         {!expand?
                         <GridItem area={'note'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <Note loading ={loadingNote} pageSize={3} data={note} type={"patient-note"} subject_id={patientCode}/>
+                                <Note loading ={loadingNote} pageSize={3} setNote={setNote} data={note} type={"patient-note"} subject_id={patientCode}/>
                             </ScaleFade>
                         </GridItem>: null }
                         <GridItem area={'divider'}>
@@ -365,7 +365,7 @@ const DetailPatient = (props) => {
                         </Select>
                     </GridItem>
                 </Grid>
-                    <Tabs isFitted variant='enclosed' size={'md'} height={'94%'}>
+                    <Tabs isFitted variant='enclosed' size={'md'} height={'100%'}>
                         <TabList>
                             <Tab fontWeight={'bold'} key={1} onClick={() => setActiveTab("General")}>General</Tab>
                             <Tab fontWeight={'bold'} key={2} onClick={() => setActiveTab("MedicalTest")}>Medical Test</Tab>

@@ -1,4 +1,6 @@
 import React from "react";
+import axios from 'axios';
+
 import './ResearcherLayout.css'
 import { Grid, GridItem } from "@chakra-ui/react";
 
@@ -13,7 +15,23 @@ import Sidebar from "../components/Sidebar/Sidebar";
 export const ResearcherLayout = ({children, path, expand, disease, name}) => {
     const navigate = useNavigate();
     const handleLogout = () => {
+        const sessionToken = sessionStorage.getItem('user')
+        ? JSON.parse(sessionStorage.getItem('user')).token
+        : '0';
+        console.log(sessionToken)
+        const url = 'http://localhost:8000/auth/logout'
         sessionStorage.removeItem('user');
+        axios({
+            method: 'delete',
+            url: url,
+            data: { session_token: sessionToken },
+          })
+            .then((res) => {
+              console.log(res)
+            })
+            .catch((res) => {
+              console.log(res);
+            });
         navigate('/login');
     };
     return(

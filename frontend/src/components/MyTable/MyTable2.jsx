@@ -110,16 +110,15 @@ export default function MyTable2(props) {
               )
               if (selectedRowData.length > 0) {
                 props.onSelect(selectedRowData[0])
+                console.log(selectedRowData[0])
               }
-              // console.log(selectedRowData);
-              // console.log(selectedIDs)
+              
             }}
             getRowClassName={(params) =>
               params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
             }
             slots={{ toolbar: GridToolbar }} 
             hideFooter
-            className="striped-table" 
             />
             <Flex justifyContent="flex-end" alignItems="center" marginTop={3} marginBottom={2}>
               <Spacer/>

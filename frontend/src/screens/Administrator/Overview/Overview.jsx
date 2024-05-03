@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import OveralTag from "../../../components/OveralTag/OveralTag";
 import Note from "../../../components/Note/Note";
 import PatientList from "../../../components/PatientList/PatientList";
-import { Center, SimpleGrid } from "@chakra-ui/react";
+import { Center, SimpleGrid , Spinner} from "@chakra-ui/react";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -28,6 +29,54 @@ import AdminLogo from "../../../img/Admin/AdminLogo.png"
 const theme = createTheme();
 const OverviewAdmin = () => {
     const navigate = useNavigate();
+    const admin_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    const admin_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '0';
+    const [note, setNote] = useState([]);
+    const [loadingNote, setLoadingNote] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/self-notes', {
+                    params: {
+                        user_code: admin_code
+                    }
+                });
+                // console.log(response)
+                setNote(response.data.data);
+                setLoadingNote(false);
+            } catch (error) {
+                setError(error);
+                setLoadingNote(false);
+            }
+        };
+    
+        fetchData();
+    }, []);
+
+    const [loginUser, setLoginUser] = useState([]);
+    const [loadingLoginUser, setLoadingLoginUser] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/currentLogin');
+                setLoginUser(response.data.result);
+                setLoadingLoginUser(false);
+                console.log(loginUser)
+            } catch (error) {
+                setError(error);
+                setLoadingLoginUser(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+
     const generalTag = [
         {
             img: DoctorLogo,
@@ -61,7 +110,7 @@ const OverviewAdmin = () => {
     const [pageSize, setPageSize] = useState(4);
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const slicedData = generalTag.slice(startIndex, endIndex);
+    const slicedData = loginUser.slice(startIndex, endIndex);
     return(
         <AdminLayout path={
             <Breadcrumb fontSize="xl">
@@ -82,19 +131,26 @@ const OverviewAdmin = () => {
                                 <OveralTag title = "Number of patients" value = "10567"/>
                             </Center> */}
                             <ThemeProvider theme={theme}>
+                            
                                 <Grid h={'80%'} gridTemplateColumns={'48% 48%'} gridTemplateRows={'48% 48%'} gap={4}>
-                                    {
+                                    {loadingLoginUser ? (
+                                            <GridItem>
+                                                <Center h={'100%'}>
+                                                    <Spinner size="xl" />
+                                                </Center>
+                                            </GridItem>
+                                    ) : (
                                         slicedData.map(infor => (
                                             <GridItem>
                                                 <Tag data={infor}/>
                                             </GridItem>
                                         ))
-                                    }
+                                    )}
                                 </Grid>
 
                                 <Center marginTop={6}>
                                     <MyPagination
-                                        count={Math.ceil(generalTag.length / pageSize)}
+                                        count={Math.ceil(loginUser.length / pageSize)}
                                         page={page}
                                         onChange={handleChangePage}
                                     />
@@ -107,7 +163,7 @@ const OverviewAdmin = () => {
                         </GridItem>
                         <GridItem bg={'#fff'} margin={1} p={1} borderRadius={'20px'} area={'note'} position={'relative'}>
                             <Center position={'relative'} height={'100%'}>
-                                <Note pageSize='2'/>
+                                <Note loading ={loadingNote} pageSize={2} setNote={setNote} data={note} type={"self-note"} subject_id={""} />
                             </Center>
                         </GridItem>
                         <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
