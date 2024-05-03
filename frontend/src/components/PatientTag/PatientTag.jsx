@@ -7,10 +7,11 @@ import { Grid, GridItem, Spinner} from '@chakra-ui/react'
 
 const PatientTag = (props) => { 
     let patientDataList = [];
-    const keysToExtract = ['Gender','Ethnicity','Date of Birth','Marital Status','Admission Time','Discharge Time']; // List of keys to extract
+    console.log(props.data)
+    // const keysToExtract = ['Gender','Ethnicity','Date of Birth','Marital Status','Admission Time','Discharge Time']; // List of keys to extract
     if (props.data) {
         patientDataList = Object.entries(props.data)
-        .filter(([key, value]) => keysToExtract.includes(key))
+        .filter(([key, value]) => props.keysToExtract.includes(key))
         .flatMap(([key, value]) => ({ key, value }));
     }
     // if (props.data && props.data.length > 0) {
@@ -30,7 +31,7 @@ const PatientTag = (props) => {
                                     <Box position={'relative'} borderRadius={'50%'} width={'80px'} height={'80px'} bg={'rgba(166,222,247,0.4)'}>
                                         <AbsoluteCenter>
                                             {props.patient ? 
-                                            <Text color={'#A6DEF7'} fontWeight={'medium'} fontSize={'40px'}>10</Text>
+                                            <Text color={'#A6DEF7'} fontWeight={'medium'} fontSize={'40px'}>{props.data.subject_id}</Text>
                                             : props.disease ?
                                             <DiseaseCard text={props.type} hidden={true}/> 
                                             : props.medicine ? 
@@ -52,8 +53,8 @@ const PatientTag = (props) => {
             <div> 
             <CardBody paddingTop={2}>
                 <Center marginTop={4} marginBottom={1}>
-                    <Text fontWeight={'500'} fontSize={'22px'}>{props.data.subject_id} - </Text>
-                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.data.name}</Text>
+                    <Text fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.subject_id : props.disease ? props.data.disease_code : null} - </Text>
+                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.name : props.disease ? props.data.disease_name : null}</Text>
                 </Center>
                 <SimpleGrid columns={3} spacing={2} gridTemplateColumns={'48% 4% 48%'}>
                     <SimpleGrid columns={2} spacing={1}>

@@ -32,6 +32,11 @@ const theme = createTheme();
 
 const DetailPatient = (props) => {
     const location = useLocation();
+    if (!location || !location.state || !location.state.patient_Data) {
+        // Handle the case where location or location.state or location.state.patient_Data is null
+        console.error("Location state or patient data is null.");
+        // return null; // Or render some fallback UI
+    }
     const { patient_Data } = location.state;
     console.log("Navigate data")
     console.log(patient_Data)
@@ -278,6 +283,7 @@ const DetailPatient = (props) => {
         setPageSizeGeneral(pageSizeGeneral*6/4);
         setPageSizeMedicalTest(pageSizeMedicalTest*6/4);
     };
+    const keysToExtract = ['Gender','Ethnicity','Date of Birth','Marital Status','Admission Time','Discharge Time'];
     
 
     return(
@@ -308,7 +314,7 @@ const DetailPatient = (props) => {
                         {!expand?
                         <GridItem position={'relative'} area={'information'} marginTop={'8%'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <PatientTag data={patient_Data} loading={false}/>
+                                <PatientTag patient={true} data={patient_Data} loading={false} keysToExtract = {keysToExtract}/>
                             </ScaleFade>
                         </GridItem> : null }
 

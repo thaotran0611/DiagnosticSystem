@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
@@ -8,7 +8,7 @@ import {
     BreadcrumbLink,
     BreadcrumbSeparator,
   } from '@chakra-ui/react'
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Text } from '@chakra-ui/react'
 import Note from "../../../components/Note/Note";
@@ -20,10 +20,22 @@ import ClinicalSignTab from "./ClinicalSignTab";
 import GeneralTab from "./GeneralTab";
 import { ResearcherLayout } from "../../../layout/ResearcherLayout";
 import OtherDiseaseTab from "./OtherDiseaseTab";
+import axios from "axios";
 
 const theme = createTheme();
 
 const DetailDisease = (props) => {
+    const location = useLocation();
+    const disease = location.state.data;
+    console.log(location.state);
+    const researcher_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    const researcher_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '';
+    const { diseaseCode } = useParams();
+    console.log(diseaseCode);
     const navigate=useNavigate();
     const [expand, setExpand] = useState(false);
     const data = [ 
@@ -45,11 +57,46 @@ const DetailDisease = (props) => {
     
     const [pageSizeGeneral, setPageSizeGeneral] = useState(4);
     const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
+    const keysToExtract = ['disease_code', 'sum_of_admission', 'sum_of_male', 'sum_of_female', 'disease_name']
+    const [diseaseStatistic, setDiseaseStatistic] = useState([]);
+    const [error, setError] = useState(null);
+    const [loadingDisease, setLoadingDisease] = useState(true);
+    const calculateYearDifference = (date1, date2) => {
+        const year1 = new Date(date1).getFullYear();
+        const year2 = new Date(date2).getFullYear();
+        return year1 - year2;
+      };
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/detaildisease-general', {
+                    params: {
+                        disease_code: diseaseCode
+                    }
+                });
+                setDiseaseStatistic(response.data.disease.map(item => ({
+                    ...item,
+                    yearold: calculateYearDifference(item.dod, item.dob)
+                })));
+                console.log(response.data.disease.map(item => ({
+                    ...item,
+                    yearold: calculateYearDifference(item.dod, item.dob)
+                })));
+                setLoadingDisease(false);
+            } catch (error) {
+                setError(error);
+                setLoadingDisease(false);
+            }
+        };
+        if (diseaseStatistic.length == 0){
+            fetchData();
+        }
+    }, []);
     return(
         <ResearcherLayout path={
                 <Breadcrumb>
                     <BreadcrumbItem>
-                        <BreadcrumbLink href='./'>Disease</BreadcrumbLink>
+                        <BreadcrumbLink href='../'>Disease</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem isCurrentPage>
                         <BreadcrumbLink href="#">10</BreadcrumbLink>
@@ -73,14 +120,14 @@ const DetailDisease = (props) => {
                         {!expand?
                         <GridItem position={'relative'} area={'information'} marginTop={'8%'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <PatientTag disease = {true} type={"Lungs"} data={data} name='Lung Disease' id='1200 patients'/>
+                                <PatientTag disease = {true} type={"Lungs"} data={disease} name='Lung Disease' id='1200 patients' keysToExtract={keysToExtract}/>
                             </ScaleFade>
                         </GridItem> : null }
 
                         {!expand?
                         <GridItem area={'note'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <Note pageSize='3'/>
+                                {/* <Note pageSize='3'/> */}
                             </ScaleFade>
                         </GridItem>: null }
                         <GridItem area={'divider'}>
@@ -118,7 +165,7 @@ const DetailDisease = (props) => {
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'} w={'100%'} position={'relative'}>
-                                <GeneralTab expand={expand}/>
+                                <GeneralTab expand={expand} diseaseStatistic={diseaseStatistic}/>
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
                                 <OtherDiseaseTab/>

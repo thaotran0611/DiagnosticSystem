@@ -861,15 +861,9 @@ async def get_patients_detail_medicaltest(researcher_code, db=Depends(get_db)) -
     df = pd.DataFrame(db.execute(stmt).fetchall())
 
     if len(df)>0:
-        # df['value'] = df['value'].apply(lambda x: str(x))
-
-        # transform_timestamp(df,['DOB', 'DOD', 'DOD_HOSP', 'SSN'])
-        # transform_date(df,['chartdate'])
         result = df.to_dict(orient='records')
-        # print(result)
     else:
         result = []
-    # print(result)
     return JSONResponse(content={"diseases": result})
 
 @app.get("/researcher-overview-drug", response_model=dict, tags=["root"])
@@ -1071,6 +1065,44 @@ async def update_annotate(data:dict, db=Depends(get_db)) -> dict:
         cursor.close()
 
     return JSONResponse(content={"result": "successfully"})
+
+@app.get("/detaildisease-general", response_model=dict, tags=["root"])
+async def detail_disease_general(disease_code='AA', db=Depends(get_db)) -> dict:
+    subquery = sa.select(
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.hadm_id,
+        sa.func.max(ANNOTATE.columns.time).label('max_time')
+    ).where(
+        ANNOTATE.columns.value == 1
+    ).group_by(
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.hadm_id
+    ).alias("subquery")
+
+    stmt = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,
+        subquery.columns.disease_code,
+        DISEASE.columns.name,
+        PATIENTS_CHECKED.columns.gender,
+        ADMISSIONS_CHECKED.columns.marital_status,
+        ADMISSIONS_CHECKED.columns.religion,
+        ADMISSIONS_CHECKED.columns.ethnicity,
+        PATIENTS_CHECKED.columns.dob,
+        PATIENTS_CHECKED.columns.dod,
+        # (sa.func.extract('year', PATIENTS_CHECKED.columns.dod) - sa.func.extract('year', PATIENTS_CHECKED.columns.dob)).label('age_of_death')
+    )\
+    .select_from(sa.join(sa.join(sa.join(subquery, DISEASE, subquery.columns.disease_code == DISEASE.columns.disease_code), ADMISSIONS_CHECKED, ADMISSIONS_CHECKED.columns.hadm_id == subquery.columns.hadm_id), PATIENTS_CHECKED, PATIENTS_CHECKED.columns.subject_id == ADMISSIONS_CHECKED.columns.subject_id))\
+    .where(subquery.columns.disease_code == disease_code) \
+    .order_by(ADMISSIONS_CHECKED.columns.hadm_id)
+
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        transform_timestamp(df,['dob', 'dod'])
+        result = df.to_dict(orient='records')
+    else:
+        result = []
+    return JSONResponse(content={"disease": result})
+
 
  
 

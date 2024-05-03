@@ -14,13 +14,13 @@ const OtherDiseaseTab = (props) => {
             {expandOtherDiseases === 1 ? null :
                 <GridItem h={'100%'} position={'relative'}>
                     <Grid gridTemplateColumns={'50% 50%'} h={'100%'} position={'relative'}>
-                        <GridItem h={'100%'} position={'relative'} overflow={'auto'}>
+                        <GridItem h={'95%'} position={'relative'} overflow={'auto'}>
                             <Box h={'92%'} overflow={'auto'} position={'relative'}>
                                 <PieChart />
                             </Box>
                         </GridItem>
                         <GridItem h={'100%'}>
-                            <MyTable2 height={expandOtherDiseases === 2 ? '300px' : '600px'}/>
+                            <MyTable2 height={expandOtherDiseases === 2 ? '250px' : '600px'}/>
                         </GridItem>
                     </Grid>
                 </GridItem>
@@ -54,13 +54,13 @@ const OtherDiseaseTab = (props) => {
                 </Center>
             </GridItem>
             {expandOtherDiseases === 3 ? null :
-                <GridItem h={'100%'} position={'relative'}>
+                <GridItem h={'95%'} position={'relative'}>
                     <Grid gridTemplateColumns={'50% 50%'} h={'100%'}>
                         <GridItem h={'100%'} position={'relative'} overflow={'auto'}>
                             <AreaChart/>
                         </GridItem>
                         <GridItem h={'100%'}>
-                            <MyTable2 height={expandOtherDiseases === 2 ? '300px' : '600px'}/>
+                            <MyTable2 height={expandOtherDiseases === 2 ? '250px' : '600px'}/>
                         </GridItem>
                     </Grid>
                 </GridItem>
