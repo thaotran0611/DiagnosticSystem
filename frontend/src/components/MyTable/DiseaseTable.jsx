@@ -3,6 +3,7 @@ import { Table, Thead, Tbody, Tr, Th, Td, Box, Button, Text, Center, Flex } from
 import DiseaseCard from '../DiseaseCard/DiseaseCard';
 import DiseaseNote from './DiseaseNote';
 import { format } from "date-fns";
+import {log} from '../../functions'
 
 export default function DiseaseTable(props) {
   const [diagnoses, setDiagnoses] = useState({}); // Declaration of setDiagnoses
@@ -81,11 +82,11 @@ export default function DiseaseTable(props) {
     })
     .then(response => {
         if (response.ok) {
-            console.log('Data saved successfully.');
-            // Optionally, you can handle success actions here
+            var log_data = response.data.log;
+            log_data['result'] = 1 ;
+            log(log_data);
         } else {
             console.error('Failed to save data.');
-            // Optionally, you can handle error actions here
         }
     })
     .catch(error => {
@@ -141,7 +142,7 @@ export default function DiseaseTable(props) {
               <Td width="20%" textAlign="center">
                 {isDoctorAllowed(props.doctor) ? (
                   <select value={renderDiagnose(record.value)} onChange={(e) => handleDiagnosisChange(idx, e.target.value)}>
-                    <option value="Pending">Pending</option>
+                    <option value="Pending">Unknown</option>
                     <option value="Positive">Positive</option>
                     <option value="Negative">Negative</option>
                   </select>
@@ -151,7 +152,7 @@ export default function DiseaseTable(props) {
               </Td>
               <Td width="35%">
                 {isDoctorAllowed(props.doctor) ? ( // Render text input if doctor has permission
-                  <DiseaseNote idx={idx} note={record.note} onSave={handleTextChange}/>
+                  <DiseaseNote idx={idx} note={record.note} time={record.time} onSave={handleTextChange}/>
                   // <textarea
                   //   type="text"
                   //   value={record.note || ''} // Assuming record has a 'text' property

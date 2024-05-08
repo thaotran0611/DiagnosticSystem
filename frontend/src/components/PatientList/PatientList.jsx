@@ -97,7 +97,7 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
         </Stack>
       </Flex>
       
-      <Box p={5} maxHeight="330px" overflowY="auto" style={{
+      <Box p={5} maxHeight="400px" overflowY="auto" style={{
             scrollbarWidth: 'thin', 
             scrollbarColor: '#A0AEC0 #ffffff', 
           }}>
@@ -119,10 +119,6 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
           onChange={handleChangePage}
         />
       </Center>
-  
-      
-
-        
     </ThemeProvider>
   );
 };

@@ -26,6 +26,8 @@ import { useParams } from 'react-router-dom';
 import { Select } from '@chakra-ui/react'
 import _ from "lodash";
 import { useLocation } from 'react-router-dom';
+import {log} from '../../../functions';
+import { format } from 'date-fns'
 
 const theme = createTheme();
 
@@ -156,6 +158,15 @@ const DetailPatient = (props) => {
                 setLoadingProcedure(false);
             }
         };
+        if (activeTab === "Procedure"){
+            var log_data = {
+                'user_code': doctor_code,
+                'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                'action': 'View Procedure of Patient',
+                'related_item': 'Patient ' + patientCode
+            }
+            log(log_data);
+        }
         if (procedure.length === 0 && activeTab === "Procedure") {
             fetchData();
         }
@@ -180,6 +191,15 @@ const DetailPatient = (props) => {
                 setLoadingPrescription(false);
             }
         };
+        if (activeTab === "Prescription"){
+            var log_data = {
+                'user_code': doctor_code,
+                'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                'action': 'View Prescription of Patient',
+                'related_item': 'Patient ' + patientCode
+              }
+            log(log_data);
+        }
         if (Prescription.length === 0  && activeTab === "Prescription") {
             fetchData();
         }    
@@ -205,8 +225,18 @@ const DetailPatient = (props) => {
                 setLoadingNoteEvent(false);
             }
         };
+        if (activeTab === "Note"){
+            var log_data = {
+                'user_code': doctor_code,
+                'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                'action': 'View NoteEvent of Patient',
+                'related_item': 'Patient ' + patientCode
+              }
+            log(log_data);
+        }
         if (note_event.length === 0 && activeTab === "Note") {
             fetchData();
+            
         }
     }, [activeTab]);
 
@@ -264,6 +294,15 @@ const DetailPatient = (props) => {
                 setLoadingMedicalTest(false);
             }
         };
+        if (activeTab === "MedicalTest"){
+            var log_data = {
+                'user_code': doctor_code,
+                'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                'action': 'View MedicalTest of Patient',
+                'related_item': 'Patient ' + patientCode
+              }
+            log(log_data);
+        }
         if (medicaltest.length === 0 && activeTab === "MedicalTest") {
             fetchData();
         }

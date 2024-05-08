@@ -13,8 +13,10 @@ import {
   from 'mdb-react-ui-kit';
 import { useNavigate } from "react-router-dom";
 import { Button } from "@chakra-ui/react";
+import {log} from '../../functions';
+import { format } from 'date-fns'
 
-const LoginPage = ({ setLoggedIn }) => {
+const LoginPage = ({ setLoggedIn, setRole }) => {
     const navigate = useNavigate();
 
     // Define state variables for username and password
@@ -52,7 +54,15 @@ const LoginPage = ({ setLoggedIn }) => {
                 role: res.data.user.role,
                 token: res.data.user.token
               };
+              var log_data = {
+                'user_code':  res.data.user.code,
+                'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                'action': 'Login',
+                'related_item': ''
+              }
+              log(log_data);
               sessionStorage.setItem('user', JSON.stringify(dataResponse));
+              setRole(res.data.user.role);
             })
             .then(() => {
               setLoggedIn(true);
@@ -60,10 +70,11 @@ const LoginPage = ({ setLoggedIn }) => {
             })
             .catch((res) => {
               console.log(res);
-              // setOpen(true);
-            });    }
+              setIsLoading(false);
+              alert("Invalid username or password. Please try again."); // Display alert
 
-
+            });    
+          }
     return(
         <div className="bg-contain">
             <div className="login-contain">
@@ -93,7 +104,7 @@ const LoginPage = ({ setLoggedIn }) => {
                     />
 
                     <div className="d-flex justify-content-between mx-3 mb-4">
-                        <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' />
+                        {/* <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Remember me' /> */}
                         <a href="!#">Forgot password?</a>
                     </div>
                     <Button

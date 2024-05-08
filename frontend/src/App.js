@@ -26,9 +26,12 @@ import Schedule from './screens/Administrator/Schedule/Schedule';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  var role = '';
-  if (sessionStorage.getItem('user')) {
-      role = JSON.parse(sessionStorage.getItem('user')).role;
+  const [roles, setRole] = useState('')
+  var role = ''
+  if(sessionStorage.getItem('user')){
+    role = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).role
+    : '0';
   }
   return (
     <Box>
@@ -42,9 +45,15 @@ function App() {
         <Route
           path="/login"
           element={
-            <LoginPage setLoggedIn={setLoggedIn}/>
+            <LoginPage setLoggedIn={setLoggedIn} setRole={setRole}/>
           }
         />
+        {role == 'RESEARCHER' && (<Route 
+          path='/overview'
+          element={
+            <OverviewResearcher/>
+          }
+        /> )}
         {role == 'DOCTOR' && (<Route 
           path='/overview'
           element={
@@ -72,12 +81,7 @@ function App() {
           }
         />
         )}
-        {role == 'RESEARCHER' && (<Route 
-          path='/overview'
-          element={
-            <OverviewResearcher/>
-          }
-        /> )}
+        
         {role == 'RESEARCHER' && (<Route 
           path='/researcher/disease'
           element={
@@ -133,7 +137,7 @@ function App() {
           }
         />)}
         {role == 'ADMINISTRATOR' && (<Route
-          path='/admin/users/detailuser'
+          path='/admin/users/detailuser/:userCode'
           element={
             <DetailUser/>
           }

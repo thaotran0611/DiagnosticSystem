@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
@@ -24,11 +25,77 @@ import GeneralTab from "../../Doctor/DetailPatient/GeneralTab";
 import { AdminLayout } from "../../../layout/AdminLayout";
 import MyTable2 from "../../../components/MyTable/MyTable2";
 import { AreaChart } from "../../../components/Chart/AreaChart";
+import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const theme = createTheme();
 
 const DetailUser = (props) => {
     const navigate=useNavigate();
+    const { userCode } = useParams();
+
+    const location = useLocation();
+    if (!location || !location.state || !location.state.patient_Data) {
+        // Handle the case where location or location.state or location.state.patient_Data is null
+        console.error("Location state or patient data is null.");
+        // return null; // Or render some fallback UI
+    }
+    const { selectedUser } = location.state;
+    const admin_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    const keysToExtract = ['code','name','gender','role'];
+
+
+    const [note, setNote] = useState([])
+    const [loadingNote, setLoadingNote] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/user-notes', {
+                    params: {
+                        admin_code: admin_code,
+                        user_code: userCode
+                    }
+                });
+                // console.log(response)
+                setNote(response.data.note);
+                setLoadingNote(false);
+            } catch (error) {
+                setError(error);
+                setLoadingNote(false);
+            }
+        };
+        fetchData();
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
+    }, []);
+
+    const [actionLog, setActionLog] = useState([])
+    const [loadingActionLog, setLoadingActionLog] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/detail-user-action-log', {
+                    params: {
+                        user_code: userCode
+                    }
+                });
+                // console.log(response)
+                setActionLog(response.data.note);
+                setLoadingActionLog(false);
+            } catch (error) {
+                setError(error);
+                setLoadingActionLog(false);
+            }
+        };
+        fetchData();
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
+    }, []);
+
     const [expand, setExpand] = useState(false);
     const data = [ 
         { key: 'Role', value: 'Doctor' }, 
@@ -72,14 +139,14 @@ const DetailUser = (props) => {
                         {!expand?
                         <GridItem position={'relative'} area={'information'} marginTop={'8%'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <PatientTag data={data} name='Dr.Kim' id='511'/>
+                                <PatientTag patient={true} data={selectedUser} loading={false} keysToExtract = {keysToExtract}/>
                             </ScaleFade>
                         </GridItem> : null }
 
                         {!expand?
                         <GridItem area={'note'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <Note pageSize='3'/>
+                                <Note loading ={loadingNote} pageSize={3} setNote={setNote} data={note} type={"user-note"} subject_id='' user_code={userCode}/>
                             </ScaleFade>
                         </GridItem>: null }
                         <GridItem area={'divider'}>
@@ -147,7 +214,7 @@ const DetailUser = (props) => {
                         </GridItem>
                         {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'8'}>
                             <Box h={'100%'}>
-                                <MyTable2 height={expandGeneral === 1 ? '620px': '330px'} width={expand ? '1700px' : '1100px'}/>
+                                <MyTable2 data={actionLog} height={expandGeneral === 1 ? '620px': '330px'} width={expand ? '1700px' : '1100px'}/>
                             </Box>
                             </GridItem>}
                     </Grid>

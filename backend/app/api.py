@@ -96,6 +96,11 @@ def transform_date(df,col_list):
     for col in col_list:
         # df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if x is not None else None)
         df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d') if x is not None else None)
+        
+def transform_time(df,col_list):
+    for col in col_list:
+        # df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if x is not None else None)
+        df[col] = df[col].apply(lambda x: x.strftime('%H:%M:%S') if x is not None else None)
 
 
 def generate_random_string(length):
@@ -127,12 +132,13 @@ async def login(data: dict, db=Depends(get_db)) -> dict:
                 response[0]['role'] = user
                 response[0]['token'] = session_token
                 active_sessions[user][session_token] = {"user_info": response[0]}
-                print(response[0])
+                # print(response[0])
                 break
         return JSONResponse(content={"user":response[0]})
         # result = pd.DataFrame(db.execute(query).fetchall())
     else:
-        pass
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
 
 @app.delete("/auth/logout", tags=["root"])
 async def logout(data: dict, db=Depends(get_db)):
@@ -150,20 +156,20 @@ async def logout(data: dict, db=Depends(get_db)):
 
 @app.get("/currentLogin", tags=["root"])
 async def currentLogin(db=Depends(get_db)) -> dict:
-    img = {"DOCTOR": '../../../img/Admin/DoctorLogo.png', "RESEARCHER": '../../../img/Admin/ResearcherLogo.png', "ADMINISTRATOR": '../../../img/Admin/AnalystLogo.png'
-           , "ANALYST": '../../../img/Admin/AnalystLogo.png'}
+    # img = {"DOCTOR": '../../../img/Admin/DoctorLogo.png', "RESEARCHER": '../../../img/Admin/ResearcherLogo.png', "ADMINISTRATOR": '../../../img/Admin/AnalystLogo.png'
+    #        , "ANALYST": '../../../img/Admin/AnalystLogo.png'}
 
     current_login = []
     for key in active_sessions.keys():
         record = {}
-        record['img'] = img[key]
+        # record['img'] = img[key]
         record['online'] = len(active_sessions[key])
         query = eval(key).select()
         result = pd.DataFrame(db.execute(query).fetchall())
         record['total'] = len(result)
         record['name'] = key
         current_login.append(record)
-    print(current_login)
+    # print(current_login)
     return JSONResponse(content={"result": current_login})
 
     
@@ -286,11 +292,19 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
     ) 
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df) == 0:
+        columns = db.execute(stmt).keys()
+        df = pd.DataFrame(columns=columns)
+
     df2 = pd.DataFrame(db.execute(stmt2).fetchall())
+    if len(df2) == 0:
+        columns = db.execute(stmt2).keys()
+        df2 = pd.DataFrame(columns=columns)
+        
     df2 = df2.groupby('hadm_id')['disease_code'].agg(lambda x: ','.join(x)).reset_index()
     df_result = pd.merge(df,df2, how="left", on=["hadm_id","hadm_id"])
     print(df_result)
-    print(df)
+    # print(df)
 
     # end = time.time()
     # print(end-start)
@@ -323,213 +337,269 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
         result = []
     return JSONResponse(content={"data": result, "genderData":gender_data})
 
-@app.post("/insert-self-note", tags=["root"])
-async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
-    # print(data)
-    # note_id = generate_random_string(random.randint(4, 9))
-    note_id = data.get('note_id')
-    priority = data.get("priority")
-    title = data.get("title")
-    content = data.get("content")
-    created_at = data.get("created_at")
-    user_code = data.get("user_code")
-    
-    insert_query_hive = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-    insert_query_mysql = """INSERT INTO transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-    
-    if select_db == 'hive':
-        insert_query = insert_query_hive
-        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-    else:
-        insert_query = insert_query_mysql
-        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-        conn = engine.connect().connection
-    
-    cursor = conn.cursor()
-
-    # Define data to be inserted
-    data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
-
-    # Execute INSERT statement
-    cursor.execute(insert_query, data)
-
-    # Commit transaction
-    conn.commit()
-
-    # Close cursor and connection
-    cursor.close()
-    conn.close()
-
-    return {"message": "Note inserted successfully"}
-
-@app.post("/update-self-note", tags=["root"])
-async def update_self_note(data:dict, db=Depends(get_db)) -> dict:
-    # print(data)
-    note_id = data.get("note_id")
-    priority = data.get("priority")
-    title = data.get("title")
-    content = data.get("content")
-    created_at = data.get("created_at")
-    user_code = data.get("user_code")
-    
-    insert_query_hive = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-    insert_query_mysql = """INSERT INTO transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-
-    # Define data to be inserted
-    
-    if select_db == 'hive':
-        insert_query = insert_query_hive
-        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-    else:
-        insert_query = insert_query_mysql
-        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-        conn = engine.connect().connection
-    
-    cursor = conn.cursor()
-    
-    update_query = """UPDATE transactional_note SET active = 0 WHERE note_id = %s"""
-    cursor.execute(update_query, (note_id,))
-    conn.commit()
-    
-    data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
-    cursor.execute(insert_query, data)
-    conn.commit()
-
-    # Close cursor and connection
-    cursor.close()
-    conn.close()
-
-    return {"message": "Note inserted successfully"}
-
-@app.post("/delete-self-note", tags=["root"])
-async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
-    # print(data)
-    note_id = data.get("note_id")
-    
-    if select_db == 'hive':
-        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-    else:
-        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-        conn = engine.connect().connection
-    cursor = conn.cursor()
-    delete_query = """DELETE FROM transactional_note WHERE note_id = %s"""
-
-    # Execute the delete query with the parameter
-    cursor.execute(delete_query, (note_id,))
-
-    # Commit the transaction
-    conn.commit()
-
-    # Close cursor and connection
-    cursor.close()
-    conn.close()
-
-    return {"message": "Note inserted successfully"}
-
-@app.post("/insert-patient-note", tags=["root"])
-async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
-    print("Insert Patient Note: ", data)
-    # note_id = generate_random_string(random.randint(4, 9))
-    note_id = data.get('note_id')
-    priority = data.get("priority")
-    title = data.get("title")
-    content = data.get("content")
-    created_at = data.get("created_at")
-    user_code = data.get("user_code")
-    subject_id = data.get("subject_id")
-
-    insert_query_hive = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-    insert_query_mysql = """INSERT INTO transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-    
-    if select_db == 'hive':
-        insert_query = insert_query_hive
-        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-    else:
-        insert_query = insert_query_mysql
-        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-        conn = engine.connect().connection
-    
-    cursor = conn.cursor()
-
-    # Define data to be inserted
-    data_insert = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
-    # Execute INSERT statement
-    cursor.execute(insert_query, data_insert)
-
-    # Commit transaction
-    conn.commit()
-
-    # Close cursor and connection
-    cursor.close()
-    conn.close()
-    print("Insert patient note successfully")
-    return {"message": "Note inserted successfully"}
-
-@app.post("/update-patient-note", tags=["root"])
-async def update_patient_note(data:dict, db=Depends(get_db)) -> dict:
-    # print(data)
-    note_id = data.get("note_id")
-    priority = data.get("priority")
-    title = data.get("title")
-    content = data.get("content")
-    created_at = data.get("created_at")
-    user_code = data.get("user_code")
-    subject_id = data.get("subject_id")
-
-    insert_query_hive = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-    insert_query_mysql = """INSERT INTO transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-    
-    if select_db == 'hive':
-        insert_query = insert_query_hive
-        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-    else:
-        insert_query = insert_query_mysql
-        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-        conn = engine.connect().connection
-    
-    cursor = conn.cursor()
-    
-    update_query = """UPDATE transactional_patient_note SET active = 0 WHERE note_id = %s"""
-    cursor.execute(update_query, (note_id,))
-    conn.commit()
-    
-    # Define data to be inserted
-    data = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
-
-    cursor.execute(insert_query, data)
-    conn.commit()
-
-    # Close cursor and connection
-    cursor.close()
-    conn.close()
-
-    return {"message": "Note inserted successfully"}
-
-@app.post("/delete-patient-note", tags=["root"])
-async def delete_patient_note(data:dict, db=Depends(get_db)) -> dict:
-    note_id = data.get("note_id")
-    
-    if select_db == 'hive':
-        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-    else:
-        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-        conn = engine.connect().connection
+# @app.post("/insert-self-note", tags=["root"])
+# async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
+#     # print(data)
+#     # note_id = generate_random_string(random.randint(4, 9))
+#     try:
+#         note_id = data.get('note_id')
+#         priority = data.get("priority")
+#         title = data.get("title")
+#         content = data.get("content")
+#         created_at = data.get("created_at")
+#         user_code = data.get("user_code")
         
-    cursor = conn.cursor()
-    delete_query = """DELETE FROM transactional_patient_note WHERE note_id = %s"""
+#         insert_query_hive = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
+#         insert_query_mysql = """INSERT INTO transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
+        
+#         if select_db == 'hive':
+#             insert_query = insert_query_hive
+#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+#         else:
+#             insert_query = insert_query_mysql
+#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+#             conn = engine.connect().connection
+        
+#         cursor = conn.cursor()
 
-    # Execute the delete query with the parameter
-    cursor.execute(delete_query, (note_id,))
+#         # Define data to be inserted
+#         data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
 
-    # Commit the transaction
-    conn.commit()
+#         # Execute INSERT statement
+#         cursor.execute(insert_query, data)
 
-    # Close cursor and connection
-    cursor.close()
-    conn.close()
+#         # Commit transaction
+#         conn.commit()
 
-    return {"message": "Note inserted successfully"}
+#         # Close cursor and connection
+#         cursor.close()
+#         conn.close()
+#         log_data = {
+#             'user_code': user_code,
+#             'time': created_at,
+#             'action': 'insert-self-note',
+#             'related_item': f"Note: {note_id}"
+#         }
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
 
+#     return {"message": "Note inserted successfully", "log": log_data}
+
+# @app.post("/update-self-note", tags=["root"])
+# async def update_self_note(data:dict, db=Depends(get_db)) -> dict:
+#     try:
+#         note_id = data.get("note_id")
+#         priority = data.get("priority")
+#         title = data.get("title")
+#         content = data.get("content")
+#         created_at = data.get("created_at")
+#         user_code = data.get("user_code")
+        
+#         insert_query_hive = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
+#         insert_query_mysql = """INSERT INTO transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
+
+#         # Define data to be inserted
+        
+#         if select_db == 'hive':
+#             insert_query = insert_query_hive
+#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+#         else:
+#             insert_query = insert_query_mysql
+#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+#             conn = engine.connect().connection
+        
+#         cursor = conn.cursor()
+        
+#         update_query = """UPDATE transactional_note SET active = 0 WHERE note_id = %s"""
+#         cursor.execute(update_query, (note_id,))
+#         conn.commit()
+        
+#         data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
+#         cursor.execute(insert_query, data)
+#         conn.commit()
+
+#         # Close cursor and connection
+#         cursor.close()
+#         conn.close()
+        
+#         log_data = {
+#             'user_code': user_code,
+#             'time': created_at,
+#             'action': 'update-self-note',
+#             'related_item': f"Note: {note_id}",
+#         }
+
+#         return {"message": "Note inserted successfully", 'log': log_data}
+#     except:
+#         raise HTTPException(status_code=500, detail="An error occurred while updating the note.")
+
+
+# @app.post("/delete-self-note", tags=["root"])
+# async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
+#     try:
+#         note_id = data.get("note_id")
+
+#         if select_db == 'hive':
+#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+#         else:
+#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+#             conn = engine.connect().connection
+#         cursor = conn.cursor()
+
+#         delete_query = """DELETE FROM transactional_note WHERE note_id = %s"""
+
+#         # Execute the delete query with the parameter
+#         cursor.execute(delete_query, (note_id,))
+
+#         # Commit the transaction
+#         conn.commit()
+
+#         # Close cursor and connection
+#         cursor.close()
+#         conn.close()
+
+#         log_data = {
+#             'user_code': data.get('user_code'),
+#             'time': data.get('time'),
+#             'action': 'delete-self-note',
+#             'related_item': f"Note: {note_id}"
+#         }
+
+#         return {"message": "Note inserted successfully","log": log_data}
+#     except:
+#         raise HTTPException(status_code=500, detail="An error occurred while deleting the note.")
+
+
+# @app.post("/insert-patient-note", tags=["root"])
+# async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
+#     try:
+#         note_id = data.get('note_id')
+#         priority = data.get("priority")
+#         title = data.get("title")
+#         content = data.get("content")
+#         created_at = data.get("created_at")
+#         user_code = data.get("user_code")
+#         subject_id = data.get("subject_id")
+
+#         insert_query_hive = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+#         insert_query_mysql = """INSERT INTO transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        
+#         if select_db == 'hive':
+#             insert_query = insert_query_hive
+#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+#         else:
+#             insert_query = insert_query_mysql
+#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+#             conn = engine.connect().connection
+        
+#         cursor = conn.cursor()
+
+#         # Define data to be inserted
+#         data_insert = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
+#         # Execute INSERT statement
+#         cursor.execute(insert_query, data_insert)
+
+#         # Commit transaction
+#         conn.commit()
+
+#         # Close cursor and connection
+#         cursor.close()
+#         conn.close()
+#         log_data = {
+#             'user_code': user_code,
+#             'time': created_at,
+#             'action': 'insert-patient-note',
+#             'related_item': f"Note: {note_id} \n Patient Code: {subject_id}",
+#         }    
+        
+#         return {"message": "Note inserted successfully", 'log':log_data}
+#     except:
+#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
+
+
+# @app.post("/update-patient-note", tags=["root"])
+# async def update_patient_note(data:dict, db=Depends(get_db)) -> dict:
+#     try:
+#         note_id = data.get("note_id")
+#         priority = data.get("priority")
+#         title = data.get("title")
+#         content = data.get("content")
+#         created_at = data.get("created_at")
+#         user_code = data.get("user_code")
+#         subject_id = data.get("subject_id")
+
+#         insert_query_hive = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+#         insert_query_mysql = """INSERT INTO transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        
+#         if select_db == 'hive':
+#             insert_query = insert_query_hive
+#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+#         else:
+#             insert_query = insert_query_mysql
+#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+#             conn = engine.connect().connection
+        
+#         cursor = conn.cursor()
+        
+#         update_query = """UPDATE transactional_patient_note SET active = 0 WHERE note_id = %s"""
+#         cursor.execute(update_query, (note_id,))
+#         conn.commit()
+        
+#         # Define data to be inserted
+#         data = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
+
+#         cursor.execute(insert_query, data)
+#         conn.commit()
+
+#         # Close cursor and connection
+#         cursor.close()
+#         conn.close()
+
+#         log_data = {
+#             'user_code': user_code,
+#             'time': created_at,
+#             'action': 'update-patient-note',
+#             'related_item': f"Note: {note_id} \n Patient Code: {subject_id}",
+#         }    
+#         return {"message": "Note updated successfully",'log': log_data}
+#     except:
+#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
+
+
+# @app.post("/delete-patient-note", tags=["root"])
+# async def delete_patient_note(data:dict, db=Depends(get_db)) -> dict:
+#     try:
+#         note_id = data.get("note_id")
+        
+#         if select_db == 'hive':
+#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+#         else:
+#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+#             conn = engine.connect().connection
+            
+#         cursor = conn.cursor()
+#         delete_query = """DELETE FROM transactional_patient_note WHERE note_id = %s"""
+#         select_query = sa.select(PATIENT_NOTE).where(PATIENT_NOTE.columns.note_id == note_id)
+        
+#         df = pd.DataFrame(db.execute(select_query).fetchall())
+#         deleted_records = df.to_dict(orient='records')
+
+#         # Execute the delete query with the parameter
+#         cursor.execute(delete_query, (note_id,))
+#         conn.commit()
+#         # Close cursor and connection
+#         cursor.close()
+#         conn.close()
+
+#         log_data = {
+#             'user_code': deleted_records[0]['doctor_code'],
+#             'time': data.get('time'),
+#             'action': 'delete-patient-note',
+#             'related_item': f"Note: {note_id} \n Patient Code: {deleted_records[0]['subject_id']}",
+#         }    
+#         return {"message": "Note deleted successfully",'log': log_data}
+#     except:         
+#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
 
 @app.get("/self-notes", response_model=dict, tags=["root"]) 
 async def get_self_note(user_code, db=Depends(get_db)) -> dict:
@@ -540,7 +610,7 @@ async def get_self_note(user_code, db=Depends(get_db)) -> dict:
         result = df.to_dict(orient='records')
     else:
         result = []
-    print(result)
+    # print(result)
     
     return JSONResponse(content={"data": result})
 
@@ -727,7 +797,7 @@ async def get_patients_detail_procedure(doctor_code, subject_id, db=Depends(get_
             .where(PROCEDURE.columns.hadm_id.in_(subq_hadm_ids))
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
-    print(len(df))
+    # print(len(df))
     if len(df)>0:
         df = df.drop(columns=['row_id','subject_id'])
         df['value'] = df['value'].apply(lambda x: float(x))
@@ -736,10 +806,8 @@ async def get_patients_detail_procedure(doctor_code, subject_id, db=Depends(get_
         # transform_date(df,['chartdate'])
         df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
-        # print(result)
     else:
         result = []
-    # print(result)
     return JSONResponse(content={"procedure": result})
 
 @app.get("/patients-detail-medicaltest", response_model=dict, tags=["root"])
@@ -1064,7 +1132,13 @@ async def update_annotate(data:dict, db=Depends(get_db)) -> dict:
         conn.commit()
         cursor.close()
 
-    return JSONResponse(content={"result": "successfully"})
+    log_data = {
+            'user_code': doctor_code,
+            'time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'action': 'Update Annotation',
+            'related_item': f"Admission ID: {hadm_id}"
+        }
+    return JSONResponse(content={"result": "successfully", 'log': log_data})
 
 @app.get("/detaildisease-general", response_model=dict, tags=["root"])
 async def detail_disease_general(disease_code='AA', db=Depends(get_db)) -> dict:
@@ -1104,7 +1178,377 @@ async def detail_disease_general(disease_code='AA', db=Depends(get_db)) -> dict:
     return JSONResponse(content={"disease": result})
 
 
- 
+@app.get("/get-users", response_model=dict, tags=["root"])
+async def get_users(db=Depends(get_db)) -> dict:
+    tables = ['DOCTOR','RESEARCHER', 'ADMINISTRATOR','ANALYST']
+    df = pd.DataFrame()
+    for table in tables:
+        stmt = sa.select(USERS.columns.code,
+                         USERS.columns.name,
+                         USERS.columns.gender) \
+                .select_from(sa.join(USERS, eval(table), USERS.columns.code == eval(table).columns.code))
+        result = pd.DataFrame(db.execute(stmt).fetchall())
+        result['role'] = table
+        df = pd.concat([df, result], axis=0, ignore_index=True)
+    # print(df)
+    result = df.to_dict(orient='records')
+    return JSONResponse(content={"users": result})
+
+
+@app.post("/log-action", response_model=dict, tags=["root"])
+async def log_action(data: dict, db=Depends(get_db)) -> dict:
+    # print("Log action", data)
+    df = pd.DataFrame([data])
+    columns = df.columns
+    
+    insert_query_hive = f"""
+        INSERT INTO TABLE user_action_log ({', '.join([f'`{col}`' for col in columns])})
+        VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+        """
+    
+    insert_query_mysql = f"""
+        INSERT INTO  user_action_log ({', '.join([f'`{col}`' for col in columns])})
+        VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+        """    
+           
+    if select_db == 'hive':
+        insert_query = insert_query_hive
+        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    else:
+        insert_query = insert_query_mysql
+        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+        conn = engine.connect().connection
+    
+    cursor = conn.cursor()
+    df['time'] = pd.to_datetime(df['time'], format='%Y-%m-%d %H:%M:%S')
+    df['time'] = df['time'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    data_tuples = [tuple(row) for row in df.to_numpy()]
+    cursor.executemany(insert_query, data_tuples)
+    conn.commit()
+    cursor.close()
+    return JSONResponse(content={"result": "successfully"})
+
+@app.get("/system-log", response_model=dict, tags=["root"])
+async def get_sytem_log(db=Depends(get_db)) -> dict:
+    stmt = sa.select(SYSTEM_LOG)
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df) > 0:
+        df = df.drop(columns=['id'])
+        transform_timestamp(df,['created'])
+        result = df.to_dict(orient='records')
+        return JSONResponse(content={"system_log": result})
+    else:
+        return JSONResponse(content={"system_log": []})
+
+
+#need to update
+@app.get("/user-action-log", response_model=dict, tags=["root"])
+async def get_user_action_log(db=Depends(get_db)) -> dict:
+    stmt = sa.select(USER_ACTION_LOG)
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        transform_timestamp(df,['time'])
+        result = df.to_dict(orient='records')
+        return JSONResponse(content={"user_action_log": result})
+    else:
+        return JSONResponse(content={"user_action_log": []})
+
+@app.post("/insert-load-schedule", response_model=dict, tags=["root"])
+async def get_user_action_log(data: dict, db=Depends(get_db)) -> dict:
+    print(data)
+    df = pd.DataFrame([data])
+    df['active'] = 1
+    columns = df.columns
+
+    insert_query_hive = f"""
+        INSERT INTO TABLE get_date_schedule ({', '.join([f'`{col}`' for col in columns])})
+        VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+        """
+    
+    insert_query_mysql = f"""
+        INSERT INTO  get_date_schedule ({', '.join([f'`{col}`' for col in columns])})
+        VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+        """    
+        
+    if select_db == 'hive':
+        insert_query = insert_query_hive
+        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    else:
+        insert_query = insert_query_mysql
+        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+        conn = engine.connect().connection
+    cursor = conn.cursor()
+    try:
+        df['start_date'] = pd.to_datetime(df['start_date'], format='ISO8601')
+        df['start_date'] = df['start_date'].dt.date
+
+        df['time'] = pd.to_datetime(df['time'], format='ISO8601')
+        df['time'] = df['time'].dt.time
+        
+        df['created'] = pd.to_datetime(df['created'], format='%Y-%m-%d %H:%M:%S')
+        df['created'] = df['created'].dt.strftime('%Y-%m-%d %H:%M:%S')
+
+        # df['start_date'] = pd.to_datetime(df['start_date'], format='%Y-%m-%d')
+        # df['time'] = pd.to_datetime(df['time'], format='%Y-%m-%d %H:%M:%S')
+
+        print(df)
+
+        data_tuples = [tuple(row) for row in df.to_numpy()]
+        cursor.executemany(insert_query, data_tuples)
+        conn.commit()
+        cursor.close()
+    except Exception as e:
+        print(e)
+    return JSONResponse(content={"result": "successfully"})
+
+@app.get("/get-admin-schedule", response_model=dict, tags=["root"])
+async def get_admin_schedule(user_code,db=Depends(get_db)) -> dict:
+    stmt = sa.select(ADMIN_SCHEDULE).where(ADMIN_SCHEDULE.columns.administrator_code == user_code)
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        print(df)
+        transform_timestamp(df,['created'])
+        transform_date(df,['start_date'])
+        transform_time(df,['time'])
+        # df['time'] = df['time'].dt.strftime('%H:%M:%S')
+        print(df)
+        result = df.to_dict(orient='records')
+        return JSONResponse(content={"schedule_log": result})
+    else:
+        return JSONResponse(content={"schedule_log": []})
+    
+
+@app.get("/user-notes", response_model=dict, tags=["root"]) 
+async def get_user_notes(admin_code,user_code ,db=Depends(get_db)) -> dict:
+    stmt = USER_NOTE.select().where(sa.and_(USER_NOTE.columns.admin_code == admin_code, USER_NOTE.columns.user_code == user_code, 
+                                               USER_NOTE.columns.active == True ))\
+        .order_by(sa.desc(USER_NOTE.columns.updated_at))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        transform_timestamp(df,['created_at','updated_at'])
+        result = df.to_dict(orient='records')
+    else:
+        result = []
+    return JSONResponse(content={"note": result})
+    
+    
+    
+
+
+
+@app.post("/insert-note", tags=["root"])
+async def insert_note(data:dict, db=Depends(get_db)) -> dict:
+    # print(data)
+    # note_id = generate_random_string(random.randint(4, 9))
+    tables ={
+        'self-note':'transactional_note',
+        'patient-note': 'transactional_patient_note',
+        'user-note': 'users_note'
+    }
+    action = {
+        'self-note':'insert self note',
+        'patient-note': 'insert patient note',
+        'user-note': 'insert user note'
+    }
+    try:
+        note = data.get('note')
+        type = data.get('type')
+        # print(note,type)
+        df = pd.DataFrame([note])
+        df['updated_at'] = df['created_at']
+        df['active'] = True
+        columns = df.columns
+
+        insert_query_hive = f"""
+            INSERT INTO TABLE {tables[type]} ({', '.join([f'`{col}`' for col in columns])})
+            VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+            """
+        
+        insert_query_mysql = f"""
+            INSERT INTO  {tables[type]} ({', '.join([f'`{col}`' for col in columns])})
+            VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+            """    
+        
+        
+        if select_db == 'hive':
+            insert_query = insert_query_hive
+            conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+        else:
+            insert_query = insert_query_mysql
+            engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+            conn = engine.connect().connection
+        
+        cursor = conn.cursor()
+
+        data_tuples = [tuple(row) for row in df.to_numpy()]
+        print(data_tuples)
+        print(insert_query)
+        cursor.executemany(insert_query, data_tuples)
+        conn.commit()
+        cursor.close()
+        log_data = {
+            'user_code': note['user_code'] if type != 'user-note' else note['admin_code'],
+            'time': note['created_at'],
+            'action': action[type],
+            'related_item': f"Note: {note['note_id']}"
+        }
+            
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
+
+    return {"message": "Note inserted successfully", "log": log_data}
+
+
+@app.post("/update-note", tags=["root"])
+async def update_note(data:dict, db=Depends(get_db)) -> dict:
+    try:
+        tables ={
+        'self-note':'transactional_note',
+        'patient-note': 'transactional_patient_note',
+        'user-note': 'users_note'
+    }
+        action = {
+            'self-note':'update self note',
+            'patient-note': 'update patient note',
+            'user-note': 'update user note'
+        }
+        
+        note = data.get('note')
+        type = data.get('type')
+        print(note,type)
+        df = pd.DataFrame([note])
+        df['updated_at'] = df['created_at']
+        df['active'] = True
+        print(df)
+        columns = df.columns
+
+        insert_query_hive = f"""
+            INSERT INTO TABLE {tables[type]} ({', '.join([f'`{col}`' for col in columns])})
+            VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+            """
+        
+        insert_query_mysql = f"""
+            INSERT INTO  {tables[type]} ({', '.join([f'`{col}`' for col in columns])})
+            VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+            """    
+        
+        
+        if select_db == 'hive':
+            insert_query = insert_query_hive
+            conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+        else:
+            insert_query = insert_query_mysql
+            engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+            conn = engine.connect().connection
+        
+        
+        cursor = conn.cursor()
+        
+        update_query = f"""UPDATE {tables[type]} SET active = 0 WHERE note_id = %s"""
+        cursor.execute(update_query, (note['note_id'],))
+        conn.commit()
+        
+        data_tuples = [tuple(row) for row in df.to_numpy()]
+        print(data_tuples)
+        print(insert_query)
+        cursor.executemany(insert_query, data_tuples)
+        conn.commit()
+        cursor.close()
+        log_data = {
+            'user_code': note['user_code'] if type != 'user-note' else note['admin_code'],
+            'time': note['created_at'],
+            'action': action[type],
+            'related_item': f"Note: {note['note_id']}"
+        }
+
+        return {"message": "Note updated successfully", 'log': log_data}
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="An error occurred while updating the note.")
+
+@app.post("/delete-note", tags=["root"])
+async def delete_note(data:dict, db=Depends(get_db)) -> dict:
+    try:
+        tables ={
+        'self-note':'transactional_note',
+        'patient-note': 'transactional_patient_note',
+        'user-note': 'users_note'
+    }
+        action = {
+            'self-note':'delete self note',
+            'patient-note': 'delete patient note',
+            'user-note': 'delete user note'
+        }
+        
+        note_id = data.get('note_id')
+        type = data.get('type')
+    
+        if select_db == 'hive':
+            conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+        else:
+            engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+            conn = engine.connect().connection
+            
+        cursor = conn.cursor()
+        
+        select_query = f"""SELECT * FROM {tables[type]} WHERE note_id = %s"""
+        delete_query = f"""DELETE FROM {tables[type]} WHERE note_id = %s"""
+        
+        cursor.execute(select_query, (note_id,))
+        df = pd.DataFrame(cursor.fetchall())
+        df.columns = [col[0] for col in cursor.description]
+        deleted_records = df.to_dict(orient='records')
+        print(deleted_records)
+        related_subject = ''
+        
+        if type == 'patient-note':
+            related_subject = deleted_records[0]['subject_id']
+        elif type == 'user-note':
+            related_subject = deleted_records[0]['user_code']
+
+        cursor.execute(delete_query, (note_id,))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        log_data = {
+            'user_code': data.get('user_code'),
+            'time': data.get('time'),
+            'action':  action[type],
+            'related_item': f"Note: {note_id} - Related subject: {related_subject}"
+        }
+        return {"message": "Note deleted successfully", 'log': log_data}
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="An error occurred while updating the note.")
+
+
+
+@app.get("/detail-user-action-log", response_model=dict, tags=["root"])
+async def get_user_action_log(user_code, db=Depends(get_db)) -> dict:
+    stmt = sa.select(USER_ACTION_LOG).where(USER_ACTION_LOG.columns.user_code==user_code)
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        transform_timestamp(df,['time'])
+        result = df.to_dict(orient='records')
+        return JSONResponse(content={"user_action_log": result})
+    else:
+        return JSONResponse(content={"user_action_log": []})
+
+
+
+
+    
+    
+
+    
+
 
 
 

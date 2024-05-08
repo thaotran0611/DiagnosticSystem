@@ -17,7 +17,6 @@ async def db_logging(request: Request,  call_next):
     # body = await request.body() 
     # body_data = body.decode("utf-8") 
     # print(body.decode("utf-8")) 
-     
     response = await call_next(request) 
     response_status_code = response.status_code 
     print(response_status_code) 

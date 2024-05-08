@@ -17,11 +17,14 @@ import BasicDateTimePicker from "../DateTimePicker/DateTimePicker";
 import dayjs from 'dayjs';
 import { Button } from "bootstrap";
 import {Spinner } from "@chakra-ui/react";
+import {log} from '../../functions'
 
 
 const theme = createTheme();
 const Note = (props) => {
-console.log(props.data)
+    const user_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
     // const date = dayjs(props.data[0]['created_at']).toDate()
     // console.log('day la ngay', date)
     const [fromdate, setFromDate] = useState (props.data.length > 0? dayjs(new Date(props.data[props.data.length - 1].created_at)) : dayjs(new Date()));
@@ -55,16 +58,24 @@ console.log(props.data)
     const onDelete = (note_id) =>{
         const updatedNotes = props.data.filter(note => note.note_id !== note_id);
         props.setNote(updatedNotes);
-        const url = props.type == "self-note" ? 'http://localhost:8000/delete-self-note': 'http://localhost:8000/delete-patient-note';
+        const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
+
+        let url = 'http://localhost:8000/delete-note' ;
+        
         axios({
             method: 'post',
             url: url,
             data: {
-                note_id:note_id
+                note_id: note_id,
+                time: currentDate,
+                user_code: user_code,
+                type: props.type
             },
           })
             .then((res) => {
               console.log(res)
+              var log_data = res.data.log;
+              log(log_data);
             })
             .catch((res) => {
               console.log(res);
@@ -81,7 +92,7 @@ console.log(props.data)
                     <Text className="header">Note</Text> 
                     <Popup trigger={<PlusSquareIcon marginBottom={1} boxSize={'1.2em'} className="icon-add"/>}
                         nested modal contentStyle={{background: 'none', border: 'none'}}>
-                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id}/>}
+                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id} user_code={props.user_code}/>}
                     </Popup>
                 </GridItem>
                 <GridItem colSpan={4} rowSpan={1}>
@@ -119,14 +130,14 @@ console.log(props.data)
                                 const timeValue = dayjs(item.created_at).toDate();
                                 return itemValue.includes(searchvalue) && timeValue >= fromdate && timeValue <= todate;
                             }).map(note => (
-                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code}/>
                             ))
                             :
                             slicedData.filter((item) => {
                                 const timeValue = dayjs(item.created_at).toDate();
                                 return timeValue >= fromdate && timeValue <= todate;
                             }).map(note => (
-                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code}/>
                             ))
                         }
                     </div>

@@ -1,2 +1,2 @@
-select_db = 'hive'
-# select_db = 'mysql'
+# select_db = 'hive'
+select_db = 'mysql'

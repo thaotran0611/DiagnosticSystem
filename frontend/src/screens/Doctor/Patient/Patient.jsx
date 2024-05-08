@@ -16,6 +16,8 @@ import { Grid, GridItem, Spinner } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
 import dayjs from 'dayjs';
+import { format } from 'date-fns'
+import {log} from '../../../functions';
 
 const theme = createTheme();
 
@@ -51,18 +53,18 @@ const Patient = () => {
                 console.log(response.data.data);
                 setPatientData(response.data.data);
                 setFilteredResults(response.data.data);
-                admission_location = _.uniqBy(response.data.data, "admission_location").map((image) => image.admission_location);
-                admission_type = _.uniqBy(response.data.data, "admission_type").map((image) => image.admission_type);
-                ethnicity = _.uniqBy(response.data.data, "ethnicity").map((image) => image.ethnicity);
-                insurance = _.uniqBy(response.data.data, "insurance").map((image) => image.insurance);
-                marital_status = _.uniqBy(response.data.data, "marital_status").map((image) => image.marital_status);
-                gender = _.uniqBy(response.data.data, "gender").map((image) => image.gender);
-                setfilterData([{name: "admission_location", data: admission_location}, 
-                               {name: "admission_type", data: admission_type}, 
-                               {name:"ethnicity", data: ethnicity}, 
-                               {name: "insurance", data: insurance}, 
-                               {name: "marital_status", data: marital_status},
-                               {name: "gender", data: gender}]);
+                admission_location = _.uniqBy(response.data.data, "Admission Location").map((image) => image['Admission Location']);
+                admission_type = _.uniqBy(response.data.data, "Admission Type").map((image) => image['Admission Type']);
+                ethnicity = _.uniqBy(response.data.data, "Ethnicity").map((image) => image.Ethnicity);
+                insurance = _.uniqBy(response.data.data, "Insurance").map((image) => image.Insurance);
+                marital_status = _.uniqBy(response.data.data, "Marital Status").map((image) => image['Marital Status']);
+                gender = _.uniqBy(response.data.data, "Gender").map((image) => image.Gender);
+                setfilterData([{name: "Admission Location", data: admission_location}, 
+                               {name: "Admission Type", data: admission_type}, 
+                               {name:"Ethnicity", data: ethnicity}, 
+                               {name: "Insurance", data: insurance}, 
+                               {name: "Marital Status", data: marital_status},
+                               {name: "Gender", data: gender}]);
                 setLoadingPatient(false);
             } catch (error) {
                 setError(error);
@@ -73,6 +75,13 @@ const Patient = () => {
     }, []);
     
     const handleClick = (data) => {
+        var log_data = {
+            'user_code': doctor_code,
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'View Detail of Patient',
+            'related_item': 'Patient ' + data.subject_id
+          }
+          log(log_data);
         navigate(`detailpatient/${data.subject_id}`, { state: { patient_Data: data }} ); // Assuming the URL pattern is '/patient/:patientCode'
     };
 
@@ -108,17 +117,17 @@ const Patient = () => {
             });
             if(adms!== null && disc!==null) {
                 setFilteredResults(filteredData.filter((item) => {
-                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                    return new Date(item['Admission Time']) >= adms && new Date(item['Discharge Time']) <= disc;
                 }))
             }
             else if(adms!==null){
                 setFilteredResults(filteredData.filter((item) => {
-                    return new Date(item.admittime) >= adms;
+                    return new Date(item['Admission Time']) >= adms;
                 }))
             }
             else if(disc!==null){
                 setFilteredResults(filteredData.filter((item) => {
-                    return new Date(item.dischtime) <= disc;
+                    return new Date(item['Discharge Time']) <= disc;
                 }))
             }
             else{
@@ -131,17 +140,17 @@ const Patient = () => {
             })
             if(adms!== null && disc!==null) {
                 setFilteredResults(filterData2.filter((item) => {
-                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                    return new Date(item['Admission Time']) >= adms && new Date(item['Discharge Time']) <= disc;
                 }))
             }
             else if(adms!==null){
                 setFilteredResults(filterData2.filter((item) => {
-                    return new Date(item.admittime) >= adms;
+                    return new Date(item['Admission Time']) >= adms;
                 }))
             }
             else if(disc!==null){
                 setFilteredResults(filterData2.filter((item) => {
-                    return new Date(item.dischtime) <= disc;
+                    return new Date(item['Discharge Time']) <= disc;
                 }))
             }
             else{
@@ -164,17 +173,17 @@ const Patient = () => {
             });
             if(adms!== null && disc!== null) {
                 setFilteredResults(filterData2.filter((item) => {
-                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                    return new Date(item['Admission Time']) >= adms && new Date(item['Discharge Time']) <= disc;
                 }))
             }
             else if(adms!==null){
                 setFilteredResults(filterData2.filter((item) => {
-                    return new Date(item.admittime) >= adms;
+                    return new Date(item['Admission Time']) >= adms;
                 }))
             }
             else if(disc!==null){
                 setFilteredResults(filterData2.filter((item) => {
-                    return new Date(item.dischtime) <= disc;
+                    return new Date(item['Discharge Time']) <= disc;
                 }))
             }
             else{
@@ -184,17 +193,17 @@ const Patient = () => {
         else{
             if(adms!== null && disc!== null) {
                 setFilteredResults(patientdata.filter((item) => {
-                    return new Date(item.admittime) >= adms && new Date(item.dischtime) <= disc;
+                    return new Date(item['Admission Time']) >= adms && new Date(item['Discharge Time']) <= disc;
                 }));
             }
             else if(adms!== null){
                 setFilteredResults(patientdata.filter((item) => {
-                    return new Date(item.admittime) >= adms;
+                    return new Date(item['Admission Time']) >= adms;
                 }));
             }
             else if(disc!== null){
                 setFilteredResults(patientdata.filter((item) => {
-                    return new Date(item.dischtime) <= disc;
+                    return new Date(item['Discharge Time']) <= disc;
                 }));
             }
             else{

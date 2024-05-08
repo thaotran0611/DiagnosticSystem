@@ -26,10 +26,10 @@ const MiniNote = (props) => {
                 <p style={{ fontSize: '1.2em', fontWeight: 'bold' }}>{props.title}</p>
                 <p className="content-date">{props.created_at}</p>
             </div>
-                <p className="content-text" style={{ maxWidth: '80%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{props.content}</p>
+                <p className="content-text" style={{ maxWidth: '80%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{props.note}</p>
                 <Popup trigger={<EditIcon onClick={handleEdit}  className="edit-icon"/>}
                     nested modal contentStyle={{background: 'none', border: 'none'}}>
-                    {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} type={props.type} new={false} content={props.content} priority={props.priority} created_at={props.created_at} note_id={props.note_id} title={props.title} subject_id={props.subject_id}/>}
+                    {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} type={props.type} new={false} content={props.note} priority={props.priority} created_at={props.created_at} note_id={props.note_id} title={props.title} subject_id={props.subject_id} user_code={props.user_code}/>}
                 </Popup>
                 <DeleteIcon onClick={handleClick} className="delete-icon"/>
             </div>

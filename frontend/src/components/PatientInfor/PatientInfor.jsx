@@ -3,6 +3,8 @@ import DiseaseCard from '../DiseaseCard/DiseaseCard'
 import React from 'react'; 
 import { Center, Spinner, Card, CardHeader, CardBody, Box, StackDivider, Stack, Heading, Text, CardFooter,Button,SimpleGrid, Divider, Flex } from '@chakra-ui/react'; 
 import { useNavigate } from "react-router-dom";
+import {log} from '../../functions';
+import { format } from 'date-fns'
 
 
 const PatientInfor = (data) => { 
@@ -30,6 +32,16 @@ const PatientInfor = (data) => {
   const navigate = useNavigate();
   
   const handleClick = () => {
+    const doctor_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    var log_data = {
+      'user_code': doctor_code,
+      'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+      'action': 'View Detail of Patient',
+      'related_item': 'Patient ' + data.data.subject_id
+    }
+    log(log_data);
     navigate(`/doctor/patient/detailpatient/${data.data.subject_id}`, { state: { patient_Data: data.data } });
   };  
   return (data.data !== null ? ( 

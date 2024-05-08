@@ -28,6 +28,7 @@ import AdminLogo from "../../../img/Admin/AdminLogo.png"
 
 const theme = createTheme();
 const OverviewAdmin = () => {
+    const img = {'DOCTOR':DoctorLogo, 'RESEARCHER':ResearcherLogo, 'ADMINISTRATOR':AdminLogo, 'ANALYST':AnalystLogo}
     const navigate = useNavigate();
     const admin_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
@@ -65,7 +66,13 @@ const OverviewAdmin = () => {
         const fetchData = async () => {
             try {
                 const response = await axios.get('http://localhost:8000/currentLogin');
-                setLoginUser(response.data.result);
+                const updatedLoginUser = response.data.result.map(user => {
+                    return {
+                        ...user,
+                        img: img[user.name]
+                    };
+                });
+                setLoginUser(updatedLoginUser);
                 setLoadingLoginUser(false);
                 console.log(loginUser)
             } catch (error) {
@@ -74,8 +81,48 @@ const OverviewAdmin = () => {
             }
         };
         fetchData();
+        // const intervalId = setInterval(fetchData, 10000);
+        // return () => clearInterval(intervalId);
     }, []);
 
+    const [systemLog, setSystemLog] = useState([]);
+    const [loadingSytemLog, setLoadingSystemLog] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/system-log');
+                // console.log(response)
+                setSystemLog(response.data.system_log);
+                setLoadingSystemLog(false);
+            } catch (error) {
+                setError(error);
+                setLoadingSystemLog(false);
+            }
+        };
+    
+        fetchData();
+    }, []);
+
+    const [actionLog, setActionLog] = useState([]);
+    const [loadingActionLog, setLoadingActionLog] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/user-action-log');
+                // console.log(response)
+                setActionLog(response.data.user_action_log);
+                setLoadingActionLog(false);
+            } catch (error) {
+                setError(error);
+                setLoadingActionLog(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    
 
     const generalTag = [
         {
@@ -111,6 +158,10 @@ const OverviewAdmin = () => {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const slicedData = loginUser.slice(startIndex, endIndex);
+    const [option, setOption] = useState('System Log')
+    const [selectedUser, setSelectedUser] = useState('')
+    const [selectedRow, setSelectedRow] = useState('')
+
     return(
         <AdminLayout path={
             <Breadcrumb fontSize="xl">
@@ -169,10 +220,16 @@ const OverviewAdmin = () => {
                         <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
                             <Grid gridTemplateRows={'12% 88%'} h={'100%'}>
                                 <GridItem p={3}>
-                                    <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Actions List</Text>
+                                <Text pt="2" fontSize={35} fontWeight="bold" marginRight="auto" variant={'outline'}>
+
+                                <select onChange={(e) => {setOption(e.target.value)}}>
+                                    <option value='System Log'>System Log</option>
+                                    <option value='User Action Log'>User Action Log</option>
+                                </select>
+                                </Text>
                                 </GridItem>
-                                <GridItem padding={'0 10px'}>
-                                    <MyTable2 height={'350px'}/>
+                                <GridItem marginTop={3} padding={'10px 10px'}>
+                                    {option == 'System Log' ? <MyTable2 data = {systemLog} height={'350px'} onSelect={setSelectedRow}/> : <MyTable2 data = {actionLog} height={'350px'} onSelect={setSelectedUser}/>}
                                 </GridItem>
                             </Grid>
                         </GridItem>

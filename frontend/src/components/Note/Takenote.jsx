@@ -10,6 +10,7 @@ import {
     AlertTitle,
     AlertDescription,
   } from '@chakra-ui/react'
+import {log} from '../../functions'
 const Takenote = (props) => {
     const user_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
@@ -43,34 +44,44 @@ const Takenote = (props) => {
         }
     };
     const submit = () => {
-        const url = props.type == "self-note" ? 'http://localhost:8000/insert-self-note': 'http://localhost:8000/insert-patient-note';
+        let url = 'http://localhost:8000/insert-note' ;
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-
         const newNoteData = {
             note_id: generateRandomString(5),
             priority: priority,
             title: title,
-            content: message,
+            note: message,
             created_at: currentDate,
             user_code: user_code,
-            subject_id: props.subject_id
+            // subject_id: props.subject_id
         };
-        props.setNote([...props.data, newNoteData]); 
+        if (props.type === "self-note"){
+            // url = 'http://localhost:8000/insert-self-note'
+        }
+        else if(props.type === "patient-note"){
+            // url = 'http://localhost:8000/insert-patient-note';
+            newNoteData.subject_id = props.subject_id;
+        }
+        else if(props.type === "user-note"){
+            // url = ''
+            newNoteData.admin_code = user_code;
+            newNoteData.user_code = props.user_code;
+
+        }
+
+        props.setNote([newNoteData, ...props.data]); 
         axios({
             method: 'post',
             url: url,
-            data: newNoteData,
-            // {
-            //     priority: priority,
-            //     title: title,
-            //     content: message,
-            //     created_at:currentDate,
-            //     user_code: user_code,
-            //     subject_id: props.subject_id
-            // },
+            data: {
+                note: newNoteData,
+                type: props.type
+            },
           })
             .then((res) => {
               console.log(res)
+              var log_data = res.data.log;
+              log(log_data);
               setInsertSuccess(true);
             })
             .catch((res) => {
@@ -83,17 +94,28 @@ const Takenote = (props) => {
     }
 
     const change = () => {
-        const url = props.type == "self-note" ? 'http://localhost:8000/update-self-note': 'http://localhost:8000/update-patient-note';
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         const updatedNoteData = {
             note_id: props.note_id,
             priority: priority,
             title: title,
-            content: message,
+            note: message,
             created_at: currentDate,
             user_code: user_code,
-            subject_id: props.subject_id
         };
+
+        let url = 'http://localhost:8000/update-note' ;
+        if (props.type === "self-note"){
+            // url = 'http://localhost:8000/update-self-note'
+        }
+        else if(props.type === "patient-note"){
+            updatedNoteData.subject_id = props.subject_id;
+        }
+        else if(props.type === "user-note"){
+            updatedNoteData.admin_code = user_code;
+            updatedNoteData.user_code = props.user_code;
+        }
+        
         const updatedNotes = props.data.map(note => {
             if (note.note_id === props.note_id) {
                 return updatedNoteData; // Update the specific note
@@ -105,20 +127,15 @@ const Takenote = (props) => {
         axios({
             method: 'post',
             url: url,
-            data: updatedNoteData
-            // {
-            //     note_id: props.note_id,
-            //     priority: priority,
-            //     title: title,
-            //     content: message,
-            //     created_at:currentDate,
-            //     user_code: user_code,
-            //     subject_id: props.subject_id
-            // },
-            ,
+            data: {
+                note: updatedNoteData,
+                type: props.type
+            },
           })
             .then((res) => {
               console.log(res)
+              var log_data = res.data.log;
+              log(log_data);
               setInsertSuccess(true);
             })
             .catch((res) => {

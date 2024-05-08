@@ -43,6 +43,12 @@ const DiseaseNote = (props) => {
 
     return (
         <Box>
+            
+            {message && (
+                    <Text color="gray.500" fontSize="sm" mb={1}>
+                        {props.time}
+                    </Text>
+            )}
             <Flex align="center">
                 <Box flex="1">
                     {editing || showFullNote ? (

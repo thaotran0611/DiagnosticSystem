@@ -31,7 +31,9 @@ const PatientTag = (props) => {
                                     <Box position={'relative'} borderRadius={'50%'} width={'80px'} height={'80px'} bg={'rgba(166,222,247,0.4)'}>
                                         <AbsoluteCenter>
                                             {props.patient ? 
-                                            <Text color={'#A6DEF7'} fontWeight={'medium'} fontSize={'40px'}>{props.data.subject_id}</Text>
+                                            <Text color={'#A6DEF7'} fontWeight={'medium'} fontSize={'40px'}>  
+                                                {props.data.subject_id ? props.data.subject_id : props.data.code}
+                                            </Text>
                                             : props.disease ?
                                             <DiseaseCard text={props.type} hidden={true}/> 
                                             : props.medicine ? 

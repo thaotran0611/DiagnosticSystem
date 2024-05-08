@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import Sidebar from "../components/Sidebar/Sidebar";
+import {log} from '../functions';
+import { format } from 'date-fns'
 
 export const DoctorLayout = ({children, path, expand, patient, name}) => {
     const navigate = useNavigate();
@@ -32,6 +34,13 @@ export const DoctorLayout = ({children, path, expand, patient, name}) => {
             .catch((res) => {
               console.log(res);
             });
+        var log_data = {
+            'user_code':  sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).code: '0',
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'Logout',
+            'related_item': ''
+            }
+        log(log_data);
         navigate('/login');
     };
     return(

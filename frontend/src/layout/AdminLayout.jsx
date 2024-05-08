@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import Sidebar from "../components/Sidebar/Sidebar";
+import {log} from '../functions';
+import { format } from 'date-fns'
 
 export const AdminLayout = ({children, path, expand, user}) => {
     const navigate = useNavigate();
@@ -20,7 +22,6 @@ export const AdminLayout = ({children, path, expand, user}) => {
         : '0';
         console.log(sessionToken)
         const url = 'http://localhost:8000/auth/logout'
-        sessionStorage.removeItem('user');
         axios({
             method: 'delete',
             url: url,
@@ -32,6 +33,14 @@ export const AdminLayout = ({children, path, expand, user}) => {
             .catch((res) => {
               console.log(res);
             });
+        var log_data = {
+            'user_code':  sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).code: '0',
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'Logout',
+            'related_item': ''
+            }
+        log(log_data);
+        sessionStorage.removeItem('user');
         navigate('/login');
     };
     return(

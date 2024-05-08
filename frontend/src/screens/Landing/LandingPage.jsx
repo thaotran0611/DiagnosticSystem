@@ -84,9 +84,9 @@ const LandingPage = () => {
         <div style={{height: 'max-content'}}>
             <div className="LandingPage_Header">
                 <img style={{height: '120px', marginLeft: '10%'}} src={logo}/>
-                <div style={{marginLeft: '80%', marginTop: '50px'}}>
+                {/* <div style={{marginLeft: '80%', marginTop: '50px'}}>
                     <Submit_button onClick={()=>{navigate('../login')}} text = 'Login'/>
-                </div>
+                </div> */}
                 <nav style={{position: 'absolute', marginTop: '40px', marginLeft: '44%'}} class="navbar navbar-expand-lg bg-body-tertiary">
                     <div class="container-fluid">
                         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
@@ -95,6 +95,9 @@ const LandingPage = () => {
                             <a style={{textDecoration: 'none', color: 'black', borderRadius: '10px', margin: '0px 20px'}} href="#ICUProcess" className="nav-link">ICU process</a>
                             <a style={{textDecoration: 'none', color: 'black', borderRadius: '10px', margin: '0px 20px'}} href="#MedicineProcess" className="nav-link">Medicine process</a>
                             <a style={{textDecoration: 'none', color: 'black', borderRadius: '10px', margin: '0px 20px'}} href="#Contact" className="nav-link">Contact us</a>
+                            <div style={{margin: '0px 20px'}}>
+                                <Submit_button onClick={()=>{navigate('../login')}} text = 'Login'/>
+                            </div>
                         </Scrollspy>
                         </div>
                     </div>
