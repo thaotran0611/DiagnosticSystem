@@ -27,7 +27,6 @@ const theme = createTheme();
 const DetailDisease = (props) => {
     const location = useLocation();
     const disease = location.state.data;
-    console.log(location.state);
     const researcher_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
@@ -35,7 +34,6 @@ const DetailDisease = (props) => {
     ? JSON.parse(sessionStorage.getItem('user')).name
     : '';
     const { diseaseCode } = useParams();
-    console.log(diseaseCode);
     const navigate=useNavigate();
     const [expand, setExpand] = useState(false);
     const data = [ 
@@ -92,6 +90,50 @@ const DetailDisease = (props) => {
             fetchData();
         }
     }, []);
+    const [otherdiseases, setOtherDiseases] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/detaildisease-otherdiseases', {
+                    params: {
+                        disease_code: diseaseCode
+                    }
+                });
+                setOtherDiseases(response.data.otherdiseases.map(item => ({
+                    ...item,
+                    yearold: calculateYearDifference(item.dod, item.dob)
+                })));
+                console.log(response.data.otherdiseases.map(item => ({
+                    ...item,
+                    yearold: calculateYearDifference(item.dod, item.dob)
+                })));
+            } catch (error) {
+                setError(error);
+            }
+        };
+        if (otherdiseases.length == 0){
+            fetchData();
+        }
+    }, []);
+    const [prescription, setPrescription] = useState([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/detaildisease-prescriptions', {
+                    params: {
+                        disease_code: diseaseCode
+                    }
+                });
+                setPrescription(response.data.prescriptions);
+                console.log(response.data.prescriptions);
+            } catch (error) {
+                setError(error);
+            }
+        };
+        if (prescription.length == 0){
+            fetchData();
+        }
+    }, []);
     return(
         <ResearcherLayout path={
                 <Breadcrumb>
@@ -99,7 +141,7 @@ const DetailDisease = (props) => {
                         <BreadcrumbLink href='../'>Disease</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem isCurrentPage>
-                        <BreadcrumbLink href="#">10</BreadcrumbLink>
+                        <BreadcrumbLink href="#">{diseaseCode}</BreadcrumbLink>
                     </BreadcrumbItem>
                 </Breadcrumb>
             }
@@ -160,21 +202,21 @@ const DetailDisease = (props) => {
                         <TabList>
                             <Tab fontWeight={'bold'} key={1}>General</Tab>
                             <Tab fontWeight={'bold'} key={2}>Other Diseases</Tab>
-                            <Tab fontWeight={'bold'} key={3}>Clinical sign</Tab>
-                            <Tab fontWeight={'bold'} key={4}>Prescription</Tab>
+                            {/* <Tab fontWeight={'bold'} key={3}>Clinical sign</Tab> */}
+                            <Tab fontWeight={'bold'} key={3}>Prescription</Tab>
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'} w={'100%'} position={'relative'}>
                                 <GeneralTab expand={expand} diseaseStatistic={diseaseStatistic}/>
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
-                                <OtherDiseaseTab/>
+                                <OtherDiseaseTab expand={expand} otherdiseases={otherdiseases}/>
                             </TabPanel>
-                            <TabPanel key={3} h={'100%'}>
+                            {/* <TabPanel key={3} h={'100%'}>
                                 <ClinicalSignTab/>
-                            </TabPanel>
-                            <TabPanel key={4} h={'100%'}>
-                                <PrescriptionTab/>
+                            </TabPanel> */}
+                            <TabPanel key={3} h={'100%'}>
+                                <PrescriptionTab prescription={prescription}/>
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

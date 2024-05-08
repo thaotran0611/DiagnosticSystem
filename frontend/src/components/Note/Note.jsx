@@ -21,11 +21,11 @@ import {Spinner } from "@chakra-ui/react";
 
 const theme = createTheme();
 const Note = (props) => {
-console.log(props.data)
+// console.log(props.data[props.data.length - 1].created_at)
     // const date = dayjs(props.data[0]['created_at']).toDate()
     // console.log('day la ngay', date)
-    const [fromdate, setFromDate] = useState (props.data.length > 0? dayjs(new Date(props.data[props.data.length - 1].created_at)) : dayjs(new Date()));
-    const [todate, setToDate] = useState(dayjs(new Date()))
+    const [fromdate, setFromDate] = useState (null);
+    const [todate, setToDate] = useState(null);
     const pageSize = props.pageSize;
     const [page, setPage] = useState(1);
     
@@ -113,18 +113,22 @@ console.log(props.data)
                 <ThemeProvider theme={theme}>
                     <div className="NoteDetail" style={{width: '100%'}}>
                         {
+                            fromdate === null && todate === null ?
+                            slicedData.map(note => (
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
+                            )) :
                             searchvalue!== '' ? 
                             slicedData.filter((item) => {
                                 const itemValue = String(item.title).toLowerCase();
                                 const timeValue = dayjs(item.created_at).toDate();
-                                return itemValue.includes(searchvalue) && timeValue >= fromdate && timeValue <= todate;
+                                return itemValue.includes(searchvalue) && (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                             }).map(note => (
                                 <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
                             ))
                             :
                             slicedData.filter((item) => {
                                 const timeValue = dayjs(item.created_at).toDate();
-                                return timeValue >= fromdate && timeValue <= todate;
+                                return (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                             }).map(note => (
                                 <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} content={note.content} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id}/>
                             ))
@@ -133,14 +137,17 @@ console.log(props.data)
                     <div className="pagination-note-container">
                     
                     <Pagination
-                        count={Math.ceil(props.data ? searchvalue!== '' ? 
-                         props.data.filter((item) => {
+                        count={Math.ceil(
+                        fromdate === null && todate === null ?
+                        props.data.length /pageSize :
+                        props.data ? searchvalue!== '' ? 
+                        props.data.filter((item) => {
                             const itemValue = String(item.title).toLowerCase();
                             const timeValue = dayjs(item.created_at).toDate();
-                            return itemValue.includes(searchvalue) && timeValue >= fromdate && timeValue <= todate;
+                            return itemValue.includes(searchvalue) && (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                         }).length / pageSize: props.data.filter((item) => {
                             const timeValue = dayjs(item.created_at).toDate();
-                            return timeValue >= fromdate && timeValue <= todate;
+                            return (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                         }).length /pageSize: 0)}
                         page={page}
                         onChange={handleChangePage}

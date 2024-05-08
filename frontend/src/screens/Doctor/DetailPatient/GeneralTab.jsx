@@ -30,7 +30,7 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
         <Grid gridTemplateRows={expandGeneral === 1 ? '3% 97%':
                                 expandGeneral === 2 ? '25% 3% 72%':
                                                         '97% 3%'}
-                h='100%'>
+                h='100%' position={'relative'}>
             {expandGeneral === 1 ? null : 
             <GridItem position={'relative'}>
                 <ThemeProvider theme={theme}>
@@ -52,7 +52,7 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
                 </ThemeProvider>
             </GridItem>}
 
-            <GridItem>
+            <GridItem height={'100%'} position='relative'>
                 <Center height={'100%'} position='relative'>
                     <Divider orientation="horizontal" style={{height: '2px'}} color={'#3E36B0'}/>
                     <AbsoluteCenter>

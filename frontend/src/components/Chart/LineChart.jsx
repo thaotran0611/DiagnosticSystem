@@ -23,7 +23,6 @@ ChartJS.register(
 
 export function LineChart(props) {
   const [clickedIndex, setClickedIndex] = useState(null);
-  console.log(props.data);
   function extractDate(label, level) {
     const date = new Date(label);
     if (level === 'year') {
@@ -61,13 +60,21 @@ export function LineChart(props) {
   }
   const groupedByMonth = groupDataByDate(props.label, props.data, props.level);
   const options = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: props.unitY // Unit for the y-axis
+        }
+      }
+    },
     onClick: (event, elements) => {
       if (elements.length > 0) {
         const index = elements[0].index;
         const datasetIndex = elements[0].datasetIndex;
         const value = data.datasets[datasetIndex].data[index];
         const label = data.labels[index];
-        console.log(`Clicked on data point ${label} with value ${value}`);
         setClickedIndex(index);
         if (props.setDecision) {
           props.setDecision(label);

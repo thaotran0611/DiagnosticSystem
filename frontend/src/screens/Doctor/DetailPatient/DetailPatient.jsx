@@ -96,7 +96,7 @@ const DetailPatient = (props) => {
                     }
                 });
                 setAddmission(response.data.admission);
-                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "Admission ID").map((image) => image['Admission ID'])));
+                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "hadm_id").map((image) => image['hadm_id'])));
                 setLoadingAdmission(false);
                 setInfoTag(response.data.infomation_tag)
                 console.log(allAdmission)
@@ -233,7 +233,7 @@ const DetailPatient = (props) => {
         }
         return 0;
     }
-    const [componentChart, setComponentChart] = useState([1]);
+    const [componentChart, setComponentChart] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -259,6 +259,19 @@ const DetailPatient = (props) => {
                     return !isUnique(array, item);
                 }), item => `${item.hadm_id}-${item.label}`).map(image => ({hadm_id: image.hadm_id, label: image.label})))
                 setLoadingMedicalTest(false);
+                const temp = _.uniqBy(response.data.medicaltest.filter((item, index, array) => {
+                    return !isUnique(array, item);
+                }), item => `${item.hadm_id}-${item.label}`).map(image => ({hadm_id: image.hadm_id, label: image.label}));
+                setComponentChart([{
+                    id: 1,
+                    charttype: hadmID === 'All Admission' && temp.length > 0 ? temp[0].label : temp.filter((item) => {
+                        const itemValue = String(item.hadm_id);
+                        return itemValue.includes(props.hadmID)
+                    }).length > 0 ? temp.filter((item) => {
+                        const itemValue = String(item.hadm_id);
+                        return itemValue.includes(props.hadmID);
+                    })[0].label : ""
+                }])
             } catch (error) {
                 setError(error);
                 setLoadingMedicalTest(false);
@@ -349,29 +362,26 @@ const DetailPatient = (props) => {
                         </GridItem>
                     </Grid>
                 </GridItem>
-                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'20px'} padding={6} maxHeight="100vh" overflowY="auto" style={{
-                        scrollbarWidth: 'thin', 
-                        scrollbarColor: '#A0AEC0 #ffffff', 
-                    }}>
-                <Grid
-                    h='40px'
-                    templateColumns='repeat(6, 1fr)'
-                    gap={4}
-                    >
-                    <GridItem textAlign={'right'} colStart={5} colSpan={1}>
-                        <Text paddingTop={1} fontWeight={600}>Hadm_ID:</Text>
-                    </GridItem>
-                    <GridItem colStart={6} colSpan={1}>
-                        <Select onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
-                            {
-                                allAdmission.map(item => (
-                                    <option selected={item === hadmID ? true : false} value={item}>{item}</option>
-                                ))
-                            }
-                        </Select>
-                    </GridItem>
-                </Grid>
-                    <Tabs isFitted variant='enclosed' size={'md'} height={'100%'}>
+                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'20px'} padding={6} height="100%" position={'relative'}>
+                    <Grid
+                        h='40px'
+                        templateColumns='repeat(6, 1fr)'
+                        gap={4}
+                        >
+                        <GridItem textAlign={'right'} colStart={5} colSpan={1}>
+                            <Text paddingTop={1} fontWeight={600}>Hadm_ID:</Text>
+                        </GridItem>
+                        <GridItem colStart={6} colSpan={1}>
+                            <Select onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
+                                {
+                                    allAdmission.map(item => (
+                                        <option selected={item === hadmID ? true : false} value={item}>{item}</option>
+                                    ))
+                                }
+                            </Select>
+                        </GridItem>
+                    </Grid>
+                    <Tabs isFitted variant='enclosed' size={'md'} height={'99%'} position={'relative'}>
                         <TabList>
                             <Tab fontWeight={'bold'} key={1} onClick={() => setActiveTab("General")}>General</Tab>
                             <Tab fontWeight={'bold'} key={2} onClick={() => setActiveTab("MedicalTest")}>Medical Test</Tab>
@@ -380,8 +390,8 @@ const DetailPatient = (props) => {
                             <Tab fontWeight={'bold'} key={5} onClick={() => setActiveTab("Note")}>Note</Tab>
                             <Tab fontWeight={'bold'} key={6} onClick={() => setActiveTab("Diseases")}>Diseases</Tab>
                         </TabList>
-                        <TabPanels h={'99%'}>
-                            <TabPanel key={1} h={'100%'}>
+                        <TabPanels h={'93%'} position={'relative'}>
+                            <TabPanel key={1} h={'100%'} position={'relative'}>
                                 {activeTab === "General" && <GeneralTab addmission={addmission} generalTag={infoTag} expand={expand} pageSize={pageSizeGeneral} setPageSize={setPageSizeGeneral} hadmID={hadmID} sethadmID={sethadmID}/>}
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>

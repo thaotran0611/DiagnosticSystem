@@ -6,7 +6,7 @@ from database import engine, get_db
 from construct import * 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy import text
+from sqlalchemy import text, case, and_, desc
 import pandas as pd
 import numpy as np
 import json
@@ -49,25 +49,25 @@ active_sessions = {"DOCTOR": {}, "RESEARCHER": {}, "ADMINISTRATOR": {}, "ANALYST
 
 def mapping_column(col):
     dic = {
-            "admittime":"Admission Time", 
-           "admission_type":"Admission Type",
-           "admission_location":"Admission Location",
-           "dischtime":"Discharge Time",
-           "ethnicity":"Ethnicity",
-           "marital_status":"Marital Status",
-           "gender":"Gender",
-           "dob":"Date of Birth",
-           "dod":"Date of Deadth",
-           "dod_hosp":"DOD at Hospital",
+           "admittime":"admittime", 
+           "admission_type":"admission_type",
+           "admission_location":"admission_location",
+           "dischtime":"dischtime",
+           "ethnicity":"ethnicity",
+           "marital_status":"marital_status",
+           "gender":"gender",
+           "dob":"dob",
+           "dod":"dod",
+           "dod_hosp":"dod_hosp",
            "dod_ssn":"dod_ssn",
-           "expire_flag":"Expire Flag",
-           "hadm_id":"Admission ID",
-           "discharge_location":"Discharge Location",
-           "startdate":"Start Date",
-           "enddate":"End Date",
-           "drug_type":"Drug Type",
-           "drug":"Drug",
-           "drug_name_poe":"Drug Name",
+           "expire_flag":"expire_flag",
+           "hadm_id":"hadm_id",
+           "discharge_location":"discharge_location",
+           "startdate":"startdate",
+           "enddate":"enddate",
+           "drug_type":"drug_type",
+           "drug":"drug",
+           "drug_name_poe":"drug_name_poe",
            "drug_name_generic":"drug_name_generic",
            "formulary_drug_cd":"formulary_drug_cd",
            "gsn":"gsn",
@@ -77,13 +77,13 @@ def mapping_column(col):
            "dose_unit_rx":"dose_unit_rx",
            "form_val_disp":"form_val_disp",
            "form_unit_disp":"form_unit_disp",
-           "route":"Route",
-           "chartdate":"Chart Date",
-           "category":"Category",
-           "description":"Description",
-           "text":"Text",
-           "diagnosis":"Diagnosis",
-           "insurance":"Insurance"}
+           "route":"route",
+           "chartdate":"chartdate",
+           "category":"category",
+           "description":"description",
+           "text":"text",
+           "diagnosis":"diagnosis",
+           "insurance":"insurance"}
     mapped_cols = [dic.get(column, column) for column in col]
     return mapped_cols
 
@@ -1102,6 +1102,172 @@ async def detail_disease_general(disease_code='AA', db=Depends(get_db)) -> dict:
     else:
         result = []
     return JSONResponse(content={"disease": result})
+
+@app.get("/detaildisease-otherdiseases", response_model=dict, tags=["root"])
+async def detaildisease_otherdiseases(disease_code='AA', db=Depends(get_db)) -> dict:
+    subq1 = sa.select(
+        ANNOTATE.columns.doctor_code,
+        ANNOTATE.columns.hadm_id,
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.value,
+        ANNOTATE.columns.time,
+        case((and_(ANNOTATE.columns.disease_code == 'AA', ANNOTATE.columns.value == True), 1), else_=0).label('AA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CND', ANNOTATE.columns.value == True), 1), else_=0).label('CND'),
+        case((and_(ANNOTATE.columns.disease_code == 'SA', ANNOTATE.columns.value == True), 1), else_=0).label('SA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CP', ANNOTATE.columns.value == True), 1), else_=0).label('CP'),
+        case((and_(ANNOTATE.columns.disease_code == 'Dep', ANNOTATE.columns.value == True), 1), else_=0).label('Dep'),
+        case((and_(ANNOTATE.columns.disease_code == 'MC', ANNOTATE.columns.value == True), 1), else_=0).label('MC'),
+        case((and_(ANNOTATE.columns.disease_code == 'Ob', ANNOTATE.columns.value == True), 1), else_=0).label('Ob'),
+        case((and_(ANNOTATE.columns.disease_code == 'PD', ANNOTATE.columns.value == True), 1), else_=0).label('PD'),
+        case((and_(ANNOTATE.columns.disease_code == 'HD', ANNOTATE.columns.value == True), 1), else_=0).label('HD'),
+        case((and_(ANNOTATE.columns.disease_code == 'LD', ANNOTATE.columns.value == True), 1), else_=0).label('LD'),
+    )\
+    .select_from(ANNOTATE).alias('subq1')
+
+    subq2 = sa.select(
+        subq1.columns.hadm_id,
+        sa.func.max(subq1.columns.time).label('time'),
+        sa.func.max(subq1.columns.AA).label('AA'),
+        sa.func.max(subq1.columns.CND).label('CND'),
+        sa.func.max(subq1.columns.SA).label('SA'),
+        sa.func.max(subq1.columns.CP).label('CP'),
+        sa.func.max(subq1.columns.Dep).label('Dep'),
+        sa.func.max(subq1.columns.MC).label('MC'),
+        sa.func.max(subq1.columns.Ob).label('Ob'),
+        sa.func.max(subq1.columns.PD).label('PD'),
+        sa.func.max(subq1.columns.HD).label('HD'),
+        sa.func.max(subq1.columns.LD).label('LD')
+    )\
+    .select_from(subq1)\
+    .group_by(subq1.columns.hadm_id).alias('subq2')
+
+    stmt = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,
+        PATIENTS_CHECKED.columns.gender,
+        ADMISSIONS_CHECKED.columns.marital_status,
+        ADMISSIONS_CHECKED.columns.religion,
+        ADMISSIONS_CHECKED.columns.ethnicity,
+        PATIENTS_CHECKED.columns.dob,
+        PATIENTS_CHECKED.columns.dod,
+        # (sa.func.year(PATIENTS_CHECKED.columns.dod) - sa.func.year(PATIENTS_CHECKED.columns.dob)).label('age_of_death'),
+        subq2.columns.AA,
+        subq2.columns.CND,
+        subq2.columns.SA,
+        subq2.columns.CP,
+        subq2.columns.Dep,
+        subq2.columns.MC,
+        subq2.columns.Ob,
+        subq2.columns.PD,
+        subq2.columns.HD,
+        subq2.columns.LD,
+    ).select_from(sa.join(sa.join(subq2, ADMISSIONS_CHECKED, subq2.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id), PATIENTS_CHECKED, PATIENTS_CHECKED.c.subject_id == ADMISSIONS_CHECKED.c.subject_id))\
+    .where(subq2.columns[disease_code] == 1)\
+    .order_by(ADMISSIONS_CHECKED.c.hadm_id)
+
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        transform_timestamp(df,['dob','dod'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"otherdiseases": result})
+
+@app.get("/detaildisease-prescriptions", response_model=dict, tags=["root"])
+async def detaildisease_prescriptions(disease_code='AA', db=Depends(get_db)) -> dict:
+    subq1 = sa.select(
+        ANNOTATE.columns.doctor_code,
+        ANNOTATE.columns.hadm_id,
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.value,
+        ANNOTATE.columns.time,
+        case((and_(ANNOTATE.columns.disease_code == 'AA', ANNOTATE.columns.value == True), 1), else_=0).label('AA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CND', ANNOTATE.columns.value == True), 1), else_=0).label('CND'),
+        case((and_(ANNOTATE.columns.disease_code == 'SA', ANNOTATE.columns.value == True), 1), else_=0).label('SA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CP', ANNOTATE.columns.value == True), 1), else_=0).label('CP'),
+        case((and_(ANNOTATE.columns.disease_code == 'Dep', ANNOTATE.columns.value == True), 1), else_=0).label('Dep'),
+        case((and_(ANNOTATE.columns.disease_code == 'MC', ANNOTATE.columns.value == True), 1), else_=0).label('MC'),
+        case((and_(ANNOTATE.columns.disease_code == 'Ob', ANNOTATE.columns.value == True), 1), else_=0).label('Ob'),
+        case((and_(ANNOTATE.columns.disease_code == 'PD', ANNOTATE.columns.value == True), 1), else_=0).label('PD'),
+        case((and_(ANNOTATE.columns.disease_code == 'HD', ANNOTATE.columns.value == True), 1), else_=0).label('HD'),
+        case((and_(ANNOTATE.columns.disease_code == 'LD', ANNOTATE.columns.value == True), 1), else_=0).label('LD'),
+    )\
+    .select_from(ANNOTATE).alias('subq1')
+
+    subq2 = sa.select(
+        subq1.columns.hadm_id.label('hadmid'),
+        sa.func.max(subq1.columns.time).label('time'),
+        sa.func.max(subq1.columns.AA).label('AA'),
+        sa.func.max(subq1.columns.CND).label('CND'),
+        sa.func.max(subq1.columns.SA).label('SA'),
+        sa.func.max(subq1.columns.CP).label('CP'),
+        sa.func.max(subq1.columns.Dep).label('Dep'),
+        sa.func.max(subq1.columns.MC).label('MC'),
+        sa.func.max(subq1.columns.Ob).label('Ob'),
+        sa.func.max(subq1.columns.PD).label('PD'),
+        sa.func.max(subq1.columns.HD).label('HD'),
+        sa.func.max(subq1.columns.LD).label('LD')
+    )\
+    .select_from(subq1)\
+    .group_by(subq1.columns.hadm_id).alias('subq2')
+
+    subq3 = sa.select(
+        PRESCRIPTIONS,
+        subq2
+    )\
+    .select_from(sa.join(PRESCRIPTIONS, subq2, PRESCRIPTIONS.c.hadm_id == subq2.c.hadmid))\
+    .where(subq2.c[disease_code] == 1).alias('subq3')
+
+    stmt = sa.select(subq3.c.drug,
+                     subq3.c.drug_type,
+                     subq3.c.drug_name_poe,
+                     subq3.c.drug_name_generic,
+                     subq3.c.AA,
+                     subq3.c.CND,
+                     subq3.c.SA,
+                     subq3.c.CP,
+                     subq3.c.Dep,
+                     subq3.c.MC,
+                     subq3.c.Ob,
+                     subq3.c.PD,
+                     subq3.c.HD,
+                     subq3.c.LD,
+                     sa.func.count().label('frequency'))\
+            .select_from(subq3)\
+            .group_by(subq3.c.drug,
+                     subq3.c.drug_type,
+                     subq3.c.drug_name_poe,
+                     subq3.c.drug_name_generic,
+                     subq3.c.AA,
+                     subq3.c.CND,
+                     subq3.c.SA,
+                     subq3.c.CP,
+                     subq3.c.Dep,
+                     subq3.c.MC,
+                     subq3.c.Ob,
+                     subq3.c.PD,
+                     subq3.c.HD,
+                     subq3.c.LD)\
+            .order_by(desc(sa.func.count()))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        # transform_timestamp(df,['dob','dod'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"prescriptions": result})
+
+
 
 
  

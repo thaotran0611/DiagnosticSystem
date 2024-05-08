@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AbsoluteCenter, Box, Button, Divider, Grid, GridItem, HStack, IconButton, ScaleFade, Select, SimpleGrid, Stack, Text, position } from "@chakra-ui/react";
+import { AbsoluteCenter, Box, Button, Checkbox, Divider, Flex, Grid, GridItem, HStack, IconButton, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, ScaleFade, Select, SimpleGrid, Stack, Text, position } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
@@ -50,8 +50,11 @@ const MedicalTestTab = (props) => {
     const [drillup, setDrillup] = useState('Default');
     const AllDrillup = ['Default', 'date', 'month', 'year'];
     // const [componentChart, setComponentChart] = useState([1]);
-    const addComponentChart = () => {
-        props.setComponentChart([...props.componentChart, props.componentChart.length > 0 ? props.componentChart[props.componentChart.length - 1] + 1 : 1]); // You can use any unique identifier here
+    const addComponentChart = (charttype) => {
+            return new Promise(resolve => {
+            props.setComponentChart([...props.componentChart, props.componentChart.length > 0 ? {id: props.componentChart[props.componentChart.length - 1].id + 1, charttype: charttype} : {id: 1, charttype: charttype}]); // You can use any unique identifier here
+            resolve();
+        });
     };
    
     const deleteComponentChart = (index) => {
@@ -88,15 +91,42 @@ const MedicalTestTab = (props) => {
             return itemValue === typeoftestmanytime;
         })
     let slicedData = medicaltest1timefilter.slice(startIndex, endIndex)
+    const scrollRef = useRef(null);
+    const scrollToBottom = () => {
+        const element = scrollRef.current;
+        if (element) {
+          element.scrollTop = element.scrollHeight;
+        }
+    };
+    const handleButtonClick = async (charttype) => {
+        if(props.componentChart.findIndex(item => item.charttype === charttype) !== -1){
+            deleteComponentChart(props.componentChart.findIndex(item => item.charttype === charttype))
+        }
+        else {
+            await addComponentChart(charttype);
+            scrollToBottom();
+        }
+      };
     // props.generalTag.slice(startIndex, endIndex);
+    const divRefs = useRef([]);
+
+    const scrollToDiv = (index) => {
+        // Get the div element using the index
+        const divElement = divRefs.current[index];
+        if (divElement) {
+        // Scroll to the div element
+        divElement.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
     return(
         <Grid gridTemplateRows={expandMedicalTest === 1 ? '3% 97%':
                                 expandMedicalTest === 2 ? '35% 3% 62%':
                                                         '97% 3%'}
-                h='100%'>
+                h='100%'
+                position={'relative'}>
             {expandMedicalTest === 1 ? null : 
 
-            <GridItem position={'relative'}>
+            <GridItem position={'relative'} h={'100%'}>
                 <Grid
                     h='40px'
                     templateColumns='repeat(6, 1fr)'
@@ -111,6 +141,7 @@ const MedicalTestTab = (props) => {
                     </GridItem>
                     
                     <GridItem colStart={6} colSpan={1}>
+                    
                         <Select onChange={(e) => {setTypeoftest1time(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={props.hadmID === 'All Admission' && typeofmedicaltest1time.length > 0 ? typeofmedicaltest1time[0].fluid : typeofmedicaltest1time.filter((item) => {
                                     const itemValue = String(item.hadm_id);
                                     return itemValue.includes(props.hadmID)
@@ -154,7 +185,7 @@ const MedicalTestTab = (props) => {
                 </ThemeProvider>
             </GridItem>}
 
-            <GridItem>
+            <GridItem height={'100%'} position='relative'>
                 <Center height={'100%'} position='relative'>
                     <Divider orientation="horizontal" style={{height: '2px'}} color={'#3E36B0'}/>
                     <AbsoluteCenter>
@@ -182,102 +213,55 @@ const MedicalTestTab = (props) => {
                     </AbsoluteCenter>
                 </Center>
             </GridItem>
-            {expandMedicalTest === 3 ? null : <GridItem position={'relative'} paddingTop={'2'} overflow={'auto'}>
-                <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}> Many-time test</Text>
-                {/* <MyTable/> */}
-                    {/* <MyTable2 height={expandMedicalTest === 1 ? '620px': '450px'} width={expand ? '1700px' : '1100px'}/> */}
-                    {/* <Grid
-                        h='40px'
-                        templateColumns='repeat(12, 1fr)'
-                        gap={4}
-                        >
-                        <GridItem colStart={1} colSpan={4}>
-                            <Text color={'#3E36B0'} fontSize={'20px'} fontWeight={600}> many-time test</Text>
-                        </GridItem>
-                        <GridItem colStart={5} colSpan={1} paddingTop={2}>
-                            <HStack textAlign={'left'} spacing={1}>
-                                <Text fontWeight={600}>Color:</Text>
-                                <InputColor
-                                    disabled={typeofchart === 'Table'? true : false}
-                                    initialValue="#5e72e4"
-                                    onChange={setColor}
-                                    placement="right"
-                                />
-                            </HStack>
-                        </GridItem>
-                        <GridItem colStart={6} colSpan={2}>
-                            <HStack spacing={1}>
-                                <Text  w={'90px'} paddingTop={1} fontWeight={600}>Display:</Text>
-                                <Select onChange={(e) => {setTypeofchart(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={Allcharts[0]}>
-                                    {
-                                        Allcharts.map(item => (
-                                            <option selected={item === typeofchart ? true : false} value={item}>{item}</option>
-                                        ))
-                                    }
-                                </Select>
-                            </HStack>
-                        </GridItem>
-                        <GridItem colStart={8} colSpan={2}>
-                            <HStack spacing={1}>
-                                <Text w={'110px'} paddingTop={1} fontWeight={600}>Roll up:</Text>
-                                <Select disabled={typeofchart === 'Table'? true : false} onChange={(e) => {setDrillup(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={AllDrillup[0]}>
-                                {
-                                    AllDrillup.map(item => (
-                                        <option selected={item === drillup ? true : false} value={item}>{item}</option>
-                                    ))
-                                }
-                            </Select>
-                            </HStack>
-                        </GridItem>
-                        <GridItem colStart={10} colSpan={3}>
-                            <HStack spacing={1} textAlign={'right'}>
-                                <Text w={'100px'} paddingTop={1} fontWeight={600}>Test:</Text>
-                            
-                                <Select  onChange={(e) => {setTypeoftestmanytime(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={props.hadmID === 'All Admission' && typeofmedicaltestmanytime.length > 0 ? typeofmedicaltestmanytime[0].label : typeofmedicaltestmanytime.filter((item) => {
-                                            const itemValue = String(item.hadm_id);
-                                            return itemValue.includes(props.hadmID)
-                                        }).length > 0 ? typeofmedicaltestmanytime.filter((item) => {
-                                            const itemValue = String(item.hadm_id);
-                                            return itemValue.includes(props.hadmID)
-                                        })[0].label : ""}>
+                {expandMedicalTest === 3 ? null : <GridItem h={'100%'} position={'relative'} paddingTop={'2'}>
+                    <HStack spacing={2} h={'10%'}>
+                        <Text w={'20%'} color={'#3E36B0'} fontSize={'25px'} fontWeight={600}> Many-time test</Text>
+                        <Flex w={'80%'} justifyContent="flex-end">
+                            <Popover closeOnBlur={true}>
+                                <PopoverTrigger>
+                                    <Button>Add Chart +</Button>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverBody maxH={'300px'} mt={2} overflow={'auto'}>
+                                    <Stack pl={6} mt={3} spacing={1}>
                                     {
                                         props.hadmID === 'All Admission' ?
                                         _.uniqBy(typeofmedicaltestmanytime, "label").map(item => (
-                                            <option selected={item.label === typeoftestmanytime ? true : false} value={item.label}>{item.label}</option>
+                                            <Checkbox onChange={(e) => {handleButtonClick(e.target.value)}} isChecked={props.componentChart.find(a => a.charttype === item.label) ? true : false} value={item.label}>{item.label}</Checkbox>
                                         )) :
                                         _.uniqBy(typeofmedicaltestmanytime.filter((item) => {
                                             const itemValue = String(item.hadm_id);
                                             return itemValue.includes(props.hadmID)
                                         }), "label").map(item => (
-                                            <option selected={item.label === typeoftestmanytime ? true : false} value={item.label}>{item.label}</option>
+                                            <Checkbox onChange={(e) => {handleButtonClick(e.target.value)}} isChecked={props.componentChart.find(a => a.charttype === item.label) ? true : false} value={item.label}>{item.label}</Checkbox>
                                         ))
                                     }
-                                </Select>
-                            </HStack>
-                        </GridItem>
-                    </Grid>
-                    <Box h={'90%'} position={'relative'}>
-                        {typeofchart === 'LineChart' ? 
-                            <LineChart level={drillup} color={color} dataset={typeoftestmanytime + " " + (medicaltestmanytimefilter.length > 0 ? medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "" : "")} label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/> 
-                        : typeofchart === 'BarChart' ?
-                            <BarChart level={drillup} color={color} dataset={typeoftestmanytime + " " + (medicaltestmanytimefilter.length > 0 ? medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "" : "")} label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/>
-                        :
-                            <MyTable2 data={medicaltestmanytimefilter} height={expandMedicalTest === 1 ? '560px' : '260px'}
-                            width={props.expand ? '1700px' : '1100px'} onSelect={()=>{}}/>
-                        }
-                    </Box> */}
+                                    </Stack>
+                                    </PopoverBody>
+                                </PopoverContent>
+                            </Popover>
+                        </Flex>
+                    </HStack>
+                    <Box ref={scrollRef} h={'80%'} position={'absolute'} overflowY={'auto'} style={{
+                                        scrollbarWidth: 'thin', 
+                                        scrollbarColor: '#A0AEC0 #ffffff', 
+                                    }}>
                     {props.componentChart.map((item, index) => (
-                        <div key={item} style={{height: '95%', position:'relative'}}>
-                            <MedicalTestChart onClose={()=>{deleteComponentChart(index)}} hadmID = {props.hadmID} medicaltestmanytime={medicaltestmanytime} typeofmedicaltestmanytime={typeofmedicaltestmanytime} expandMedicalTest={expandMedicalTest} expand={props.expand}/> 
+                        <div key={item.id} style={{height: '100%', position:'relative'}} ref={el => divRefs.current[index] = el}>
+                            <MedicalTestChart deleteComponentChart={deleteComponentChart} addComponentChart={addComponentChart} scrollToDiv={scrollToDiv} componentChart={props.componentChart} setComponentChart={props.setComponentChart} onClose={()=>{deleteComponentChart(index)}} charttype={item.charttype} hadmID = {props.hadmID} medicaltestmanytime={medicaltestmanytime} typeofmedicaltestmanytime={typeofmedicaltestmanytime} expandMedicalTest={expandMedicalTest} expand={props.expand}/> 
                         </div>
                     ))}
-                    <Scrollspy style={{margin: '0', padding: '0'}} currentClassName="active" items={['end']}>
+                    </Box>
+                    <div style={{height: '0'}} id="end"></div>
+                    {/* <Scrollspy style={{margin: '0', padding: '0', height: '10%'}} currentClassName="active" items={['end']}>
                         <Button id="end" onClick={addComponentChart}>Add Chart +</Button>
-                    </Scrollspy>
+                    </Scrollspy> */}
                     {/* <div id="end" /> Ref to the end of the components list */}
                     {/* <MedicalTestChart hadmID = {props.hadmID} medicaltestmanytime={medicaltestmanytime} typeofmedicaltestmanytime={typeofmedicaltestmanytime} expandMedicalTest={expandMedicalTest} expand={props.expand}/> */}
 
-                </GridItem>}
+            </GridItem>}
         </Grid>
     )
 }

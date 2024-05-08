@@ -31,9 +31,9 @@ const DiseaseCard = ({ text, hidden }) => {
   return (
     <Box boxSize={100} overflow="hidden" w={100}>
       <Box>
-        <Center> 
+        <AbsoluteCenter> 
           <Image src={imagePaths[text]} alt={`Card Image for ${text}`} boxSize="40px"/>
-        </Center>
+        </AbsoluteCenter>
       </Box>
       {hidden ? null : 
         <Box boxSize={100}>
