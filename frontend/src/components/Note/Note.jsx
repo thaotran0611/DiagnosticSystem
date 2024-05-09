@@ -27,8 +27,8 @@ const Note = (props) => {
     : '0';
     // const date = dayjs(props.data[0]['created_at']).toDate()
     // console.log('day la ngay', date)
-    const [fromdate, setFromDate] = useState (props.data.length > 0? dayjs(new Date(props.data[props.data.length - 1].created_at)) : dayjs(new Date()));
-    const [todate, setToDate] = useState(dayjs(new Date()))
+    const [fromdate, setFromDate] = useState (null);
+    const [todate, setToDate] = useState(null);
     const pageSize = props.pageSize;
     const [page, setPage] = useState(1);
     
@@ -92,7 +92,7 @@ const Note = (props) => {
                     <Text className="header">Note</Text> 
                     <Popup trigger={<PlusSquareIcon marginBottom={1} boxSize={'1.2em'} className="icon-add"/>}
                         nested modal contentStyle={{background: 'none', border: 'none'}}>
-                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id} user_code={props.user_code}/>}
+                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>}
                     </Popup>
                 </GridItem>
                 <GridItem colSpan={4} rowSpan={1}>
@@ -124,34 +124,41 @@ const Note = (props) => {
                 <ThemeProvider theme={theme}>
                     <div className="NoteDetail" style={{width: '100%'}}>
                         {
+                            fromdate === null && todate === null ?
+                            slicedData.map(note => (
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>
+                            )) :
                             searchvalue!== '' ? 
                             slicedData.filter((item) => {
                                 const itemValue = String(item.title).toLowerCase();
                                 const timeValue = dayjs(item.created_at).toDate();
-                                return itemValue.includes(searchvalue) && timeValue >= fromdate && timeValue <= todate;
+                                return itemValue.includes(searchvalue) && (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                             }).map(note => (
-                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>
                             ))
                             :
                             slicedData.filter((item) => {
                                 const timeValue = dayjs(item.created_at).toDate();
-                                return timeValue >= fromdate && timeValue <= todate;
+                                return (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                             }).map(note => (
-                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>
                             ))
                         }
                     </div>
                     <div className="pagination-note-container">
                     
                     <Pagination
-                        count={Math.ceil(props.data ? searchvalue!== '' ? 
-                         props.data.filter((item) => {
+                        count={Math.ceil(
+                        fromdate === null && todate === null ?
+                        props.data.length /pageSize :
+                        props.data ? searchvalue!== '' ? 
+                        props.data.filter((item) => {
                             const itemValue = String(item.title).toLowerCase();
                             const timeValue = dayjs(item.created_at).toDate();
-                            return itemValue.includes(searchvalue) && timeValue >= fromdate && timeValue <= todate;
+                            return itemValue.includes(searchvalue) && (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                         }).length / pageSize: props.data.filter((item) => {
                             const timeValue = dayjs(item.created_at).toDate();
-                            return timeValue >= fromdate && timeValue <= todate;
+                            return (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                         }).length /pageSize: 0)}
                         page={page}
                         onChange={handleChangePage}

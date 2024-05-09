@@ -50,7 +50,7 @@ const DetailMedicine = (props) => {
     const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
     return(
         <ResearcherLayout path={
-                <Breadcrumb>
+                <Breadcrumb fontSize="xl">
                     <BreadcrumbItem>
                         <BreadcrumbLink href='./'>Medicine</BreadcrumbLink>
                     </BreadcrumbItem>

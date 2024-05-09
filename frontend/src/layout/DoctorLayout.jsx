@@ -58,6 +58,7 @@ export const DoctorLayout = ({children, path, expand, patient, name}) => {
             backgroundColor='#E7E3E9'
             margin= '0.3% 0.3% 0.3% 0.3%'
             borderRadius={'40px'}
+            position={'relative'}
             >
                 <GridItem pl='2' area={'header'}>
                     <Grid paddingRight={'40px'} paddingTop={'8px'} paddingLeft={'40px'} templateColumns={'repeat(20, 1fr)'}>

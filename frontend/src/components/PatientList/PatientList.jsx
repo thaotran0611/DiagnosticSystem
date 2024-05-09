@@ -46,9 +46,20 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
     }
   };
   const [ascendding, setAscending] = useState(true);
-  const [sortby, setSortby] = useState('no sort');
+  const [sortby, setSortby] = useState('subject_id');
   // const [sortResult, setSortresult] = useState(data)
-  let sortResult = sortby !== 'no sort' ? ascendding ? [...data].sort((a, b) => {return a[sortby].toString().localeCompare(b[sortby].toString());}) : [...data].sort((a, b) => {return b[sortby].toString().localeCompare(a[sortby].toString());}) : data;
+  let sortResult = ascendding ? [...data].sort((a, b) => {
+    if (sortby === 'subject_id'){
+      return a[sortby] - b[sortby];
+    } else {
+      return a[sortby].toString().localeCompare(b[sortby].toString())
+    }})
+    : [...data].sort((a, b) => {
+    if (sortby === 'subject_id'){
+      return b[sortby] - a[sortby];
+    } else {
+      return b[sortby].toString().localeCompare(a[sortby].toString());
+    }});
   let startIndex = (page - 1) * pageSize;
   let endIndex = startIndex + pageSize;
   let slicedData = sortResult.slice(startIndex, endIndex);
@@ -72,11 +83,10 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
         <Text pl="5" pt="2" fontSize={35} fontWeight="bold" marginRight="auto">Patient List</Text>
         <Stack direction="row" spacing="4" p="2" m='0' marginLeft="auto" mr={5}>
             <Text paddingTop={3}>Sort: </Text>
-            <select onClick={(e) => {setSortby(e.target.value)}} style={{cursor: 'pointer'}}>
-              <option value="no sort">no sort</option>
-              <option value={"name"}>name</option>
-              <option value={"subject_id"}>subject id</option>
-              <option value={"dob"}>birthday</option>
+            <select   defaultValue={"subject_id"} onClick={(e) => {setSortby(e.target.value)}} style={{cursor: 'pointer'}}>
+              <option value={"subject_id"}>Subject id</option>
+              <option value={"name"}>Name</option>
+              <option value={"dob"}>Date of Birth</option>
             </select>
             {ascendding ? 
             <ArrowDownIcon onClick={() => {setAscending(!ascendding)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={5} boxSize={5}/>

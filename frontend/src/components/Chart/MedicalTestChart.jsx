@@ -12,13 +12,14 @@ const MedicalTestChart = (props) => {
     const [color, setColor] = useState({});
     const [drillup, setDrillup] = useState('Default');
     const AllDrillup = ['Default', 'date', 'month', 'year'];
-    const [typeoftestmanytime,setTypeoftestmanytime] = useState(props.hadmID === 'All Admission' && props.typeofmedicaltestmanytime.length > 0 ? props.typeofmedicaltestmanytime[0].label : props.typeofmedicaltestmanytime.filter((item) => {
-        const itemValue = String(item.hadm_id);
-        return itemValue.includes(props.hadmID)
-    }).length > 0 ? props.typeofmedicaltestmanytime.filter((item) => {
-        const itemValue = String(item.hadm_id);
-        return itemValue.includes(props.hadmID)
-    })[0].label : "");
+    const [typeoftestmanytime,setTypeoftestmanytime] = useState(props.charttype);
+    // useState(props.hadmID === 'All Admission' && props.typeofmedicaltestmanytime.length > 0 ? props.typeofmedicaltestmanytime[0].label : props.typeofmedicaltestmanytime.filter((item) => {
+    //     const itemValue = String(item.hadm_id);
+    //     return itemValue.includes(props.hadmID)
+    // }).length > 0 ? props.typeofmedicaltestmanytime.filter((item) => {
+    //     const itemValue = String(item.hadm_id);
+    //     return itemValue.includes(props.hadmID);
+    // })[0].label : "");
     let medicaltestmanytimefilter = props.hadmID === 'All Admission' ? props.medicaltestmanytime.filter((item) => {
         const itemValue = String(item.label);
         return itemValue === typeoftestmanytime;
@@ -29,16 +30,40 @@ const MedicalTestChart = (props) => {
         const itemValue = String(item.label);
         return itemValue === typeoftestmanytime;
     })
+
+    const handleOnChange = (charttype) => {
+        if (props.componentChart.findIndex(item => item.charttype === charttype)!==-1){
+            props.scrollToDiv(props.componentChart.findIndex(item => item.charttype === charttype));
+        }
+        else {
+            // props.addComponentChart(charttype);
+            // props.deleteComponentChart(typeoftestmanytime);
+            const updatedChart = props.componentChart.map(item => {
+                // If the item's id matches the provided id, update its charttype
+                console.log(item)
+                if (item.charttype === typeoftestmanytime) {
+                    console.log(item.charttype)
+                    return { ...item, charttype: charttype };
+                }
+                // Otherwise, return the original item
+                return item;
+            });
+            props.setComponentChart(updatedChart);
+            setTypeoftestmanytime(charttype);
+        }
+    }
+    
     return (
-        <div style={{height: '90%', position: 'relative'}}>
+        <div style={{height: '90%', position: 'relative', width: '100%'}}>
             <Grid
                 h='40px'
                 templateColumns='repeat(12, 1fr)'
                 gap={4}
+                marginTop={2}
                 >
                 <GridItem colStart={1} colSpan={4}>
                     <HStack>
-                    <Text paddingTop={1} color={'#3E36B0'} fontSize={'16px'} fontWeight={600}>{typeoftestmanytime + " " + (medicaltestmanytimefilter.length > 0 ? medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "" : "")}</Text>
+                    <Text paddingTop={0} color={'red'} fontSize={'22px'} fontWeight={600}>{typeoftestmanytime}</Text>
                     <SmallCloseIcon onClick={props.onClose} cursor={'pointer'}/>
                     </HStack>
                 </GridItem>
@@ -67,7 +92,7 @@ const MedicalTestChart = (props) => {
                 </GridItem>
                 <GridItem colStart={8} colSpan={2}>
                     <HStack spacing={1}>
-                        <Text w={'110px'} paddingTop={1} fontWeight={600}>Roll up:</Text>
+                        <Text w={'90px'} paddingTop={1} fontWeight={600}>Time:</Text>
                         <Select disabled={typeofchart === 'Table'? true : false} onChange={(e) => {setDrillup(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={AllDrillup[0]}>
                         {
                             AllDrillup.map(item => (
@@ -81,13 +106,15 @@ const MedicalTestChart = (props) => {
                     <HStack spacing={1} textAlign={'right'}>
                         <Text w={'100px'} paddingTop={1} fontWeight={600}>Test:</Text>
                     
-                        <Select  onChange={(e) => {setTypeoftestmanytime(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={props.hadmID === 'All Admission' && props.typeofmedicaltestmanytime.length > 0 ? props.typeofmedicaltestmanytime[0].label : props.typeofmedicaltestmanytime.filter((item) => {
-                                    const itemValue = String(item.hadm_id);
-                                    return itemValue.includes(props.hadmID)
-                                }).length > 0 ? props.typeofmedicaltestmanytime.filter((item) => {
-                                    const itemValue = String(item.hadm_id);
-                                    return itemValue.includes(props.hadmID)
-                                })[0].label : ""}>
+                        <Select  onChange={(e) => {handleOnChange(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'} defaultValue={ typeoftestmanytime
+                            // props.hadmID === 'All Admission' && props.typeofmedicaltestmanytime.length > 0 ? props.typeofmedicaltestmanytime[0].label : props.typeofmedicaltestmanytime.filter((item) => {
+                                //     const itemValue = String(item.hadm_id);
+                                //     return itemValue.includes(props.hadmID)
+                                // }).length > 0 ? props.typeofmedicaltestmanytime.filter((item) => {
+                                //     const itemValue = String(item.hadm_id);
+                                //     return itemValue.includes(props.hadmID)
+                                // })[0].label : ""
+                                }>
                             {
                                 props.hadmID === 'All Admission' ?
                                 _.uniqBy(props.typeofmedicaltestmanytime, "label").map(item => (
@@ -105,9 +132,9 @@ const MedicalTestChart = (props) => {
                     </HStack>
                 </GridItem>
             </Grid>
-            <Box h={'90%'} position={'relative'}>
+            <Box h={'90%'} position={'absolute'} w={'100%'}>
                 {typeofchart === 'LineChart' ? 
-                    <LineChart level={drillup} color={color} dataset={typeoftestmanytime + " " + (medicaltestmanytimefilter.length > 0 ? medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "" : "")} label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/> 
+                    <LineChart unitY = {medicaltestmanytimefilter.length > 0 ? medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "" : ""} level={drillup} color={color} dataset={typeoftestmanytime + " " + (medicaltestmanytimefilter.length > 0 ? medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "" : "")} label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/> 
                 : typeofchart === 'BarChart' ?
                     <BarChart level={drillup} color={color} dataset={typeoftestmanytime + " " + (medicaltestmanytimefilter.length > 0 ? medicaltestmanytimefilter[0].valueuom !== null ? " (" + medicaltestmanytimefilter[0].valueuom + ")" : "" : "")} label={medicaltestmanytimefilter.map(item => item.charttime)} data={medicaltestmanytimefilter.map(item => item.value)}/>
                 :

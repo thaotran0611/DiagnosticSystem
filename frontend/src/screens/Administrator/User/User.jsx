@@ -85,7 +85,7 @@ const User = () => {
 
     return(
         <AdminLayout path={
-          <Breadcrumb>
+          <Breadcrumb fontSize="xl">
               <BreadcrumbItem isCurrentPage>
                   <BreadcrumbLink href='#'>User</BreadcrumbLink>
               </BreadcrumbItem>

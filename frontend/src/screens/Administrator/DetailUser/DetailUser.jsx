@@ -113,7 +113,7 @@ const DetailUser = (props) => {
     const [expandGeneral, setExpandGenaral] = useState(2);
     return(
         <AdminLayout path={
-                <Breadcrumb>
+                <Breadcrumb fontSize="xl">
                     <BreadcrumbItem>
                         <BreadcrumbLink href='./'>Users</BreadcrumbLink>
                     </BreadcrumbItem>

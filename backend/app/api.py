@@ -6,7 +6,7 @@ from database import engine, get_db
 from construct import * 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy import text
+from sqlalchemy import text, case, and_, desc
 import pandas as pd
 import numpy as np
 import json
@@ -48,8 +48,7 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=db_logging)
 active_sessions = {"DOCTOR": {}, "RESEARCHER": {}, "ADMINISTRATOR": {}, "ANALYST": {}}
 
 def mapping_column(col):
-    dic = {
-            "admittime":"Admission Time", 
+    dic = {"admittime":"Admission Time", 
            "admission_type":"Admission Type",
            "admission_location":"Admission Location",
            "dischtime":"Discharge Time",
@@ -83,7 +82,13 @@ def mapping_column(col):
            "description":"Description",
            "text":"Text",
            "diagnosis":"Diagnosis",
-           "insurance":"Insurance"}
+           "insurance":"Insurance",
+           "icustay_id": "ICU Stay ID",
+           "valueuom":"UOM of Value",
+           "starttime":"Start Time",
+           "endtime": "End Time",
+           "locationcategory":"Location Category",
+           }
     mapped_cols = [dic.get(column, column) for column in col]
     return mapped_cols
 
@@ -337,270 +342,6 @@ async def get_patients_overview(doctor_code, db=Depends(get_db)) -> dict: #care 
         result = []
     return JSONResponse(content={"data": result, "genderData":gender_data})
 
-# @app.post("/insert-self-note", tags=["root"])
-# async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
-#     # print(data)
-#     # note_id = generate_random_string(random.randint(4, 9))
-#     try:
-#         note_id = data.get('note_id')
-#         priority = data.get("priority")
-#         title = data.get("title")
-#         content = data.get("content")
-#         created_at = data.get("created_at")
-#         user_code = data.get("user_code")
-        
-#         insert_query_hive = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-#         insert_query_mysql = """INSERT INTO transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-        
-#         if select_db == 'hive':
-#             insert_query = insert_query_hive
-#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-#         else:
-#             insert_query = insert_query_mysql
-#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-#             conn = engine.connect().connection
-        
-#         cursor = conn.cursor()
-
-#         # Define data to be inserted
-#         data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
-
-#         # Execute INSERT statement
-#         cursor.execute(insert_query, data)
-
-#         # Commit transaction
-#         conn.commit()
-
-#         # Close cursor and connection
-#         cursor.close()
-#         conn.close()
-#         log_data = {
-#             'user_code': user_code,
-#             'time': created_at,
-#             'action': 'insert-self-note',
-#             'related_item': f"Note: {note_id}"
-#         }
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
-
-#     return {"message": "Note inserted successfully", "log": log_data}
-
-# @app.post("/update-self-note", tags=["root"])
-# async def update_self_note(data:dict, db=Depends(get_db)) -> dict:
-#     try:
-#         note_id = data.get("note_id")
-#         priority = data.get("priority")
-#         title = data.get("title")
-#         content = data.get("content")
-#         created_at = data.get("created_at")
-#         user_code = data.get("user_code")
-        
-#         insert_query_hive = """INSERT INTO TABLE transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-#         insert_query_mysql = """INSERT INTO transactional_note VALUES (%s, %s, %s, %s, %s, %s, %s,%s)"""
-
-#         # Define data to be inserted
-        
-#         if select_db == 'hive':
-#             insert_query = insert_query_hive
-#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-#         else:
-#             insert_query = insert_query_mysql
-#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-#             conn = engine.connect().connection
-        
-#         cursor = conn.cursor()
-        
-#         update_query = """UPDATE transactional_note SET active = 0 WHERE note_id = %s"""
-#         cursor.execute(update_query, (note_id,))
-#         conn.commit()
-        
-#         data = (note_id, user_code, created_at, created_at, content, priority, title, 1)
-#         cursor.execute(insert_query, data)
-#         conn.commit()
-
-#         # Close cursor and connection
-#         cursor.close()
-#         conn.close()
-        
-#         log_data = {
-#             'user_code': user_code,
-#             'time': created_at,
-#             'action': 'update-self-note',
-#             'related_item': f"Note: {note_id}",
-#         }
-
-#         return {"message": "Note inserted successfully", 'log': log_data}
-#     except:
-#         raise HTTPException(status_code=500, detail="An error occurred while updating the note.")
-
-
-# @app.post("/delete-self-note", tags=["root"])
-# async def delete_self_note(data:dict, db=Depends(get_db)) -> dict:
-#     try:
-#         note_id = data.get("note_id")
-
-#         if select_db == 'hive':
-#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-#         else:
-#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-#             conn = engine.connect().connection
-#         cursor = conn.cursor()
-
-#         delete_query = """DELETE FROM transactional_note WHERE note_id = %s"""
-
-#         # Execute the delete query with the parameter
-#         cursor.execute(delete_query, (note_id,))
-
-#         # Commit the transaction
-#         conn.commit()
-
-#         # Close cursor and connection
-#         cursor.close()
-#         conn.close()
-
-#         log_data = {
-#             'user_code': data.get('user_code'),
-#             'time': data.get('time'),
-#             'action': 'delete-self-note',
-#             'related_item': f"Note: {note_id}"
-#         }
-
-#         return {"message": "Note inserted successfully","log": log_data}
-#     except:
-#         raise HTTPException(status_code=500, detail="An error occurred while deleting the note.")
-
-
-# @app.post("/insert-patient-note", tags=["root"])
-# async def insert_self_note(data:dict, db=Depends(get_db)) -> dict:
-#     try:
-#         note_id = data.get('note_id')
-#         priority = data.get("priority")
-#         title = data.get("title")
-#         content = data.get("content")
-#         created_at = data.get("created_at")
-#         user_code = data.get("user_code")
-#         subject_id = data.get("subject_id")
-
-#         insert_query_hive = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-#         insert_query_mysql = """INSERT INTO transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        
-#         if select_db == 'hive':
-#             insert_query = insert_query_hive
-#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-#         else:
-#             insert_query = insert_query_mysql
-#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-#             conn = engine.connect().connection
-        
-#         cursor = conn.cursor()
-
-#         # Define data to be inserted
-#         data_insert = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
-#         # Execute INSERT statement
-#         cursor.execute(insert_query, data_insert)
-
-#         # Commit transaction
-#         conn.commit()
-
-#         # Close cursor and connection
-#         cursor.close()
-#         conn.close()
-#         log_data = {
-#             'user_code': user_code,
-#             'time': created_at,
-#             'action': 'insert-patient-note',
-#             'related_item': f"Note: {note_id} \n Patient Code: {subject_id}",
-#         }    
-        
-#         return {"message": "Note inserted successfully", 'log':log_data}
-#     except:
-#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
-
-
-# @app.post("/update-patient-note", tags=["root"])
-# async def update_patient_note(data:dict, db=Depends(get_db)) -> dict:
-#     try:
-#         note_id = data.get("note_id")
-#         priority = data.get("priority")
-#         title = data.get("title")
-#         content = data.get("content")
-#         created_at = data.get("created_at")
-#         user_code = data.get("user_code")
-#         subject_id = data.get("subject_id")
-
-#         insert_query_hive = """INSERT INTO TABLE transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-#         insert_query_mysql = """INSERT INTO transactional_patient_note VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
-        
-#         if select_db == 'hive':
-#             insert_query = insert_query_hive
-#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-#         else:
-#             insert_query = insert_query_mysql
-#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-#             conn = engine.connect().connection
-        
-#         cursor = conn.cursor()
-        
-#         update_query = """UPDATE transactional_patient_note SET active = 0 WHERE note_id = %s"""
-#         cursor.execute(update_query, (note_id,))
-#         conn.commit()
-        
-#         # Define data to be inserted
-#         data = (user_code,subject_id, created_at, created_at, content, priority, title, note_id, 1)
-
-#         cursor.execute(insert_query, data)
-#         conn.commit()
-
-#         # Close cursor and connection
-#         cursor.close()
-#         conn.close()
-
-#         log_data = {
-#             'user_code': user_code,
-#             'time': created_at,
-#             'action': 'update-patient-note',
-#             'related_item': f"Note: {note_id} \n Patient Code: {subject_id}",
-#         }    
-#         return {"message": "Note updated successfully",'log': log_data}
-#     except:
-#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
-
-
-# @app.post("/delete-patient-note", tags=["root"])
-# async def delete_patient_note(data:dict, db=Depends(get_db)) -> dict:
-#     try:
-#         note_id = data.get("note_id")
-        
-#         if select_db == 'hive':
-#             conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
-#         else:
-#             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
-#             conn = engine.connect().connection
-            
-#         cursor = conn.cursor()
-#         delete_query = """DELETE FROM transactional_patient_note WHERE note_id = %s"""
-#         select_query = sa.select(PATIENT_NOTE).where(PATIENT_NOTE.columns.note_id == note_id)
-        
-#         df = pd.DataFrame(db.execute(select_query).fetchall())
-#         deleted_records = df.to_dict(orient='records')
-
-#         # Execute the delete query with the parameter
-#         cursor.execute(delete_query, (note_id,))
-#         conn.commit()
-#         # Close cursor and connection
-#         cursor.close()
-#         conn.close()
-
-#         log_data = {
-#             'user_code': deleted_records[0]['doctor_code'],
-#             'time': data.get('time'),
-#             'action': 'delete-patient-note',
-#             'related_item': f"Note: {note_id} \n Patient Code: {deleted_records[0]['subject_id']}",
-#         }    
-#         return {"message": "Note deleted successfully",'log': log_data}
-#     except:         
-#         raise HTTPException(status_code=500, detail="An error occurred while inserting the note.")
-
 @app.get("/self-notes", response_model=dict, tags=["root"]) 
 async def get_self_note(user_code, db=Depends(get_db)) -> dict:
     stmt = NOTE.select().where(sa.and_(NOTE.columns.user_code == user_code, NOTE.columns.active == True)).order_by(sa.desc(NOTE.columns.updated_at))
@@ -619,7 +360,7 @@ async def get_patient_notes(doctor_code,subject_id ,db=Depends(get_db)) -> dict:
     subject_id = int(subject_id)
     # print(subject_id)
     # doctor_code = int(doctor_code)
-    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.doctor_code == doctor_code, PATIENT_NOTE.columns.subject_id == subject_id, 
+    stmt = PATIENT_NOTE.select().where(sa.and_(PATIENT_NOTE.columns.user_code == doctor_code, PATIENT_NOTE.columns.subject_id == subject_id, 
                                                PATIENT_NOTE.columns.active == True ))\
         .order_by(sa.desc(PATIENT_NOTE.columns.updated_at))
     
@@ -1177,6 +918,172 @@ async def detail_disease_general(disease_code='AA', db=Depends(get_db)) -> dict:
         result = []
     return JSONResponse(content={"disease": result})
 
+@app.get("/detaildisease-otherdiseases", response_model=dict, tags=["root"])
+async def detaildisease_otherdiseases(disease_code='AA', db=Depends(get_db)) -> dict:
+    subq1 = sa.select(
+        ANNOTATE.columns.doctor_code,
+        ANNOTATE.columns.hadm_id,
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.value,
+        ANNOTATE.columns.time,
+        case((and_(ANNOTATE.columns.disease_code == 'AA', ANNOTATE.columns.value == True), 1), else_=0).label('AA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CND', ANNOTATE.columns.value == True), 1), else_=0).label('CND'),
+        case((and_(ANNOTATE.columns.disease_code == 'SA', ANNOTATE.columns.value == True), 1), else_=0).label('SA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CP', ANNOTATE.columns.value == True), 1), else_=0).label('CP'),
+        case((and_(ANNOTATE.columns.disease_code == 'Dep', ANNOTATE.columns.value == True), 1), else_=0).label('Dep'),
+        case((and_(ANNOTATE.columns.disease_code == 'MC', ANNOTATE.columns.value == True), 1), else_=0).label('MC'),
+        case((and_(ANNOTATE.columns.disease_code == 'Ob', ANNOTATE.columns.value == True), 1), else_=0).label('Ob'),
+        case((and_(ANNOTATE.columns.disease_code == 'PD', ANNOTATE.columns.value == True), 1), else_=0).label('PD'),
+        case((and_(ANNOTATE.columns.disease_code == 'HD', ANNOTATE.columns.value == True), 1), else_=0).label('HD'),
+        case((and_(ANNOTATE.columns.disease_code == 'LD', ANNOTATE.columns.value == True), 1), else_=0).label('LD'),
+    )\
+    .select_from(ANNOTATE).alias('subq1')
+
+    subq2 = sa.select(
+        subq1.columns.hadm_id,
+        sa.func.max(subq1.columns.time).label('time'),
+        sa.func.max(subq1.columns.AA).label('AA'),
+        sa.func.max(subq1.columns.CND).label('CND'),
+        sa.func.max(subq1.columns.SA).label('SA'),
+        sa.func.max(subq1.columns.CP).label('CP'),
+        sa.func.max(subq1.columns.Dep).label('Dep'),
+        sa.func.max(subq1.columns.MC).label('MC'),
+        sa.func.max(subq1.columns.Ob).label('Ob'),
+        sa.func.max(subq1.columns.PD).label('PD'),
+        sa.func.max(subq1.columns.HD).label('HD'),
+        sa.func.max(subq1.columns.LD).label('LD')
+    )\
+    .select_from(subq1)\
+    .group_by(subq1.columns.hadm_id).alias('subq2')
+
+    stmt = sa.select(
+        ADMISSIONS_CHECKED.columns.hadm_id,
+        PATIENTS_CHECKED.columns.gender,
+        ADMISSIONS_CHECKED.columns.marital_status,
+        ADMISSIONS_CHECKED.columns.religion,
+        ADMISSIONS_CHECKED.columns.ethnicity,
+        PATIENTS_CHECKED.columns.dob,
+        PATIENTS_CHECKED.columns.dod,
+        # (sa.func.year(PATIENTS_CHECKED.columns.dod) - sa.func.year(PATIENTS_CHECKED.columns.dob)).label('age_of_death'),
+        subq2.columns.AA,
+        subq2.columns.CND,
+        subq2.columns.SA,
+        subq2.columns.CP,
+        subq2.columns.Dep,
+        subq2.columns.MC,
+        subq2.columns.Ob,
+        subq2.columns.PD,
+        subq2.columns.HD,
+        subq2.columns.LD,
+    ).select_from(sa.join(sa.join(subq2, ADMISSIONS_CHECKED, subq2.columns.hadm_id == ADMISSIONS_CHECKED.columns.hadm_id), PATIENTS_CHECKED, PATIENTS_CHECKED.c.subject_id == ADMISSIONS_CHECKED.c.subject_id))\
+    .where(subq2.columns[disease_code] == 1)\
+    .order_by(ADMISSIONS_CHECKED.c.hadm_id)
+
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        transform_timestamp(df,['dob','dod'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"otherdiseases": result})
+
+@app.get("/detaildisease-prescriptions", response_model=dict, tags=["root"])
+async def detaildisease_prescriptions(disease_code='AA', db=Depends(get_db)) -> dict:
+    subq1 = sa.select(
+        ANNOTATE.columns.doctor_code,
+        ANNOTATE.columns.hadm_id,
+        ANNOTATE.columns.disease_code,
+        ANNOTATE.columns.value,
+        ANNOTATE.columns.time,
+        case((and_(ANNOTATE.columns.disease_code == 'AA', ANNOTATE.columns.value == True), 1), else_=0).label('AA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CND', ANNOTATE.columns.value == True), 1), else_=0).label('CND'),
+        case((and_(ANNOTATE.columns.disease_code == 'SA', ANNOTATE.columns.value == True), 1), else_=0).label('SA'),
+        case((and_(ANNOTATE.columns.disease_code == 'CP', ANNOTATE.columns.value == True), 1), else_=0).label('CP'),
+        case((and_(ANNOTATE.columns.disease_code == 'Dep', ANNOTATE.columns.value == True), 1), else_=0).label('Dep'),
+        case((and_(ANNOTATE.columns.disease_code == 'MC', ANNOTATE.columns.value == True), 1), else_=0).label('MC'),
+        case((and_(ANNOTATE.columns.disease_code == 'Ob', ANNOTATE.columns.value == True), 1), else_=0).label('Ob'),
+        case((and_(ANNOTATE.columns.disease_code == 'PD', ANNOTATE.columns.value == True), 1), else_=0).label('PD'),
+        case((and_(ANNOTATE.columns.disease_code == 'HD', ANNOTATE.columns.value == True), 1), else_=0).label('HD'),
+        case((and_(ANNOTATE.columns.disease_code == 'LD', ANNOTATE.columns.value == True), 1), else_=0).label('LD'),
+    )\
+    .select_from(ANNOTATE).alias('subq1')
+
+    subq2 = sa.select(
+        subq1.columns.hadm_id.label('hadmid'),
+        sa.func.max(subq1.columns.time).label('time'),
+        sa.func.max(subq1.columns.AA).label('AA'),
+        sa.func.max(subq1.columns.CND).label('CND'),
+        sa.func.max(subq1.columns.SA).label('SA'),
+        sa.func.max(subq1.columns.CP).label('CP'),
+        sa.func.max(subq1.columns.Dep).label('Dep'),
+        sa.func.max(subq1.columns.MC).label('MC'),
+        sa.func.max(subq1.columns.Ob).label('Ob'),
+        sa.func.max(subq1.columns.PD).label('PD'),
+        sa.func.max(subq1.columns.HD).label('HD'),
+        sa.func.max(subq1.columns.LD).label('LD')
+    )\
+    .select_from(subq1)\
+    .group_by(subq1.columns.hadm_id).alias('subq2')
+
+    subq3 = sa.select(
+        PRESCRIPTIONS,
+        subq2
+    )\
+    .select_from(sa.join(PRESCRIPTIONS, subq2, PRESCRIPTIONS.c.hadm_id == subq2.c.hadmid))\
+    .where(subq2.c[disease_code] == 1).alias('subq3')
+
+    stmt = sa.select(subq3.c.drug,
+                     subq3.c.drug_type,
+                     subq3.c.drug_name_poe,
+                     subq3.c.drug_name_generic,
+                     subq3.c.AA,
+                     subq3.c.CND,
+                     subq3.c.SA,
+                     subq3.c.CP,
+                     subq3.c.Dep,
+                     subq3.c.MC,
+                     subq3.c.Ob,
+                     subq3.c.PD,
+                     subq3.c.HD,
+                     subq3.c.LD,
+                     sa.func.count().label('frequency'))\
+            .select_from(subq3)\
+            .group_by(subq3.c.drug,
+                     subq3.c.drug_type,
+                     subq3.c.drug_name_poe,
+                     subq3.c.drug_name_generic,
+                     subq3.c.AA,
+                     subq3.c.CND,
+                     subq3.c.SA,
+                     subq3.c.CP,
+                     subq3.c.Dep,
+                     subq3.c.MC,
+                     subq3.c.Ob,
+                     subq3.c.PD,
+                     subq3.c.HD,
+                     subq3.c.LD)\
+            .order_by(desc(sa.func.count()))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        # transform_timestamp(df,['dob','dod'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"prescriptions": result})
+
+
+
 
 @app.get("/get-users", response_model=dict, tags=["root"])
 async def get_users(db=Depends(get_db)) -> dict:
@@ -1345,12 +1252,14 @@ async def insert_note(data:dict, db=Depends(get_db)) -> dict:
     tables ={
         'self-note':'transactional_note',
         'patient-note': 'transactional_patient_note',
-        'user-note': 'users_note'
+        'user-note': 'users_note',
+        'disease-note': 'disease_note'
     }
     action = {
         'self-note':'insert self note',
         'patient-note': 'insert patient note',
-        'user-note': 'insert user note'
+        'user-note': 'insert user note',
+        'disease-note': 'insert disease note'
     }
     try:
         note = data.get('note')
@@ -1408,12 +1317,14 @@ async def update_note(data:dict, db=Depends(get_db)) -> dict:
         tables ={
         'self-note':'transactional_note',
         'patient-note': 'transactional_patient_note',
-        'user-note': 'users_note'
+        'user-note': 'users_note',
+        'disease-note': 'disease_note'
     }
         action = {
             'self-note':'update self note',
             'patient-note': 'update patient note',
-            'user-note': 'update user note'
+            'user-note': 'update user note',
+            'disease-note': 'update disease note'
         }
         
         note = data.get('note')
@@ -1475,12 +1386,15 @@ async def delete_note(data:dict, db=Depends(get_db)) -> dict:
         tables ={
         'self-note':'transactional_note',
         'patient-note': 'transactional_patient_note',
-        'user-note': 'users_note'
+        'user-note': 'users_note',
+        'disease-note': 'disease_note'
     }
         action = {
             'self-note':'delete self note',
             'patient-note': 'delete patient note',
-            'user-note': 'delete user note'
+            'user-note': 'delete user note',
+            'disease-note': 'delete disease note'
+
         }
         
         note_id = data.get('note_id')
@@ -1540,6 +1454,26 @@ async def get_user_action_log(user_code, db=Depends(get_db)) -> dict:
         return JSONResponse(content={"user_action_log": result})
     else:
         return JSONResponse(content={"user_action_log": []})
+    
+@app.get("/disease-notes", response_model=dict, tags=["root"]) 
+async def get_disease_notes(user_code,disease_code ,db=Depends(get_db)) -> dict:
+    # subject_id = int(subject_id)
+    # print(subject_id)
+    # doctor_code = int(doctor_code)
+    stmt = DISEASE_NOTE.select().where(sa.and_(DISEASE_NOTE.columns.user_code == user_code, DISEASE_NOTE.columns.disease_code == disease_code, 
+                                               DISEASE_NOTE.columns.active == True ))\
+        .order_by(sa.desc(DISEASE_NOTE.columns.updated_at))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        transform_timestamp(df,['created_at','updated_at'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"note": result})
 
 
 

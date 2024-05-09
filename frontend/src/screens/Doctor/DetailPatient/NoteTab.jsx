@@ -18,12 +18,15 @@ const NoteTab = (props) => {
     const doctor_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
+    const note = props.note ?? []; 
+    const [selectedNote, setSelectedNote] = useState(null); // PASS AS PARAMETER
 
+    useEffect(() => {
+        setSelectedNote(props.note[0])
+    }, [props.note]);
     // const [note, setNote] = useState([]); // PASS AS PARAMETER
     // const [loadingNote, setLoadingNote] = useState(true);
     const [error, setError] = useState(null);
-    const note = props.note;
-    const [selectedNote, setSelectedNote] = useState(props.note[0]); // PASS AS PARAMETER
     const handleRecordSelection = (record) => {
         setSelectedNote(record);
         console.log('Selected Note:', record.Text); // Add this line to log the selected note
@@ -98,8 +101,8 @@ const NoteTab = (props) => {
                 </Center>
             </GridItem>
             {expandNote === 3 ? null : <GridItem h={'100%'} position={'relative'} paddingTop={'4'}>
-                {selectedNote ? <Text fontSize={'20px'} fontWeight={500} color={'#3E36B0'}>{selectedNote['Admission ID']} - {selectedNote['Category']} note</Text> : null }
-                {selectedNote ? <Textarea scr borderRadius={20} p={8} value={selectedNote.Text} bg={'rgba(17,17,17,0.2)'} h={'90%'} resize={'none'} readOnly placeholder='Here is a sample placeholder' /> : null}
+                {selectedNote  ? <Text fontSize={'20px'} fontWeight={500} color={'#3E36B0'}>{selectedNote['Admission ID']} - {selectedNote['Category']} note</Text> : null }
+                {selectedNote  ? <Textarea scr borderRadius={20} p={8} value={selectedNote.Text} bg={'rgba(17,17,17,0.2)'} h={'90%'} resize={'none'} readOnly placeholder='Here is a sample placeholder' /> : null}
             </GridItem>}
         </Grid>
     )

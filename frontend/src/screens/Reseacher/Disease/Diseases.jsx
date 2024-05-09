@@ -17,7 +17,8 @@ import { useNavigate } from "react-router-dom";
 import DiseaseTag from "../../../components/DiseaseTag/DiseaseTag";
 import axios from "axios";
 import _ from 'lodash';
-
+import { format } from 'date-fns'
+import {log} from '../../../functions';
 const theme = createTheme();
 
 const Disease = () => {
@@ -131,6 +132,13 @@ const Disease = () => {
     }, []);
 
     const handleClick = (data) => {
+        var log_data = {
+            'user_code': researcher_code,
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'View Detail of Disease',
+            'related_item': 'Disease ' + data.disease_code
+          }
+          log(log_data);
         navigate(`detaildisease/${data.disease_code}`, {state: {data: data}}); // Assuming the URL pattern is '/patient/:patientCode'
     };
 

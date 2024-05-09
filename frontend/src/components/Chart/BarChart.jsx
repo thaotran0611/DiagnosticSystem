@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -21,7 +21,7 @@ ChartJS.register(
 );
 
 const BarChart = (props) => {
-  
+  const [clickedIndex, setClickedIndex] = useState(null);
   function extractDate(label, level) {
     const date = new Date(label);
     if (level === 'year') {
@@ -64,6 +64,35 @@ const BarChart = (props) => {
 
   const labels = groupedByMonth.labels;
   const options = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: props.unitY // Unit for the y-axis
+        }
+      }
+    },
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        const datasetIndex = elements[0].datasetIndex;
+        const value = data.datasets[datasetIndex].data[index];
+        const label = data.labels[index];
+        setClickedIndex(index);
+        if (props.setDecision) {
+          props.setDecision(label);
+        }
+        if (props.setChangeChart) {
+          props.setChangeChart(2);
+        }
+      } else {
+        setClickedIndex(null);
+        if (props.setDecision) {
+          props.setDecision('All');
+        }
+      }
+    },
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -83,8 +112,17 @@ const BarChart = (props) => {
       }
     ],
   };
-    return(
-      <Bar options={options} data={data}/>
-    );
+  const customData = {
+    ...data,
+    datasets: data.datasets.map((dataset, datasetIndex) => {
+      return {
+        ...dataset,
+        backgroundColor: dataset.data.map((_, dataIndex) => props.changeChart ? dataIndex === clickedIndex && props.changeChart === 2 ? 'red' : props.color.rgba : dataIndex === clickedIndex ? 'red' : props.color.rgba)
+      };
+    })
+  };
+  return(
+    <Bar options={options} data={customData}/>
+  );
 }
 export default BarChart;

@@ -15,7 +15,7 @@ const Takenote = (props) => {
     const user_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
-    const [message, setMessage] = useState(props.content ? props.content : '');
+    const [message, setMessage] = useState(props.note ? props.note : '');
     const [title, setTitle] = useState(props.title ? props.title : '');
 
     const handleTakenote = event => {
@@ -68,6 +68,10 @@ const Takenote = (props) => {
             newNoteData.user_code = props.user_code;
 
         }
+        else if(props.type === "disease-note"){
+            newNoteData.disease_code = props.disease_code;
+
+        }
 
         props.setNote([newNoteData, ...props.data]); 
         axios({
@@ -114,6 +118,9 @@ const Takenote = (props) => {
         else if(props.type === "user-note"){
             updatedNoteData.admin_code = user_code;
             updatedNoteData.user_code = props.user_code;
+        }
+        else if(props.type === "disease-note"){
+            updatedNoteData.disease_code = props.disease_code;
         }
         
         const updatedNotes = props.data.map(note => {
