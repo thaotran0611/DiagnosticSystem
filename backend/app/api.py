@@ -1355,7 +1355,6 @@ async def update_note(data:dict, db=Depends(get_db)) -> dict:
             engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
             conn = engine.connect().connection
         
-        
         cursor = conn.cursor()
         
         update_query = f"""UPDATE {tables[type]} SET active = 0 WHERE note_id = %s"""
@@ -1442,8 +1441,6 @@ async def delete_note(data:dict, db=Depends(get_db)) -> dict:
         print(e)
         raise HTTPException(status_code=500, detail="An error occurred while updating the note.")
 
-
-
 @app.get("/detail-user-action-log", response_model=dict, tags=["root"])
 async def get_user_action_log(user_code, db=Depends(get_db)) -> dict:
     stmt = sa.select(USER_ACTION_LOG).where(USER_ACTION_LOG.columns.user_code==user_code)
@@ -1474,6 +1471,79 @@ async def get_disease_notes(user_code,disease_code ,db=Depends(get_db)) -> dict:
         result = []
     # print(result)
     return JSONResponse(content={"note": result})
+
+@app.get("/login-time", response_model=dict, tags=["root"]) #for overview admin page
+async def get_login_time(db=Depends(get_db)) -> dict:
+    stmt = USER_ACTION_LOG.select().where(USER_ACTION_LOG.c.action == 'Login').order_by(sa.desc(USER_ACTION_LOG.columns.time))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        transform_timestamp(df,['time'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"login_time": result})
+
+@app.post("/load-data-manually", response_model=dict, tags=["root"])
+async def insert_data_manually(data: dict,db=Depends(get_db)) -> dict:
+    df = pd.DataFrame([data])
+    max_id_stmt = sa.func.max(LOAD_DATA_MANUAL.columns.id).label("id")
+    sub = sa.select(max_id_stmt)
+    id = pd.DataFrame(db.execute(sub).fetchall())
+    result = id.to_dict(orient='records')[0]['id']
+    if result == None:
+        result = 1
+    df['id'] = result
+    # df['created_at'] = pd.to_datetime(df['created_at'], format='%Y-%m-%d %H:%M:%S')
+    print(df)
+    columns = df.columns
+
+    insert_query_hive = f"""
+        INSERT INTO TABLE load_data_manual ({', '.join([f'`{col}`' for col in columns])})
+        VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+        """
+    
+    insert_query_mysql = f"""
+        INSERT INTO  load_data_manual ({', '.join([f'`{col}`' for col in columns])})
+        VALUES ({', '.join(['%s' for _ in range(len(columns))])})
+        """    
+    
+    if select_db == 'hive':
+        insert_query = insert_query_hive
+        conn = hive.connect(host='localhost', port=10000, database='mimic_iii')
+    else:
+        insert_query = insert_query_mysql
+        engine = create_engine(SQLALCHEMY_DATABASE_URL_MYSQL) 
+        conn = engine.connect().connection
+    
+    cursor = conn.cursor()
+    
+    data_tuples = [tuple(row) for row in df.to_numpy()]
+
+    cursor.executemany(insert_query, data_tuples)
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return {"message": "Loading Data Manually successfully"}
+
+
+@app.get("/load-manual-history", response_model=dict, tags=["root"]) 
+async def get_load_manual_history(db=Depends(get_db)) -> dict:
+    stmt = LOAD_DATA_MANUAL.select()
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        transform_timestamp(df,['created_at'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"load_data_manual_history": result})
+
 
 
 

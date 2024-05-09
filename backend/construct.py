@@ -43,5 +43,6 @@ USER_ACTION_LOG = sa.Table('user_action_log', metadata, autoload=True, autoload_
 ADMIN_SCHEDULE = sa.Table('get_date_schedule', metadata, autoload=True, autoload_with=engine)  
 USER_NOTE = sa.Table('users_note', metadata, autoload=True, autoload_with=engine)  
 DISEASE_NOTE = sa.Table('disease_note', metadata, autoload=True, autoload_with=engine)  
+LOAD_DATA_MANUAL = sa.Table('load_data_manual', metadata, autoload=True, autoload_with=engine)  
 
 

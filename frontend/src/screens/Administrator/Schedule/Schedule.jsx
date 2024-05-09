@@ -103,6 +103,9 @@ const Scheduler = () => {
         return result;
     }
 
+    const [scheduleLog, setScheduleLog] = useState([]);
+    const [loadingScheduleLog, setLoadingScheduleLog] = useState([]);
+
     const save = () =>{
         let insertData = {}
         insertData.id = generateRandomString(10);
@@ -133,6 +136,7 @@ const Scheduler = () => {
         }
         console.log(insertData)
         const url = 'http://localhost:8000/insert-load-schedule';
+        setScheduleLog([insertData, ...scheduleLog])
         axios({
             method: 'post',
             url: url,
@@ -146,6 +150,32 @@ const Scheduler = () => {
                 'action': 'Add Schedule for Loading Data',
                 'related_item': 'Schedule ID ' + insertData.id
               }
+                log(log_data);
+            })
+            .catch((res) => {
+              console.log(res);
+            });
+    }
+
+    const load_manually = () =>{
+        var insertData = {
+            user_code : user_code,
+            created_at : format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+        }
+        const url = 'http://localhost:8000/load-data-manually';
+        axios({
+            method: 'post',
+            url: url,
+            data: insertData,
+          })
+            .then((res) => {
+              console.log(res)
+              var log_data = {
+                'user_code': sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).code: '0',
+                'time': insertData.created_at,
+                'action': 'Mannually Load Data',
+                'related_item': ""
+              }
             log(log_data);
             })
             .catch((res) => {
@@ -155,7 +185,7 @@ const Scheduler = () => {
     const [note, setNote] = useState([]);
     const [loadingNote, setLoadingNote] = useState(true);
     const [error, setError] = useState(null);
-
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -176,8 +206,27 @@ const Scheduler = () => {
         fetchData();
     }, []);
 
-    const [scheduleLog, setScheduleLog] = useState([]);
-    const [loadingScheduleLog, setLoadingScheduleLog] = useState([]);
+    const [loadinghistory, setLoadingHistory] = useState([]);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/load-manual-history');
+                // console.log(response)
+                setLoadingHistory(response.data.load_data_manual_history);
+                setLoading(false);
+            } catch (error) {
+                // setError(error);
+                setLoading(false);
+            }
+        };
+    
+        fetchData();
+    }, []);
+
+
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -330,17 +379,20 @@ const Scheduler = () => {
                                 </GridItem>
                                 <GridItem p={2}>
                                 <HStack spacing={4} justifyContent="flex-end">
-                                    <Button colorScheme='teal' size='md'>Load Immediately</Button>
+                                    <Button colorScheme='teal' size='md' onClick={load_manually}>Load Manually</Button>
                                     <Button w={'100px'} colorScheme='teal' size='md' onClick={save}>Set</Button>
                                 </HStack>
                                 </GridItem>
                             </Grid>
                         </GridItem>
                         
-                        <GridItem bg={'#fff'} margin={1} p={1} borderRadius={'20px'} area={'note'} position={'relative'}>
-                            <Center position={'relative'} height={'100%'}>
-                                <Note loading ={loadingNote} pageSize={2} setNote={setNote} data={note} type={"self-note"} subject_id={""} />
-                            </Center>
+                        <GridItem bg={'#fff'} margin={1} borderRadius={'20px'} area={'note'} position={'relative'}>
+                            <GridItem p={3}>
+                                    <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Loading Data Manually History</Text>
+                                </GridItem>
+                                <GridItem padding={'0 10px'}>
+                                    <MyTable2 data={loadinghistory} height={'60%'}/>
+                                </GridItem>
                         </GridItem>
                         <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
                             <Grid gridTemplateRows={'12% 88%'} h={'100%'}>
