@@ -19,6 +19,7 @@ import { Card, CardBody, Box, StackDivider, Stack, Heading, Text, Spacer , Flex 
 import CircleComponent from "../../../components/CircleComponent/CircleComponent"
 import { format } from 'date-fns'
 import {log} from '../../../functions';
+import _ from 'lodash'
 
 const theme = createTheme();
 const UserCard = (props) => { // Destructure user from props
@@ -26,7 +27,7 @@ const UserCard = (props) => { // Destructure user from props
         props.onClick(props.user);
     };
   return ( // Add return statement here
-    <Card onClick={handleClick} key={props.user.code} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}} borderRadius='20px'> 
+    <Card w={'400px'} onClick={handleClick} key={props.user.code} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}} borderRadius='20px'> 
       <CardBody border="1px solid rgba(17, 17, 17, 0.3)" borderRadius="20px" p="2" m='1'> 
           <Stack divider={<StackDivider />} spacing="2"> 
               <Flex> 
@@ -58,13 +59,23 @@ const User = () => {
     const [data, setData] = useState([]);
     const [loadingData, setLoadingData] = useState(true);
     const [error, setError] = useState(null);
-
+    const [filteredResults, setFilteredResults] = useState([]);
+    let gender = [];
+    let role = [];
+    const [filterData, setfilterData] = useState([]);
     useEffect(() => {
       const fetchData = async () => {
           try {
               const response = await axios.get('http://localhost:8000/get-users');
               console.log(response.data.users)
               setData(response.data.users);
+              setFilteredResults(response.data.users);
+              gender = _.uniqBy(response.data.users, 'gender').map((item) => item.gender);
+              role = _.uniqBy(response.data.users, 'role').map((item) => item.role);
+              console.log(role);
+              setfilterData([
+                {name: 'gender', data: gender},
+                {name: 'role', data: role}]);
               setLoadingData(false);
           } catch (error) {
               setError(error);
@@ -73,16 +84,72 @@ const User = () => {
       };
       fetchData();
   }, []);
-    const pageSize = 24;
+    const pageSize = 16;
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const slicedData = data.slice(startIndex, endIndex);
+    const slicedData = filteredResults.slice(startIndex, endIndex);
     const navigate = useNavigate();
-
+    const [searchInput, setSearchInput] = useState('');
+    const [dynamicFilter, setDynamicFilter] = useState([]);
+    const searchItems = () => {
+        if (searchInput !== '' && dynamicFilter.length > 0) {
+            // const applyFilter = (patientdata, searchInput, dynamicFilter) => {
+                // Convert single searchInput to lowercase
+            const normalizedSearchInput = searchInput.toLowerCase();
+            
+            // Filter based on both searchInput and dynamicFilter criteria
+            const filteredData = data.filter((item) => {
+                // Check if any property value contains the single searchInput
+                const includesSearchInput = Object.values(item)
+                    .join('')
+                    .toLowerCase()
+                    .includes(normalizedSearchInput);
+            
+                // Check if item matches all dynamicFilter criteria
+                const uniqueFilter = _.uniqBy(dynamicFilter, 'name').map((item) => item.name);
+                console.log(uniqueFilter)
+                const uniquematchesdynamicFilter = uniqueFilter.every((name) => {
+                    const matchesdynamicFilter = dynamicFilter.filter((item) => {return item.name === name}).some(({name, value}) => {
+                        const itemValue = String(item[name]).toLowerCase();
+                        return itemValue.includes(String(value).toLowerCase());
+                    })
+                    return matchesdynamicFilter;
+                })
+                return includesSearchInput && uniquematchesdynamicFilter;
+            });
+            setFilteredResults(filteredData);
+            
+        }
+        else if (searchInput !== '') {
+            const filterData2 = data.filter((item) => {
+                return Object.values(item).join('').toLowerCase().includes(searchInput.toLowerCase())
+            })
+            setFilteredResults(filterData2)
+        }
+        else if (dynamicFilter.length > 0) {
+            const filterData2 = data.filter((item) => {
+                // Check if item matches all search criteria
+                const uniqueFilter = _.uniqBy(dynamicFilter, 'name').map((item) => item.name);
+                console.log(uniqueFilter)
+                const uniquematchesdynamicFilter = uniqueFilter.every((name) => {
+                    const matchesdynamicFilter = dynamicFilter.filter((item) => {return item.name === name}).some(({name, value}) => {
+                        const itemValue = String(item[name]).toLowerCase();
+                        return itemValue.includes(String(value).toLowerCase());
+                    })
+                    return matchesdynamicFilter;
+                })
+                return uniquematchesdynamicFilter;
+            });
+            setFilteredResults(filterData2);
+        }
+        else{
+            setFilteredResults(data)
+        }
+    }
     return(
         <AdminLayout path={
           <Breadcrumb fontSize="xl">
@@ -94,7 +161,7 @@ const User = () => {
         disease={false}>
                 <GridItem bg={'#fff'} area={'main'}>
                 <Center padding={'1% 4%'}>
-                    {/* <SearchAndFilterBar/> */}
+                    <SearchAndFilterBar patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
                 </Center>
                     <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
                         <ThemeProvider theme={theme}>
@@ -113,7 +180,7 @@ const User = () => {
                         </Box>
                             <Center>
                                 <MyPagination 
-                                    count={Math.ceil(data.length / pageSize)} 
+                                    count={Math.ceil(filteredResults.length / pageSize)} 
                                     page = {page} 
                                     onChange = {handleChangePage}/>
                             </Center>

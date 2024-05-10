@@ -6,7 +6,7 @@ from database import engine, get_db
 from construct import * 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy import text, case, and_, desc
+from sqlalchemy import text, case, and_, desc, literal_column
 import pandas as pd
 import numpy as np
 import json
@@ -1151,7 +1151,26 @@ async def get_sytem_log(db=Depends(get_db)) -> dict:
 #need to update
 @app.get("/user-action-log", response_model=dict, tags=["root"])
 async def get_user_action_log(db=Depends(get_db)) -> dict:
-    stmt = sa.select(USER_ACTION_LOG)
+    subq = sa.select(DOCTOR.c.code,
+                     literal_column("'doctor'").label('role'))\
+            .union(sa.select(
+                RESEARCHER.c.code,
+                literal_column("'researcher'").label('role')
+            )\
+            .union(sa.select(
+                ANALYST.c.code,
+                literal_column("'analyst'").label('role')
+            )\
+            .union(sa.select(
+                ADMINISTRATOR.c.code,
+                literal_column("'analyst'").label('role')
+            ))))\
+            .alias('subq')
+            
+    stmt = sa.select(USER_ACTION_LOG,
+                     subq.c.role)\
+            .select_from(sa.join(USER_ACTION_LOG, subq, USER_ACTION_LOG.c.user_code == subq.c.code))
+    
     df = pd.DataFrame(db.execute(stmt).fetchall())
     if len(df)>0:
         transform_timestamp(df,['time'])
