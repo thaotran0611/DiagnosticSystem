@@ -19,6 +19,8 @@ import Medicine from './screens/Reseacher/Medicine/Medicine';
 import DetailMedicine from './screens/Reseacher/DetailMedicine/DetailMedicine';
 import OverviewAnalyst from './screens/Analyst/Overview/Overview';
 import Model from './screens/Analyst/Model/Model';
+import Files from './screens/Analyst/Files/Files';
+
 import OverviewAdmin from './screens/Administrator/Overview/Overview';
 import User from './screens/Administrator/User/User';
 import DetailUser from './screens/Administrator/DetailUser/DetailUser';
@@ -117,7 +119,14 @@ function App() {
         />)}
 
         {role == 'ANALYST' && (<Route
-          path='/analyst/model'
+          path='/analyst/file'
+          element={
+            <Files/>
+          }
+        /> )}
+
+        {role == 'ANALYST' && (<Route
+          path='/analyst/file/detailfiles/:fileCode'
           element={
             <Model/>
           }

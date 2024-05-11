@@ -2,7 +2,7 @@ import React from "react";
 import axios from 'axios';
 
 import './DoctorLayout.css'
-import { Grid, GridItem } from "@chakra-ui/react";
+import { Grid, GridItem, propNames } from "@chakra-ui/react";
 
 import UserTag from "../components/Usertag/UserTag";
 import { Icon } from "@chakra-ui/react";
@@ -14,7 +14,10 @@ import Sidebar from "../components/Sidebar/Sidebar";
 import {log} from '../functions';
 import { format } from 'date-fns'
 
-export const AdminLayout = ({children, path, expand, user}) => {
+export const AdminLayout = ({children, path, expand, user, name}) => {
+    const user_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '0';
     const navigate = useNavigate();
     const handleLogout = () => {
         const sessionToken = sessionStorage.getItem('user')
@@ -69,7 +72,7 @@ export const AdminLayout = ({children, path, expand, user}) => {
                                 <BellIcon cursor={'pointer'} marginTop={3} boxSize={'1.8em'} color={'#716F6F'}/>
                         </GridItem> */}
                         <GridItem colSpan={1} colStart={19}>
-                            <UserTag img={AccountCircleOutlinedIcon} name={'Dr.Kim'}/>
+                            <UserTag img={AccountCircleOutlinedIcon} name={user_name}/>
                         </GridItem>
                         <GridItem colSpan={1} colStart={20} marginLeft={'auto'} marginRight={6}>
                             <Icon onClick={handleLogout} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>

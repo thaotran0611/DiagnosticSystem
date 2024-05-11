@@ -27,7 +27,7 @@ const Tag = ({data}) => {
                 <Text fontSize={'24px'} fontWeight={'600'}>{data.name}</Text>
 
                 <Text py='2' color={'rgba(0,0,0,0.3)'} fontWeight={'500'}>
-                    {data.quantity !== null && data.quantity !== undefined ? data.quantity + ' diseases' : 
+                    {data.disease !== null && data.disease !== undefined ? data.disease : 
                     data.online !== null && data.online !== undefined ? data.online + ' / ' + data.total + ' online' : null}
                 </Text>
                 </CardBody>

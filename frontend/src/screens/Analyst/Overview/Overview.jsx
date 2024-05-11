@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import OveralTag from "../../../components/OveralTag/OveralTag";
 import Note from "../../../components/Note/Note";
 import PatientList from "../../../components/PatientList/PatientList";
@@ -23,43 +24,67 @@ import { createTheme } from "@mui/material";
 const theme = createTheme();
 const OverviewAnalyst = () => {
     const navigate = useNavigate();
-    const generalTag = [
-        {
-            img: AIlogo,
-            name: 'CNN',
-            quantity: 10,
-        },
-        {
-            img: AIlogo,
-            name: 'CNN',
-            quantity: 10,
-        },
-        {
-            img: AIlogo,
-            name: 'CNN',
-            quantity: 10,
-        },
-        {
-            img: AIlogo,
-            name: 'CNN',
-            quantity: 10,
-        },
-        {
-            img: AIlogo,
-            name: 'CNN',
-            quantity: 10,
-        },
-        {
-            img: AIlogo,
-            name: 'CNN',
-            quantity: 10,
-        },
-        {
-            img: AIlogo,
-            name: 'CNN',
-            quantity: 10,
-        }
-    ]
+    const user_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+    const user_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '0';
+
+    const [note, setNote] = useState([]);
+    const [loadingNote, setLoadingNote] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/self-notes', {
+                    params: {
+                        user_code: user_code
+                    }
+                });
+                console.log(response)
+                setNote(response.data.data);
+                setLoadingNote(false);
+            } catch (error) {
+                setError(error);
+                setLoadingNote(false);
+            }
+        };
+    
+        fetchData();
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
+    }, []);
+
+    const [file, setFile] = useState([]);
+    const [generalTag, setGeneralTag] = useState([]);
+
+    const [loadingFile, setLoadingFiles] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/files-system');
+                console.log(response)
+                setFile(response.data.file);
+                const updatedFiles = response.data.general.map(model => {
+                    return {
+                        ...model,
+                        img: AIlogo
+                    };
+                });
+                setGeneralTag(updatedFiles);
+                setLoadingFiles(false);
+            } catch (error) {
+                setError(error);
+                setLoadingFiles(false);
+            }
+        };
+    
+        fetchData();
+    }, []);
+
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
@@ -76,7 +101,9 @@ const OverviewAnalyst = () => {
                 </BreadcrumbItem>
             </Breadcrumb>
             }
-            disease={false}>
+            disease={false}
+            name={user_name}
+            >
                 <GridItem position={'relative'} marginLeft={4} pl='2' area={'main'} gap={'1%'}>
                     <Grid templateAreas={`"overal chart note"
                                           "list list list"`}          
@@ -113,7 +140,7 @@ const OverviewAnalyst = () => {
                         </GridItem>
                         <GridItem bg={'#fff'} margin={1} p={1} borderRadius={'20px'} area={'note'} position={'relative'}>
                             <Center position={'relative'} height={'100%'}>
-                                <Note pageSize='2'/>
+                                <Note loading ={loadingNote} pageSize={2} setNote={setNote} data={note} type={"self-note"} />
                             </Center>
                         </GridItem>
                         <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
@@ -122,7 +149,7 @@ const OverviewAnalyst = () => {
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Model List</Text>
                                 </GridItem>
                                 <GridItem padding={'0 10px'}>
-                                    <MyTable2 height={'350px'}/>
+                                    <MyTable2 data={file} height={'350px'}/>
                                 </GridItem>
                             </Grid>
                         </GridItem>

@@ -13,6 +13,9 @@ import {log} from '../functions';
 import { format } from 'date-fns'
 
 export const ResearcherLayout = ({children, path, expand, disease, name}) => {
+    const user_name = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).name
+    : '0';
     const navigate = useNavigate();
     const handleLogout = () => {
         const sessionToken = sessionStorage.getItem('user')
@@ -67,8 +70,7 @@ export const ResearcherLayout = ({children, path, expand, disease, name}) => {
                                 <BellIcon cursor={'pointer'} marginTop={3} boxSize={'1.8em'} color={'#716F6F'}/>
                         </GridItem> */}
                         <GridItem colSpan={1} colStart={19}>
-                            <UserTag img={AccountCircleOutlinedIcon} name={name}/>
-                            <UserTag img={AccountCircleOutlinedIcon} name={name}/>
+                            <UserTag img={AccountCircleOutlinedIcon} name={user_name}/>
                         </GridItem>
                         <GridItem colSpan={1} colStart={20} marginLeft={'auto'} marginRight={6}>
                             <Icon onClick={handleLogout} as={LogoutOutlinedIcon} cursor={'pointer'} marginTop={2} boxSize={'1.6em'} color={'#716F6F'}/>

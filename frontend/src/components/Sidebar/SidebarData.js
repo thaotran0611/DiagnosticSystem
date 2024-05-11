@@ -60,7 +60,7 @@ export const SidebarDataAnalyst = [
     {
         title: "Model",
         icon: <HiDesktopComputer class="icon" style={{ fontSize: "3.5rem"}}/>,
-        link: "../analyst/model"
+        link: "../analyst/file"
     },
     {
         title: "Setting",
