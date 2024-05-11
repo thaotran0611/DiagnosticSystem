@@ -17,7 +17,8 @@ import { useNavigate } from "react-router-dom";
 import DiseaseTag from "../../../components/DiseaseTag/DiseaseTag";
 import axios from "axios";
 import _ from 'lodash';
-
+import { format } from 'date-fns'
+import {log} from '../../../functions';
 const theme = createTheme();
 
 const Medicine = () => {
@@ -46,6 +47,7 @@ const Medicine = () => {
                         researcher_code: researcher_code
                     }
                 });
+                console.log(response);
                 setDrugs(response.data.drugs)
                 setFilteredResults(response.data.drugs);
                 drug_name_poe = _.uniqBy(response.data.drugs, 'drug_name_poe').map((item) => item.drug_name_poe);
@@ -127,7 +129,16 @@ const Medicine = () => {
     let endIndex = startIndex + pageSize;
     let slicedData = filteredResults.slice(startIndex, endIndex);
     const navigate = useNavigate();
-
+    const handleClick = (data) => {
+        var log_data = {
+            'user_code': researcher_code,
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'View Detail of Medicine',
+            'related_item': 'Medicine ' + data.drug_name_poe
+          }
+          log(log_data);
+        navigate(`detailmedicine/${data.drug_name_poe}`, {state: {data: data}}); // Assuming the URL pattern is '/patient/:patientCode'
+    };
     return(
         <ResearcherLayout path={
           <Breadcrumb>
@@ -148,7 +159,7 @@ const Medicine = () => {
                                 <SimpleGrid mt={0} columns={4} spacing={10}>
                                     {
                                         slicedData.map(item => (
-                                            <DiseaseTag sum_of_admission={1} medicine={true} data={item}/>
+                                            <DiseaseTag  onClick={handleClick} sum_of_admission={1} medicine={true} data={item}/>
                                         ))
                                     }
                                 </SimpleGrid>

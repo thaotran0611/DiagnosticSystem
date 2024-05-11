@@ -3,15 +3,20 @@ import React from "react";
 import AIlogo from '../../img/Analyst/AIlogo.png'
 
 
-const Tag = ({data}) => {
+const Tag = ({selectedTag,setSelectedTag, data}) => {
+    
     return(
         <Card
+            onClick={() => {setSelectedTag(data.name.toLowerCase())}}
             direction={{ base: 'column', sm: 'row' }}
             overflow='hidden'
             variant='outline'
             borderRadius={20}
             border={'1px solid #A6DEF7'}
             bg={'rgba(166,222,247,0.4)'}
+            boxShadow={selectedTag === data.name.toLowerCase() ? '0 0 10px rgba(0, 0, 0, 0.5)' : ''}
+            _hover={{boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', 
+            cursor: 'pointer'}}
             >
             <HStack>
                 <CardHeader w={'max-content'} p={1}>

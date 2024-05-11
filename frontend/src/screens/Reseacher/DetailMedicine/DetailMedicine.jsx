@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DoctorLayout } from "../../../layout/DoctorLayout";
-import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
+import { AbsoluteCenter, Box, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid, Spinner } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import {
     Breadcrumb,
@@ -8,7 +8,7 @@ import {
     BreadcrumbLink,
     BreadcrumbSeparator,
   } from '@chakra-ui/react'
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Text } from '@chakra-ui/react'
 import Note from "../../../components/Note/Note";
@@ -22,11 +22,14 @@ import { ResearcherLayout } from "../../../layout/ResearcherLayout";
 import ClinicalSignTab from "./ClinicalSignTab";
 import PrescriptionTab from "./PrescriptionTab";
 import GeneralTab from "./GeneralTab";
+import axios from "axios";
 // import OtherDiseaseTab from "./OtherDiseaseTab";
 
 const theme = createTheme();
 
 const DetailMedicine = (props) => {
+    const location = useLocation();
+    const medicine = location.state.data;
     const navigate=useNavigate();
     const [expand, setExpand] = useState(false);
     const data = [ 
@@ -48,14 +51,67 @@ const DetailMedicine = (props) => {
     
     const [pageSizeGeneral, setPageSizeGeneral] = useState(4);
     const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
+    const keysToExtract = ['drug', 'drug_name_poe', 'drug_type', 'formulary_drug_cd', 'sum_of_male', 'sum_of_female']
+    const [medicineStatistic, setMedicineStatistic] = useState([]);
+    const [error, setError] = useState(null);
+    const [loadingMedicine, setLoadingMedicine] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/detailmedicine-general', {
+                    params: {
+                        drug: medicine.drug,
+                        drug_name_poe: medicine.drug_name_poe,
+                        drug_type: medicine.drug_type,
+                        formulary_drug_cd: medicine.formulary_drug_cd
+                    }
+                });
+                setMedicineStatistic(response.data.drugs);
+                console.log(response.data.drugs);
+                setLoadingMedicine(false);
+            } catch (error) {
+                setError(error);
+                setLoadingMedicine(false);
+            }
+        };
+        if (medicineStatistic.length == 0){
+            fetchData();
+        }
+    }, []);
+    const [loadingOtherMedicine, setLoadingOtherMedicine] = useState(true);
+    const [otherdrugs, setOtherDrugs] = useState([])
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/detailmedicine-co-prescribed-medication', {
+                    params: {
+                        drug: medicine.drug,
+                        drug_name_poe: medicine.drug_name_poe,
+                        drug_type: medicine.drug_type,
+                        formulary_drug_cd: medicine.formulary_drug_cd
+                    }
+                });
+                setOtherDrugs(response.data.otherdrugs);
+                console.log(response.data.otherdrugs);
+                setLoadingOtherMedicine(false);
+            } catch (error) {
+                setError(error);
+                setLoadingOtherMedicine(false);
+            }
+        };
+        if (otherdrugs.length == 0){
+            fetchData();
+        }
+    }, []);
+
     return(
         <ResearcherLayout path={
                 <Breadcrumb fontSize="xl">
                     <BreadcrumbItem>
-                        <BreadcrumbLink href='./'>Medicine</BreadcrumbLink>
+                        <BreadcrumbLink href='../'>Medicine</BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbItem isCurrentPage>
-                        <BreadcrumbLink href="#">10</BreadcrumbLink>
+                        <BreadcrumbLink href="#">{medicine.drug_name_poe}</BreadcrumbLink>
                     </BreadcrumbItem>
                 </Breadcrumb>
             }
@@ -76,14 +132,14 @@ const DetailMedicine = (props) => {
                         {!expand?
                         <GridItem position={'relative'} area={'information'} marginTop={'8%'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <PatientTag medicine = {true} data={data} name='Aspirin' id='1200 patients'/>
+                                <PatientTag keysToExtract={keysToExtract} medicine = {true} data={medicine}/>
                             </ScaleFade>
                         </GridItem> : null }
 
                         {!expand?
                         <GridItem area={'note'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <Note pageSize='3'/>
+                                {/* <Note pageSize='3'/> */}
                             </ScaleFade>
                         </GridItem>: null }
                         <GridItem area={'divider'}>
@@ -115,18 +171,28 @@ const DetailMedicine = (props) => {
                     <Tabs isFitted variant='enclosed' size={'md'} height={'99%'}>
                         <TabList>
                             <Tab fontWeight={'bold'} key={1}>General</Tab>
-                            <Tab fontWeight={'bold'} key={2}>Clinical sign</Tab>
-                            <Tab fontWeight={'bold'} key={3}>Prescription</Tab>
+                            {/* <Tab fontWeight={'bold'} key={2}>Clinical sign</Tab> */}
+                            <Tab fontWeight={'bold'} key={2}>co-prescribed medications</Tab>
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'} w={'100%'} position={'relative'}>
-                                <GeneralTab expand={expand}/>
+                                {
+                                    !loadingMedicine ? <GeneralTab medicineStatistic={medicineStatistic} expand={expand}/> : 
+                                    <Center>
+                                        <Spinner/> 
+                                    </Center>
+                                }
                             </TabPanel>
-                            <TabPanel key={2} h={'100%'}>
+                            {/* <TabPanel key={2} h={'100%'}>
                                 <ClinicalSignTab/>
-                            </TabPanel>
-                            <TabPanel key={3} h={'100%'}>
-                                <PrescriptionTab/>
+                            </TabPanel> */}
+                            <TabPanel key={2} h={'100%'}>
+                                {
+                                    !loadingOtherMedicine ? <PrescriptionTab otherdrugs={otherdrugs}/> : 
+                                    <Center>
+                                        <Spinner/> 
+                                    </Center>
+                                }
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

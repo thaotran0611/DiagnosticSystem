@@ -14,6 +14,8 @@ import { Grid, GridItem,Text } from '@chakra-ui/react'
 import { ResearcherLayout } from "../../../layout/ResearcherLayout";
 import DiseaseList from "../../../components/DiseaseCard/DiseaseList";
 import dayjs from 'dayjs';
+import { format } from 'date-fns'
+import {log} from '../../../functions';
 const OverviewResearcher = () => {
     const navigate = useNavigate();
     const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
@@ -166,7 +168,26 @@ const OverviewResearcher = () => {
         };
         fetchData();
     }, []);
-
+    const handleClickDisease = (data) => {
+        var log_data = {
+            'user_code': researcher_code,
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'View Detail of Disease',
+            'related_item': 'Disease ' + data.disease_code
+          }
+          log(log_data);
+        navigate(`../researcher/disease/detaildisease/${data.disease_code}`, {state: {data: data}}); // Assuming the URL pattern is '/patient/:patientCode'
+    };
+    const handleClickMedicine = (data) => {
+        var log_data = {
+            'user_code': researcher_code,
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'View Detail of Medicine',
+            'related_item': 'Medicine ' + data.drug_name_poe
+          }
+          log(log_data);
+        navigate(`../researcher/medicine/detailmedicine/${data.drug_name_poe}`, {state: {data: data}}); // Assuming the URL pattern is '/patient/:patientCode'
+    };
     return(
         <ResearcherLayout path={
             <Breadcrumb fontSize="xl">
@@ -195,7 +216,7 @@ const OverviewResearcher = () => {
                         </GridItem>
                         <GridItem h={'100%'} area={'list'} bg={'#fff'} borderRadius={'20px'} overflow={'auto'} position={'relative'}>
                             <Box position={'relative'} borderRadius={'20px'} overflow={'auto'}>
-                                <DiseaseList diseases={diseases} drugs={drugs}/>
+                                <DiseaseList diseases={diseases} drugs={drugs} handleClickDisease = {handleClickDisease} handleClickMedicine={handleClickMedicine}/>
                             </Box>
                         </GridItem>
                     </Grid>

@@ -6,7 +6,7 @@ from database import engine, get_db
 from construct import * 
 import sqlalchemy as sa
 from sqlalchemy import create_engine
-from sqlalchemy import text, case, and_, desc
+from sqlalchemy import text, case, and_, desc, literal_column
 import pandas as pd
 import numpy as np
 import json
@@ -722,6 +722,204 @@ async def get_patients_detail_medicaltest(researcher_code = 10040, db=Depends(ge
         result = []
     # print(result)
     return JSONResponse(content={"drugs": result})
+@app.get("/detailmedicine-general", response_model=dict, tags=["root"])
+async def detail_medicine_general(drug = 'aspirin', drug_name_poe = 'aspirin', drug_type = 'main', formulary_drug_cd='asa81', db=Depends(get_db)) -> dict:
+    stmt = text('''
+                SELECT
+                    b.hadm_id,
+                    d.drug,
+                    d.drug_name_poe,
+                    d.drug_type,
+                    d.formulary_drug_cd,
+                    c.gender,
+                    c.dob,
+                    c.dod,
+                    b.admission_type,
+                    b.admission_location,
+                    b.religion,
+                    b.marital_status,
+                    b.ethnicity,
+                    b.insurance,
+                    ifnull(n.Alcohol_Abuse, 0) as Alcohol_Abuse,
+                    ifnull(n.Chronic_Neurologic_Dystrophies, 0) as Chronic_Neurologic_Dystrophies,
+                    ifnull(n.Substance_Abuse, 0) as Substance_Abuse,
+                    ifnull(n.Chronic_Pain, 0) as Chronic_Pain,
+                    ifnull(n.Depression, 0) as Depression,
+                    ifnull(n.Adv_Heart_Disease, 0) as Adv_Heart_Disease,
+                    ifnull(n.Metastatic_Cancer, 0) as Metastatic_Cancer,
+                    ifnull(n.Adv_Lung_Disease, 0) as Adv_Lung_Disease,
+                    ifnull(n.Obesity, 0) as Obesity,
+                    ifnull(n.Psychiatric_Disorders, 0) as Psychiatric_Disorders
+                FROM
+                    drug d
+                LEFT OUTER JOIN
+                    prescriptions a
+                ON
+                    d.drug = a.drug
+                    AND d.drug_name_poe = a.drug_name_poe
+                    AND d.drug_type = a.drug_type
+                    AND d.formulary_drug_cd = a.formulary_drug_cd
+                LEFT OUTER JOIN
+                    admissions_checked b
+                ON
+                    a.HADM_ID = b.HADM_ID
+                LEFT OUTER JOIN
+                    patients_checked c
+                ON
+                    b.SUBJECT_ID = c.SUBJECT_ID
+                LEFT OUTER JOIN
+                    (Select annotate1.hadm_id, MAX(annotate1.time), MAX(annotate1.Alcohol_Abuse) as Alcohol_Abuse,  MAX(annotate1.Chronic_Neurologic_Dystrophies) as Chronic_Neurologic_Dystrophies, MAX(annotate1.Substance_Abuse) as Substance_Abuse, MAX(annotate1.Chronic_Pain) as Chronic_Pain, MAX(annotate1.Depression) as Depression, MAX(annotate1.Adv_Heart_Disease) as Adv_Heart_Disease, MAX(annotate1.Metastatic_Cancer) as Metastatic_Cancer, MAX(annotate1.Adv_Lung_Disease) as Adv_Lung_Disease, MAX(annotate1.Obesity) as Obesity, MAX(annotate1.Psychiatric_Disorders) as Psychiatric_Disorders from (SELECT *, CASE 
+                        WHEN  annotate.disease_code='AA' and annotate.value=1 THEN 1
+                        ELSE 0
+                    END AS 'Alcohol_Abuse',
+                    CASE 
+                        WHEN  annotate.disease_code='CND'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Chronic_Neurologic_Dystrophies',
+                    CASE 
+                        WHEN  annotate.disease_code='SA'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Substance_Abuse',
+                    CASE 
+                        WHEN  annotate.disease_code='CP'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Chronic_Pain',
+                    CASE 
+                        WHEN  annotate.disease_code='Dep'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Depression',
+                    CASE 
+                        WHEN  annotate.disease_code='HD'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Adv_Heart_Disease',
+                    CASE 
+                        WHEN  annotate.disease_code='LD'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Adv_Lung_Disease',
+                    CASE 
+                        WHEN  annotate.disease_code='MC'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Metastatic_Cancer',
+                    CASE 
+                        WHEN  annotate.disease_code='Ob'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Obesity',
+                    CASE 
+                        WHEN  annotate.disease_code='PD'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Psychiatric_Disorders'
+                    FROM dacn.annotate)  as annotate1 group by annotate1.hadm_id) as n
+                ON n.hadm_id = b.hadm_id
+                WHERE   d.drug = :drug
+                    AND d.drug_name_poe = :drug_name_poe
+                    AND d.drug_type = :drug_type
+                    AND d.formulary_drug_cd = :formulary_drug_cd
+                ORDER BY b.hadm_id
+            ''')
+    stmt = stmt.bindparams(
+        drug = drug,
+        drug_name_poe = drug_name_poe,
+        drug_type = drug_type,
+        formulary_drug_cd = formulary_drug_cd
+    )
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        transform_timestamp(df,['dob', 'dod'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"drugs": result})
+
+@app.get("/detailmedicine-co-prescribed-medication", response_model=dict, tags=["root"])
+async def detail_co_prescribed_medication(drug = 'aspirin', drug_name_poe = 'aspirin', drug_type = 'main', formulary_drug_cd='asa81', db=Depends(get_db)) -> dict:
+    stmt = text('''
+                SELECT
+                    a.drug,
+                    a.drug_name_poe,
+                    a.drug_type,
+                    a.formulary_drug_cd,
+                    ifnull(n.Alcohol_Abuse, 0) as Alcohol_Abuse,
+                    ifnull(n.Chronic_Neurologic_Dystrophies, 0) as Chronic_Neurologic_Dystrophies,
+                    ifnull(n.Substance_Abuse, 0) as Substance_Abuse,
+                    ifnull(n.Chronic_Pain, 0) as Chronic_Pain,
+                    ifnull(n.Depression, 0) as Depression,
+                    ifnull(n.Adv_Heart_Disease, 0) as Adv_Heart_Disease,
+                    ifnull(n.Metastatic_Cancer, 0) as Metastatic_Cancer,
+                    ifnull(n.Adv_Lung_Disease, 0) as Adv_Lung_Disease,
+                    ifnull(n.Obesity, 0) as Obesity,
+                    ifnull(n.Psychiatric_Disorders, 0) as Psychiatric_Disorders
+                FROM prescriptions a
+                LEFT OUTER JOIN
+                    (Select annotate1.hadm_id, MAX(annotate1.time), MAX(annotate1.Alcohol_Abuse) as Alcohol_Abuse,  MAX(annotate1.Chronic_Neurologic_Dystrophies) as Chronic_Neurologic_Dystrophies, MAX(annotate1.Substance_Abuse) as Substance_Abuse, MAX(annotate1.Chronic_Pain) as Chronic_Pain, MAX(annotate1.Depression) as Depression, MAX(annotate1.Adv_Heart_Disease) as Adv_Heart_Disease, MAX(annotate1.Metastatic_Cancer) as Metastatic_Cancer, MAX(annotate1.Adv_Lung_Disease) as Adv_Lung_Disease, MAX(annotate1.Obesity) as Obesity, MAX(annotate1.Psychiatric_Disorders) as Psychiatric_Disorders from (SELECT *, CASE 
+                        WHEN  annotate.disease_code='AA' and annotate.value=1 THEN 1
+                        ELSE 0
+                    END AS 'Alcohol_Abuse',
+                    CASE 
+                        WHEN  annotate.disease_code='CND'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Chronic_Neurologic_Dystrophies',
+                    CASE 
+                        WHEN  annotate.disease_code='SA'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Substance_Abuse',
+                    CASE 
+                        WHEN  annotate.disease_code='CP'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Chronic_Pain',
+                    CASE 
+                        WHEN  annotate.disease_code='Dep'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Depression',
+                    CASE 
+                        WHEN  annotate.disease_code='HD'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Adv_Heart_Disease',
+                    CASE 
+                        WHEN  annotate.disease_code='LD'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Adv_Lung_Disease',
+                    CASE 
+                        WHEN  annotate.disease_code='MC'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Metastatic_Cancer',
+                    CASE 
+                        WHEN  annotate.disease_code='Ob'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Obesity',
+                    CASE 
+                        WHEN  annotate.disease_code='PD'and annotate.value=1  THEN 1
+                        ELSE 0
+                    END AS 'Psychiatric_Disorders'
+                    FROM dacn.annotate)  as annotate1 group by annotate1.hadm_id) as n
+                ON n.hadm_id = a.hadm_id
+                WHERE a.hadm_id in (select hadm_id from prescriptions 
+                                    where drug = :drug and drug_name_poe = :drug_name_poe and drug_type = :drug_type and formulary_drug_cd = :formulary_drug_cd)
+                ''')
+    
+    stmt = stmt.bindparams(
+        drug = drug,
+        drug_name_poe = drug_name_poe,
+        drug_type = drug_type,
+        formulary_drug_cd = formulary_drug_cd
+    )
+
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+    if len(df)>0:
+        # df['value'] = df['value'].apply(lambda x: str(x))
+
+        # transform_timestamp(df,['dob', 'dod'])
+        # transform_date(df,['chartdate'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"otherdrugs": result})
 
 @app.get("/researcher-disease-all-admission", response_model=dict, tags=["root"])
 async def get_predict(db=Depends(get_db)) -> dict:
@@ -1151,7 +1349,26 @@ async def get_sytem_log(db=Depends(get_db)) -> dict:
 #need to update
 @app.get("/user-action-log", response_model=dict, tags=["root"])
 async def get_user_action_log(db=Depends(get_db)) -> dict:
-    stmt = sa.select(USER_ACTION_LOG)
+    subq = sa.select(DOCTOR.c.code,
+                     literal_column("'doctor'").label('role'))\
+            .union(sa.select(
+                RESEARCHER.c.code,
+                literal_column("'researcher'").label('role')
+            )\
+            .union(sa.select(
+                ANALYST.c.code,
+                literal_column("'analyst'").label('role')
+            )\
+            .union(sa.select(
+                ADMINISTRATOR.c.code,
+                literal_column("'analyst'").label('role')
+            ))))\
+            .alias('subq')
+            
+    stmt = sa.select(USER_ACTION_LOG,
+                     subq.c.role)\
+            .select_from(sa.join(USER_ACTION_LOG, subq, USER_ACTION_LOG.c.user_code == subq.c.code))
+    
     df = pd.DataFrame(db.execute(stmt).fetchall())
     if len(df)>0:
         transform_timestamp(df,['time'])

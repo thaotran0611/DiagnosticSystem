@@ -159,28 +159,28 @@ const DiseaseList = (props) => {
               
               (<SimpleGrid mt={5} columns={1} spacing={2}>
               {slicedDisease.map((disease, index) => (
-                <DiseaseStatistic width={'1600px'} key={index} {...disease} />
+                <DiseaseStatistic handleClickDisease={props.handleClickDisease} width={'1600px'} key={index} data ={disease} />
               ))}
               </SimpleGrid>)
               :
               (
                 <SimpleGrid mt={5} columns={2} spacingX={20} spacingY={2}>
                   {slicedDisease.map((disease, index) => (
-                    <DiseaseStatistic width={'800px'} key={index} {...disease} />
+                    <DiseaseStatistic handleClickDisease={props.handleClickDisease} width={'800px'} key={index} data ={disease} />
               ))}
                 </SimpleGrid>
               ) : 
               selectedLayout === 'list' ? 
               (<SimpleGrid mt={5} columns={1} spacing={2}>
                 {slicedDrug.map((disease, index) => (
-                  <DrugStatistic width={'1600px'} key={index} {...disease} />
+                  <DrugStatistic handleClickMedicine={props.handleClickMedicine} width={'1600px'} key={index} data = {disease} />
                 ))}
                 </SimpleGrid>)
               :
               (
                 <SimpleGrid mt={5} columns={2} spacingX={20} spacingY={2}>
                   {slicedDrug.map((disease, index) => (
-                    <DrugStatistic width={'800px'} key={index} {...disease} />
+                    <DrugStatistic handleClickMedicine={props.handleClickMedicine} width={'800px'} key={index} data = {disease} />
                   ))}
                 </SimpleGrid>
               )
