@@ -84,6 +84,7 @@ const Files = () => {
     const endIndex = startIndex + pageSize;
     const slicedData = file.slice(startIndex, endIndex);
     const navigate = useNavigate();
+    const [selectedRecord, setSelectedRecord] = useState(null);
 
     return(
         <AnalystLayout path={

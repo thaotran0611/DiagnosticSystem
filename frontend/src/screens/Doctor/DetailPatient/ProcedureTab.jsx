@@ -42,7 +42,7 @@ const ProcedureTab = (props) => {
     return(
         <Box h={'98%'}>
             <MyTable2 tablename='Table of procedure' onSelect={handleRecordSelection} data={props.hadmID === 'All Admission' ? procedure : procedure.filter((item) => {
-                        const itemValue = String(item.hadm_id);
+                        const itemValue = String(item['Admission ID']);
                         return itemValue.includes(props.hadmID);
                     })} height={'580px'}/>
         </Box>

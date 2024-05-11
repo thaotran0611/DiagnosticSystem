@@ -93,6 +93,8 @@ const OverviewAnalyst = () => {
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const slicedData = generalTag.slice(startIndex, endIndex);
+    const [selectedRecord, setSelectedRecord] = useState(null);
+
     return(
         <AnalystLayout path={
             <Breadcrumb fontSize="xl">
@@ -149,7 +151,7 @@ const OverviewAnalyst = () => {
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Model List</Text>
                                 </GridItem>
                                 <GridItem padding={'0 10px'}>
-                                    <MyTable2 data={file} height={'350px'}/>
+                                    <MyTable2 data={file}  onSelect={setSelectedRecord} height={'350px'}/>
                                 </GridItem>
                             </Grid>
                         </GridItem>

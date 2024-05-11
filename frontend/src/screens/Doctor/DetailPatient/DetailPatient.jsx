@@ -98,7 +98,7 @@ const DetailPatient = (props) => {
                     }
                 });
                 setAddmission(response.data.admission);
-                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "hadm_id").map((image) => image['hadm_id'])));
+                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "Admission ID").map((image) => image['Admission ID'])));
                 setLoadingAdmission(false);
                 setInfoTag(response.data.infomation_tag)
                 console.log(allAdmission)

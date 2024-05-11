@@ -81,7 +81,7 @@ const PrescriptionTab = (props) => {
                     </PopoverContent>
                 </Popover>
             </HStack>
-            <MyTable2 data={filterOtherDiseases} tablename={'Table of prescriptions with diseases: ' + codiseases.map(item => " "+ item)} height={'590px'}/>
+            <MyTable2 onSelect = {()=>{}} data={filterOtherDiseases} tablename={'Table of prescriptions with diseases: ' + codiseases.map(item => " "+ item)} height={'590px'}/>
         </Box>
     )
 }

@@ -170,13 +170,14 @@ const Scheduler = () => {
           })
             .then((res) => {
               console.log(res)
+              setLoadingHistory([insertData, ...loadinghistory,]);
               var log_data = {
                 'user_code': sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).code: '0',
                 'time': insertData.created_at,
                 'action': 'Mannually Load Data',
                 'related_item': ""
               }
-            log(log_data);
+                log(log_data);
             })
             .catch((res) => {
               console.log(res);
@@ -225,9 +226,6 @@ const Scheduler = () => {
         fetchData();
     }, []);
 
-
-
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -246,6 +244,9 @@ const Scheduler = () => {
         };
         fetchData();
     }, []);
+
+    const [selectedRecord, setSelectedRecord] = useState(null);
+
     return(
         <AdminLayout path={
             <Breadcrumb fontSize="xl">
@@ -261,7 +262,7 @@ const Scheduler = () => {
                           gridTemplateRows={'42.5% 56.5%'}
                           gridTemplateColumns={'60% 40%'}
                           h='100%'>
-                        <GridItem bg={'#fff'} margin={1} p={2} borderRadius={'20px'} area={'load'} position={'relative'}>
+                        <GridItem bg={'#fff'} margin={1} p={2} borderRadius={'20px'} area={'load'} position={'relative'} overflow="auto">
                             <Grid gridTemplateRows={'15% 55% 30%'} h={'100%'}>
                                 <GridItem>
                                     <Center>
@@ -386,21 +387,21 @@ const Scheduler = () => {
                             </Grid>
                         </GridItem>
                         
-                        <GridItem bg={'#fff'} margin={1} borderRadius={'20px'} area={'note'} position={'relative'}>
+                        <GridItem bg={'#fff'} margin={1} borderRadius={'20px'} area={'note'} position={'relative'} overflow="auto">
                             <GridItem p={3}>
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Loading Data Manually History</Text>
                                 </GridItem>
                                 <GridItem padding={'0 10px'}>
-                                    <MyTable2 data={loadinghistory} height={'60%'}/>
+                                    <MyTable2 data={loadinghistory} onSelect={setSelectedRecord} height={'60%'}/>
                                 </GridItem>
                         </GridItem>
-                        <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
+                        <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'} overflow="auto">
                             <Grid gridTemplateRows={'12% 88%'} h={'100%'}>
                                 <GridItem p={3}>
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Schedule History</Text>
                                 </GridItem>
                                 <GridItem padding={'0 10px'}>
-                                    <MyTable2 data={scheduleLog} height={'350px'}/>
+                                    <MyTable2 data={scheduleLog} onSelect={setSelectedRecord} height={'350px'}/>
                                 </GridItem>
                             </Grid>
                         </GridItem>

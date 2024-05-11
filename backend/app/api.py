@@ -1711,9 +1711,10 @@ async def insert_data_manually(data: dict,db=Depends(get_db)) -> dict:
     sub = sa.select(max_id_stmt)
     id = pd.DataFrame(db.execute(sub).fetchall())
     result = id.to_dict(orient='records')[0]['id']
+    print(result)
     if result == None:
         result = 1
-    df['id'] = result
+    df['id'] = result + 1
     # df['created_at'] = pd.to_datetime(df['created_at'], format='%Y-%m-%d %H:%M:%S')
     print(df)
     columns = df.columns
@@ -1749,10 +1750,11 @@ async def insert_data_manually(data: dict,db=Depends(get_db)) -> dict:
 
 @app.get("/load-manual-history", response_model=dict, tags=["root"]) 
 async def get_load_manual_history(db=Depends(get_db)) -> dict:
-    stmt = LOAD_DATA_MANUAL.select()
+    stmt = LOAD_DATA_MANUAL.select().order_by(sa.desc(LOAD_DATA_MANUAL.columns.created_at))
     df = pd.DataFrame(db.execute(stmt).fetchall())
 
     if len(df)>0:
+        df.drop(columns=['id'], inplace = True)
         transform_timestamp(df,['created_at'])
         result = df.to_dict(orient='records')
         # print(result)
