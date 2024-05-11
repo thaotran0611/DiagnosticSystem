@@ -35,7 +35,7 @@ const PatientTag = (props) => {
                                                 {props.data.subject_id ? props.data.subject_id : props.data.code}
                                             </Text>
                                             : props.disease ?
-                                            <DiseaseCard text={props.type} hidden={true}/> 
+                                            <DiseaseCard text={props.data.disease_code} hidden={true}/> 
                                             : props.medicine ? 
                                             <Box w={10} overflow="hidden">
                                                 <Box>
@@ -55,8 +55,8 @@ const PatientTag = (props) => {
             <div> 
             <CardBody paddingTop={2}>
                 <Center marginTop={4} marginBottom={1}>
-                    <Text fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.subject_id : props.disease ? props.data.disease_code : null} - </Text>
-                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.name : props.disease ? props.data.disease_name : null}</Text>
+                    <Text fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.subject_id : props.disease ? props.data.disease_code : props.data.drug} - </Text>
+                    <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.name : props.disease ? props.data.disease_name : props.data.drug_type}</Text>
                 </Center>
                 <SimpleGrid columns={3} spacing={2} gridTemplateColumns={'48% 4% 48%'}>
                     <SimpleGrid columns={2} spacing={1}>

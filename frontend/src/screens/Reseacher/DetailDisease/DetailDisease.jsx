@@ -186,7 +186,7 @@ const DetailDisease = (props) => {
                         {!expand?
                         <GridItem position={'relative'} area={'information'} marginTop={'8%'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                <PatientTag disease = {true} type={"Lungs"} data={disease} name='Lung Disease' id='1200 patients' keysToExtract={keysToExtract}/>
+                                <PatientTag disease = {true} type={"Lungs"} data={disease} keysToExtract={keysToExtract}/>
                             </ScaleFade>
                         </GridItem> : null }
 

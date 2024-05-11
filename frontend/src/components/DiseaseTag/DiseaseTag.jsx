@@ -4,6 +4,7 @@ import { BellIcon } from "@chakra-ui/icons";
 import DiseaseCard from "../DiseaseCard/DiseaseCard";
 import { GiMedicines } from "react-icons/gi";
 const DiseaseTag = ({data, medicine, sum_of_admission, onClick}) => {
+    console.log(data)
     const handleClick = () => {
         onClick(data);
     };

@@ -103,7 +103,7 @@ function App() {
         />)}
 
         {role == 'RESEARCHER' && (<Route 
-          path='/researcher/medicine/detailmedicine'
+          path='/researcher/medicine/detailmedicine/:medicineCode'
           element={
             <DetailMedicine/>
           }
