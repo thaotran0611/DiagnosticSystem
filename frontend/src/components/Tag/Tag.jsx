@@ -7,6 +7,7 @@ const Tag = ({selectedTag,setSelectedTag, data}) => {
     
     return(
         <Card
+            h={'130px'}
             onClick={() => {setSelectedTag(data.name.toLowerCase())}}
             direction={{ base: 'column', sm: 'row' }}
             overflow='hidden'

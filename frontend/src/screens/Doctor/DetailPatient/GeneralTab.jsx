@@ -10,21 +10,20 @@ import MyTable from "../../../components/MyTable/MyTable";
 import MyTable2 from "../../../components/MyTable/MyTable2";
 
 const theme = createTheme();
-const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmID, sethadmID}) => {
+const GeneralTab = (props ) => {
     const [expandGeneral, setExpandGenaral] = useState(2);
     // const [pageSize, setPageSize] = useState(4);
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
-    console.log(addmission)
-
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const slicedData = generalTag.slice(startIndex, endIndex);
+    console.log(props.addmission)
+    console.log(props.hadmID)
+    const startIndex = (page - 1) * props.pageSize;
+    const endIndex = startIndex + props.pageSize;
+    const slicedData = props.generalTag.slice(startIndex, endIndex);
     const handleRecordSelection = (record) => {
-        sethadmID(record.hadm_id);
-        console.log(hadmID)
+        // props.sethadmID(record['Amission ID']);
     }
     return(
         <Grid gridTemplateRows={expandGeneral === 1 ? '3% 97%':
@@ -34,7 +33,7 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
             {expandGeneral === 1 ? null : 
             <GridItem position={'relative'}>
                 <ThemeProvider theme={theme}>
-                    <SimpleGrid h={'80%'} columns={expand ? 6 : 4} spacing={8} autoRows={false}>
+                    <SimpleGrid h={'80%'} columns={props.expand ? 6 : 4} spacing={8} autoRows={false}>
                         {
                             slicedData.map(infor => (
                                 <GeneralCard heading = {infor.heading} content={infor.content}/>
@@ -44,7 +43,7 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
                 
                     <Center>
                         <MyPagination
-                            count={Math.ceil(generalTag.length / pageSize)}
+                            count={Math.ceil(props.generalTag.length / props.pageSize)}
                             page={page}
                             onChange={handleChangePage}
                         />
@@ -64,7 +63,7 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
                                     icon={<ChevronDownIcon/>}
                                     bg={'#3E36B0'}
                                     color={'white'}
-                                    onClick={expandGeneral === 2 ? ()=>{setExpandGenaral(expandGeneral + 1); setPageSize(pageSize*3)}: ()=>{setExpandGenaral(expandGeneral + 1)}}
+                                    onClick={expandGeneral === 2 ? ()=>{setExpandGenaral(expandGeneral + 1); props.setPageSize(props.pageSize*3)}: ()=>{setExpandGenaral(expandGeneral + 1)}}
                                 />
                                 <IconButton
                                     marginLeft={2}
@@ -73,7 +72,7 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
                                     icon={<ChevronUpIcon/>}
                                     bg={'#3E36B0'}
                                     color={'white'}
-                                    onClick={expandGeneral === 3 ? ()=>{setExpandGenaral(expandGeneral - 1); setPageSize(pageSize/3)}: ()=>{setExpandGenaral(expandGeneral - 1)}}
+                                    onClick={expandGeneral === 3 ? ()=>{setExpandGenaral(expandGeneral - 1); props.setPageSize(props.pageSize/3)}: ()=>{setExpandGenaral(expandGeneral - 1)}}
                                 />
                             </Center>
                         </Box>
@@ -83,7 +82,7 @@ const GeneralTab = ({addmission,generalTag, expand, pageSize, setPageSize, hadmI
             {expandGeneral === 3 ? null : <GridItem position={'relative'} paddingTop={'2'}>
                 {/* <Text color={'#3E36B0'} fontSize={'25px'} fontWeight={600}>Table of Admission</Text> */}
                 <Box h={'92%'}>
-                    <MyTable2 tablename='Table of Admission' data = {addmission} height={expandGeneral === 1 ? '560px': '380px'} width={expand ? '1700px' : '1100px'}
+                    <MyTable2 tablename='Table of Admission' data = {props.addmission} height={expandGeneral === 1 ? '560px': '380px'} width={props.expand ? '1700px' : '1100px'}
                     onSelect={handleRecordSelection}/>
                 </Box>
                 </GridItem>}

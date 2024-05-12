@@ -144,6 +144,7 @@ const OverviewAdmin = () => {
             try {
                 const response = await axios.get('http://localhost:8000/user-action-log');
                 setActionLog(response.data.user_action_log);
+                console.log(response.data.user_action_log);
                 let maxDate = response.data.user_action_log.reduce((max, obj) => {
                     const currentDate = dayjs(obj.time);
                     return currentDate > max ? dayjs(currentDate) : dayjs(max);
@@ -156,7 +157,7 @@ const OverviewAdmin = () => {
                   }, dayjs(new Date()))
                 setFromDate(minDate);
                 setMinDate(minDate);
-                setActiontype(_.uniqBy(response.data.user_action_log, 'action').map((item) => item.action));
+                setActiontype(_.uniqBy(response.data.user_action_log, 'action').map((item) => ({action: item.action, role: item.role})));
                 
                 setLoadingActionLog(false);
             } catch (error) {
@@ -270,8 +271,8 @@ const OverviewAdmin = () => {
                             <HStack h={'20%'}>
                                 <Text>Action:</Text>
                                 <Select w={'20%'} onChange={(e) => setTypeAction(e.target.value)}>
-                                    {actiontype.map(item => (
-                                        <option value={item} defaultValue={item === 'login' ? true : false}>{item}</option>
+                                    {actiontype.filter((item) => item.role === selectedTag).map(item => (
+                                        <option value={item.action} defaultValue={item.action === 'login' ? true : false}>{item.action}</option>
                                     ))}
                                     
                                 </Select>
@@ -343,7 +344,7 @@ const OverviewAdmin = () => {
                                 </Text>
                                 </GridItem>
                                 <GridItem marginTop={3} padding={'10px 10px'}>
-                                    {option == 'System Log' ? <MyTable2 data = {systemLog} height={'350px'} onSelect={setSelectedRow}/> : <MyTable2 data = {actionLog} height={'350px'} onSelect={setSelectedUser}/>}
+                                    {option == 'System Log' ? <MyTable2 data = {systemLog} height={'320px'} onSelect={setSelectedRow}/> : <MyTable2 data = {actionLog} height={'320px'} onSelect={setSelectedUser}/>}
                                 </GridItem>
                             </Grid>
                         </GridItem>

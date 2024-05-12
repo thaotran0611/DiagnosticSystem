@@ -119,9 +119,12 @@ export default function DiseaseTable(props) {
   }, [canSave]);
 
   return (
-    <Box>
+    <Box marginTop={1} h={'90%'} w={'100%'} overflow={'auto'} position={'absolute'} style={{
+      scrollbarWidth: 'thin', 
+      scrollbarColor: '#A0AEC0 #ffffff', 
+  }}>
       <Center>
-      <Text fontSize="xl" fontWeight="bold" mt={5} mb={10}>PREDICTION DISEASES FOR ADMISSION ID: {props.hadmID}</Text>
+        <Text fontSize="xl" fontWeight="bold" mt={5} mb={10}>PREDICTION DISEASES FOR ADMISSION ID: {props.hadmID}</Text>
       </Center>
       <Table key={props.data.map(item => item.note).join('_')} variant="simple">
         <Thead>

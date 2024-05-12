@@ -401,7 +401,7 @@ const DetailPatient = (props) => {
                         </GridItem>
                     </Grid>
                 </GridItem>
-                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'20px'} padding={6} height="100%" position={'relative'}>
+                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'40px'} padding={6} height="100%" position={'relative'}>
                     <Grid
                         h='40px'
                         templateColumns='repeat(6, 1fr)'
@@ -450,7 +450,7 @@ const DetailPatient = (props) => {
                             <TabPanel key={5} h={'100%'}>
                                 {activeTab === "Note" && <NoteTab note={note_event} hadmID={hadmID} expand={expand} subject_id={patientCode}/>}
                             </TabPanel>
-                            <TabPanel key={6} h={'100%'}>
+                            <TabPanel key={6} h={'100%'} position={'relative'}>
                                 {activeTab === "Diseases" && <DiseasesTab subject_id={patientCode} allAdmission={allAdmission}/>}
                             </TabPanel>
                         </TabPanels>

@@ -168,19 +168,19 @@ const Model = () => {
         disease={false}
         >
             <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
-                    <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
+                    {/* <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/> */}
                     <Grid gridTemplateColumns={'50% 50%'} h={'73%'} position={'relative'} bg={'#F7F5F8'} borderRadius={'0 0 40px 40px '}>
                         <GridItem position={'relative'}>
-                            <Grid gridTemplateRows={'45% 55%'} h={'100%'}>
-                                <GridItem bg={'#fff'} m={2} borderRadius={'20px'}>
-                                    <Grid gridTemplateRows={'15% 55% 30%'} h={'100%'}>
-                                        <GridItem>
+                            <Grid gridTemplateRows={'50% 50%'} h={'100%'}>
+                                <GridItem bg={'#fff'} borderRadius={'20px'} h={'100%'} position={'relative'}>
+                                    <Grid gridTemplateRows={'15% 70% 15%'} h={'100%'}>
+                                        <GridItem h={'100%'}>
                                             <Center>
                                                 <Text color={'#3E36B0'} fontSize={'24px'} fontWeight={'700'}>Set time to train model</Text>
                                             </Center>
                                         </GridItem>
                                         <GridItem position={'relative'} p={1}>
-                                            <Grid gridTemplateRows={'50% 50%'} h={'100%'}>
+                                            <Grid gridTemplateRows={'20% 20% 20% 20% 20%'} h={'100%'}>
                                                 <GridItem>
                                                     <Grid gridTemplateColumns={'20% 80%'}>
                                                         <GridItem>
@@ -188,32 +188,37 @@ const Model = () => {
                                                                 <Text color={'#111'} fontSize={'20px'} fontWeight={'500'}>Retrain Type</Text>
                                                             </Flex>
                                                         </GridItem>
-                                                        <GridItem style={{ width: "50%"}} marginBottom={2}>
+                                                        <GridItem style={{ width: "50%"}}>
                                                             <Select value={selectedOption} onChange={handleOptionChange} placeholder="Options">
                                                                     <option value='Schedule'>Schedule</option>
                                                                     <option value='Intermediately'>Intermediately</option>
                                                             </Select>
                                                         </GridItem>
-
-        
+                                                    </Grid>
+                                                </GridItem>
+                                                <GridItem>
+                                                    <Grid gridTemplateColumns={'20% 80%'}>
                                                         <GridItem>
                                                             <Flex justifyContent="flex-start"> 
                                                                 <Text color={'#111'} fontSize={'20px'} fontWeight={'500'}>Type of Model</Text>
                                                             </Flex>
                                                         </GridItem>
-                                                        <GridItem style={{ width: "50%"}} marginBottom={2}>
+                                                        <GridItem style={{ width: "50%"}}>
                                                             <Select placeholder='Select Model' onClick={(e) => setModel(e.target.value)}>
                                                                 <option value='CNN'>CNN</option>
                                                                 <option value='N-grams'>N-grams</option>
                                                             </Select>
                                                         </GridItem>
-
+                                                    </Grid>
+                                                </GridItem>
+                                                <GridItem>
+                                                    <Grid gridTemplateColumns={'20% 80%'}>
                                                         <GridItem>
                                                         <Flex justifyContent="flex-start"> 
                                                             <Text color={'#111'} fontSize={'20px'} fontWeight={'500'}>Epoch</Text>
                                                         </Flex>
                                                         </GridItem>
-                                                        <GridItem style={{ width: "50%"}} marginBottom={2}>
+                                                        <GridItem style={{ width: "50%"}}>
                                                             <Select placeholder='Select Epoch' onClick={(e) => setEpoch(e.target.value)}>
                                                                 <option value={5}>5</option>
                                                                 <option value={10}>10</option>
@@ -221,20 +226,26 @@ const Model = () => {
                                                                 <option value={20}>20</option>
                                                             </Select>
                                                         </GridItem>
-
+                                                    </Grid>
+                                                </GridItem>
+                                                <GridItem>
+                                                    <Grid gridTemplateColumns={'20% 80%'}>
                                                         <GridItem>
                                                         <Flex justifyContent="flex-start"> 
                                                             <Text color={'#111'} fontSize={'20px'} fontWeight={'500'}>Location to store</Text>
                                                         </Flex>
                                                         </GridItem>
-                                                        <GridItem style={{ width: "50%"}} marginBottom={2}>
+                                                        <GridItem style={{ width: "50%"}}>
                                                             <Select placeholder='Select Location' onClick={(e) => setLocationStore(e.target.value)}>
                                                                 <option value='option1'>Option 1</option>
                                                                 <option value='option2'>Option 2</option>
                                                                 <option value='option3'>Option 3</option>
                                                             </Select>
                                                         </GridItem>
-
+                                                    </Grid>
+                                                </GridItem>
+                                                <GridItem>
+                                                    <Grid gridTemplateColumns={'20% 80%'}>
                                                         {selectedOption === 'Schedule' ? (
                                                         <React.Fragment>
                                                             <GridItem>
@@ -249,34 +260,30 @@ const Model = () => {
                                                             </GridItem>
                                                         </React.Fragment>
                                                     ) : null}
-
-
-                                                        
                                                     </Grid>
                                                 </GridItem>
                                             </Grid>
                                         </GridItem>
                                         <GridItem p={2}>
-                                            <HStack float={'right'}>
-                                                {/* <Button colorScheme='teal' size='md' onClick={save}>Retrain intermediately</Button> */}
-                                                <Button w={'100px'} colorScheme='teal' size='md' onClick={save}>Set</Button>
+                                            <HStack float={'right'} marginRight={10}>
+                                                <Button w={'100px'}  colorScheme='teal' size='md' onClick={save}>Set</Button>
                                             </HStack>
                                         </GridItem>
                                     </Grid>
                                 </GridItem>
                                 <GridItem bg={'#fff'} m={2} borderRadius={'20px'}>
-                                    <Grid gridTemplateRows={'10% 90%'} h={'100%'}>
+                                    <Grid gridTemplateRows={'10% 90%'} h={'100%'} position={'relative'}>
                                         <GridItem>
                                             <Center>
                                                 <Text color={'#3E36B0'} fontSize={'24px'} fontWeight={'700'}>Detail of Model</Text>
                                             </Center>
                                         </GridItem>
-                                        <GridItem position={'relative'} p={2}>
-                                        <SimpleGrid columns={2} spacing={0}> 
+                                        <GridItem h={'100%'} position={'relative'} p={2} overflow={'auto'}>
+                                        <SimpleGrid columns={2} spacing={0} > 
                                             {selectModel_keyvalue.map((item, index) => ( 
                                             <React.Fragment key={index}> 
-                                                <Text fontSize={'sm'} fontWeight="bold">{item.key}:</Text> 
-                                                <Text fontSize={'sm'}>{item.value}</Text> 
+                                                <Text fontSize={'md'} fontWeight="bold">{item.key}:</Text> 
+                                                <Text fontSize={'md'}>{item.value}</Text> 
                                             </React.Fragment> 
                                             ))} 
                                         </SimpleGrid> 
@@ -346,7 +353,7 @@ const Model = () => {
                                             </Center>   
                                         </GridItem>
                                         <GridItem p={2}>
-                                            <MyTable2 data={trainingData} onSelect={setSelectedRecord} height={'280px'}/>
+                                            <MyTable2 data={trainingData} onSelect={setSelectedRecord} height={'380px'}/>
                                         </GridItem>
                                     </Grid>
                                 </GridItem>

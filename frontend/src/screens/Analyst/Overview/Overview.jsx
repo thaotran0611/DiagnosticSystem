@@ -20,6 +20,8 @@ import AIlogo from "../../../img/Analyst/AIlogo.png"
 import { ThemeProvider } from "@emotion/react";
 import MyPagination from "../../../components/Pagination/Pagination";
 import { createTheme } from "@mui/material";
+import { format } from 'date-fns';
+import { log } from '../../../functions';
 
 const theme = createTheme();
 const OverviewAnalyst = () => {
@@ -61,6 +63,16 @@ const OverviewAnalyst = () => {
     const [generalTag, setGeneralTag] = useState([]);
 
     const [loadingFile, setLoadingFiles] = useState(true);
+    const handleClick = (data) => {
+        var log_data = {
+            'user_code': sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).code: '0',
+            'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            'action': 'View Detail of File',
+            'related_item': 'File ' + data.code
+          }
+        log(log_data);
+        navigate(`detailfiles/${data.code}`, { state: { selectedModel: data }} ); // Assuming the URL pattern is '/patient/:patientCode'
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -89,7 +101,7 @@ const OverviewAnalyst = () => {
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
-    const [pageSize, setPageSize] = useState(6);
+    const [pageSize, setPageSize] = useState(8);
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const slicedData = generalTag.slice(startIndex, endIndex);
@@ -107,7 +119,7 @@ const OverviewAnalyst = () => {
             name={user_name}
             >
                 <GridItem position={'relative'} marginLeft={4} pl='2' area={'main'} gap={'1%'}>
-                    <Grid templateAreas={`"overal chart note"
+                    <Grid templateAreas={`"overal overal note"
                                           "list list list"`}          
                           gridTemplateRows={'42.5% 56.5%'}
                           gridTemplateColumns={'33% 33% 33%'}
@@ -117,11 +129,11 @@ const OverviewAnalyst = () => {
                                 <OveralTag title = "Number of patients" value = "10567"/>
                             </Center> */}
                             <ThemeProvider theme={theme}>
-                                <Grid h={'80%'} gridTemplateColumns={'31% 31% 31%'} gridTemplateRows={'46% 46%'} gap={4}>
+                                <Grid h={'80%'} gridTemplateColumns={'23.25% 23.25% 23.25% 23.25%'} gridTemplateRows={'46% 46%'} gap={4}>
                                     {
                                         slicedData.map(infor => (
                                             <GridItem>
-                                                <Tag data={infor}/>
+                                                <Tag data={infor} />
                                             </GridItem>
                                         ))
                                     }
@@ -137,9 +149,9 @@ const OverviewAnalyst = () => {
                             </ThemeProvider>
                             {/* <Tag /> */}
                         </GridItem>
-                        <GridItem bg={'#fff'} margin={1} p={1} borderRadius={'20px'} area={'chart'} position={'relative'}>
+                        {/* <GridItem bg={'#fff'} margin={1} p={1} borderRadius={'20px'} area={'chart'} position={'relative'}>
                             <AreaChart />
-                        </GridItem>
+                        </GridItem> */}
                         <GridItem bg={'#fff'} margin={1} p={1} borderRadius={'20px'} area={'note'} position={'relative'}>
                             <Center position={'relative'} height={'100%'}>
                                 <Note loading ={loadingNote} pageSize={2} setNote={setNote} data={note} type={"self-note"} />

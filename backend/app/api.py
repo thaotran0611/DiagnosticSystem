@@ -934,18 +934,19 @@ async def get_predict(db=Depends(get_db)) -> dict:
 async def predict_disease(hadm_id, db=Depends(get_db)) -> dict:
     hadm_id = int(hadm_id)
     subq = sa.select(
-        [ADMISSIONS_CHECKED.columns.hadm_id]
+        ADMISSIONS_CHECKED.columns.hadm_id
     ).select_from(ADMISSIONS_CHECKED) \
     .where(sa.and_(
-        ADMISSIONS_CHECKED.columns.subject_id == sa.select([ADMISSIONS_CHECKED.columns.subject_id])
+        ADMISSIONS_CHECKED.columns.subject_id == sa.select(ADMISSIONS_CHECKED.columns.subject_id)
             .where(ADMISSIONS_CHECKED.columns.hadm_id == hadm_id),
-        ADMISSIONS_CHECKED.columns.admittime < sa.select([ADMISSIONS_CHECKED.columns.admittime])
+        ADMISSIONS_CHECKED.columns.admittime < sa.select(ADMISSIONS_CHECKED.columns.admittime)
             .where(ADMISSIONS_CHECKED.columns.hadm_id == hadm_id)
     )) \
     .order_by(ADMISSIONS_CHECKED.columns.admittime.desc()) \
     .limit(1) 
 
     df = pd.DataFrame(db.execute(subq).fetchall())
+    print("*********",df)
     hadm_id_list = list(df['hadm_id'])
     
     stmt = sa.select(
@@ -1361,7 +1362,7 @@ async def get_user_action_log(db=Depends(get_db)) -> dict:
             )\
             .union(sa.select(
                 ADMINISTRATOR.c.code,
-                literal_column("'analyst'").label('role')
+                literal_column("'administrator'").label('role')
             ))))\
             .alias('subq')
             

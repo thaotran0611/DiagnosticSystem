@@ -255,7 +255,7 @@ const DetailUser = (props) => {
                         </GridItem>
                     </Grid>
                 </GridItem>
-                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'20px'} padding={6}>
+                <GridItem marginLeft={4} pl='2' area={'main'} bg={'#fff'} borderEndEndRadius={'40px'} padding={6}>
                     <Grid gridTemplateRows={expandGeneral === 1 ? '3% 97%':
                                             expandGeneral === 2 ? '45% 3% 52%':
                                                                     '97% 3%'}
