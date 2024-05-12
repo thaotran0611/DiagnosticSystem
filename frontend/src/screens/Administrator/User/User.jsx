@@ -159,7 +159,7 @@ const User = () => {
           </Breadcrumb>
         }
         disease={false}>
-                <GridItem bg={'#fff'} area={'main'}>
+                <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
                 <Center padding={'1% 4%'}>
                     <SearchAndFilterBar patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
                 </Center>

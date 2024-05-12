@@ -111,7 +111,7 @@ const Overview = () => {
                             </Center>
                         </GridItem>
                         {loadingPatient ? (
-                            <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
+                            <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'} h={'96%'}>
                                 <Center h={'100%'}>
                                     <Spinner size="xl" />
                                 </Center>

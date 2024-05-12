@@ -256,7 +256,7 @@ const Scheduler = () => {
             </Breadcrumb>
             }
             disease={false}>
-                <GridItem position={'relative'} marginLeft={4} pl='2' area={'main'} gap={'1%'}>
+                <GridItem position={'relative'} marginLeft={0} pl='2' area={'main'} gap={'1%'}>
                     <Grid templateAreas={`"load note"
                                           "list list"`}          
                           gridTemplateRows={'42.5% 56.5%'}
@@ -295,9 +295,9 @@ const Scheduler = () => {
                                                 <GridItem style={{ width: "40%"}}>
                                                     <Select value={selectedOption} onChange={handleOptionChange} placeholder="Options" marginBottom={2}>
                                                         <option value='Hourly'>Hourly</option>
-                                                        <option value='Daily'>Day</option>
-                                                        <option value='Weekly'>Week</option>
-                                                        <option value='Monthly'>Month</option>
+                                                        <option value='Daily'>Dayly</option>
+                                                        <option value='Weekly'>Weekly</option>
+                                                        <option value='Monthly'>Monthly</option>
                                                     </Select>
                                                 </GridItem>
                                                 {
@@ -392,16 +392,16 @@ const Scheduler = () => {
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Loading Data Manually History</Text>
                                 </GridItem>
                                 <GridItem padding={'0 10px'}>
-                                    <MyTable2 data={loadinghistory} onSelect={setSelectedRecord} height={'60%'}/>
+                                    <MyTable2 data={loadinghistory} onSelect={setSelectedRecord} height={'200px'}/>
                                 </GridItem>
                         </GridItem>
-                        <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'} overflow="auto">
+                        <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
                             <Grid gridTemplateRows={'12% 88%'} h={'100%'}>
                                 <GridItem p={3}>
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Schedule History</Text>
                                 </GridItem>
                                 <GridItem padding={'0 10px'}>
-                                    <MyTable2 data={scheduleLog} onSelect={setSelectedRecord} height={'350px'}/>
+                                    <MyTable2 data={scheduleLog} onSelect={setSelectedRecord} height={'330px'}/>
                                 </GridItem>
                             </Grid>
                         </GridItem>

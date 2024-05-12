@@ -21,11 +21,11 @@ export const SidebarDataDoctor = [
         icon: <MdPeopleAlt class="icon" style={{ fontSize: "3.5rem"}} />,
         link: "../doctor/patient"
     },
-    {
-        title: "Setting",
-        icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../doctor/setting"
-    },
+    // {
+    //     title: "Setting",
+    //     icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
+    //     link: "../doctor/setting"
+    // },
 ]
 
 export const SidebarDataResearcher = [
@@ -44,11 +44,11 @@ export const SidebarDataResearcher = [
         icon: <GiMedicines class="icon" style={{ fontSize: "3.5rem"}}/>,
         link: "../researcher/medicine"
     },
-    {
-        title: "Setting",
-        icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../doctor/setting"
-    }
+    // {
+    //     title: "Setting",
+    //     icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
+    //     link: "../doctor/setting"
+    // }
 ]
 
 export const SidebarDataAnalyst = [
@@ -62,11 +62,11 @@ export const SidebarDataAnalyst = [
         icon: <HiDesktopComputer class="icon" style={{ fontSize: "3.5rem"}}/>,
         link: "../analyst/file"
     },
-    {
-        title: "Setting",
-        icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../analyst/setting"
-    }
+    // {
+    //     title: "Setting",
+    //     icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
+    //     link: "../analyst/setting"
+    // }
 ]
 
 export const SidebarDataAdmin = [
@@ -85,9 +85,9 @@ export const SidebarDataAdmin = [
         icon: <IoTimeOutline class="icon" style={{ fontSize: "3.5rem"}}/>,
         link: "../admin/schedule"
     },
-    {
-        title: "Setting",
-        icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
-        link: "../admin/setting"
-    }
+    // {
+    //     title: "Setting",
+    //     icon: <IoSettingsOutline class="icon" style={{ fontSize: "3.5rem"}} />,
+    //     link: "../admin/setting"
+    // }
 ]

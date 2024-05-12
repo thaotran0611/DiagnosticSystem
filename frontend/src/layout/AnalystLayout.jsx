@@ -67,7 +67,7 @@ export const AnalystLayout = ({children, path}) => {
                         {/* <GridItem colStart={18} colSpan={1} marginLeft={'auto'} marginRight={6}>
                                 <BellIcon cursor={'pointer'} marginTop={3} boxSize={'1.8em'} color={'#716F6F'}/>
                         </GridItem> */}
-                        <GridItem colSpan={1} colStart={19}>
+                        <GridItem colSpan={2} colStart={18}>
                             <UserTag img={AccountCircleOutlinedIcon} name={user_name}/>
                         </GridItem>
                         <GridItem colSpan={1} colStart={20} marginLeft={'auto'} marginRight={6}>

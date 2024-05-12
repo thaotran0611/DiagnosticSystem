@@ -211,7 +211,7 @@ const OverviewResearcher = () => {
                         </GridItem>
                         <GridItem area={'note'} position={'relative'}>
                             <Center position={'relative'} height={'100%'}>
-                                <Note loading ={loadingNote} pageSize={2} data={note} type={"self-note"} subject_id={""}/>
+                                <Note setNote={setNote} loading ={loadingNote} pageSize={2} data={note} type={"self-note"} subject_id={""}/>
                             </Center>
                         </GridItem>
                         <GridItem h={'100%'} area={'list'} bg={'#fff'} borderRadius={'20px'} overflow={'auto'} position={'relative'}>

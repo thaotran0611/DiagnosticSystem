@@ -86,7 +86,7 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
             <select   defaultValue={"subject_id"} onClick={(e) => {setSortby(e.target.value)}} style={{cursor: 'pointer'}}>
               <option value={"subject_id"}>Subject id</option>
               <option value={"name"}>Name</option>
-              <option value={"dob"}>Date of Birth</option>
+              <option value={"Date of Birth"}>Date of Birth</option>
             </select>
             {ascendding ? 
             <ArrowDownIcon onClick={() => {setAscending(!ascendding)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={5} boxSize={5}/>
@@ -107,7 +107,7 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
         </Stack>
       </Flex>
       
-      <Box p={5} maxHeight="400px" overflowY="auto" style={{
+      <Box p={5} maxHeight="340px" overflowY="auto" style={{
             scrollbarWidth: 'thin', 
             scrollbarColor: '#A0AEC0 #ffffff', 
           }}>

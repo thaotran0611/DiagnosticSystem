@@ -60,7 +60,7 @@ const DiseasesTab = (props) => {
         sethadmID(e.target.value);
     };
     return(
-        <Box h={'100%'}>
+        <Box h={'100%'} position={'relative'}>
             <Select onChange={handleHadmIDChange} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
                 {
                     props.allAdmission.map(item => (

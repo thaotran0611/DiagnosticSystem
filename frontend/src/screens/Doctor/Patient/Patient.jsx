@@ -226,7 +226,7 @@ const Patient = () => {
 
     return(
         <DoctorLayout path={
-          <Breadcrumb>
+          <Breadcrumb fontSize="xl">
               <BreadcrumbItem isCurrentPage>
                   <BreadcrumbLink href='#'>Patient</BreadcrumbLink>
               </BreadcrumbItem>
@@ -243,7 +243,7 @@ const Patient = () => {
                 <Box h={'100%'} position={'relative'}>
 
                     {loadingPatient ?(
-                        <Center h={'100%'} bg={'#fff'} borderRadius={'20px'}>
+                        <Center h={'60%'} w={'100%'} bg={'#fff'} borderRadius={'20px'} position={'absolute'}>
                             <Spinner size="xl" />
                         </Center>
                         ) :
