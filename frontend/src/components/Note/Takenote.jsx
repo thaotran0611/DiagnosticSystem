@@ -46,7 +46,7 @@ const Takenote = (props) => {
     const submit = () => {
         let url = 'http://localhost:8000/insert-note' ;
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-        const newNoteData = {
+        let newNoteData = {
             note_id: generateRandomString(5),
             priority: priority,
             title: title,
@@ -70,7 +70,9 @@ const Takenote = (props) => {
         }
         else if(props.type === "disease-note"){
             newNoteData.disease_code = props.disease_code;
-
+        }
+        else if(props.type === "medicine-note"){
+            newNoteData = {...newNoteData, ...props.medicine_code};
         }
 
         props.setNote([newNoteData, ...props.data]); 
@@ -99,7 +101,7 @@ const Takenote = (props) => {
 
     const change = () => {
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
-        const updatedNoteData = {
+        let updatedNoteData = {
             note_id: props.note_id,
             priority: priority,
             title: title,
@@ -121,6 +123,9 @@ const Takenote = (props) => {
         }
         else if(props.type === "disease-note"){
             updatedNoteData.disease_code = props.disease_code;
+        }
+        else if(props.type === "medicine-note"){
+            updatedNoteData = {...updatedNoteData, ...props.medicine_code};
         }
         
         const updatedNotes = props.data.map(note => {

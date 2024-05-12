@@ -28,8 +28,18 @@ import axios from "axios";
 const theme = createTheme();
 
 const DetailMedicine = (props) => {
+    const researcher_code = sessionStorage.getItem('user')
+    ? JSON.parse(sessionStorage.getItem('user')).code
+    : '0';
+
     const location = useLocation();
     const medicine = location.state.data;
+    const medicineKey = {
+        drug: medicine.drug,
+        drug_name_poe: medicine.drug_name_poe,
+        drug_type: medicine.drug_type,
+        formulary_drug_cd: medicine.formulary_drug_cd
+    }
     const navigate=useNavigate();
     const [expand, setExpand] = useState(false);
     const data = [ 
@@ -104,6 +114,31 @@ const DetailMedicine = (props) => {
         }
     }, []);
 
+
+    const [note, setNote] = useState([])
+    const [loadingNote, setLoadingNote] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/medicine-notes', {
+                    params: {
+                        user_code: researcher_code,
+                        drug: medicine.drug,
+                        drug_name_poe: medicine.drug_name_poe,
+                        drug_type: medicine.drug_type,
+                        formulary_drug_cd: medicine.formulary_drug_cd                    }
+                });
+                setNote(response.data.note);
+                setLoadingNote(false);
+            } catch (error) {
+                setLoadingNote(false);
+            }
+        };
+        fetchData();
+        // const intervalId = setInterval(fetchData, 5000);
+        // return () => clearInterval(intervalId);
+    }, []);
     return(
         <ResearcherLayout path={
                 <Breadcrumb fontSize="xl">
@@ -139,7 +174,7 @@ const DetailMedicine = (props) => {
                         {!expand?
                         <GridItem area={'note'}>
                             <ScaleFade initialScale={0.8} in={!expand} style={{height: '100%'}}>
-                                {/* <Note pageSize='3'/> */}
+                                <Note loading ={loadingNote} pageSize={3} setNote={setNote} data={note} type={"medicine-note"} medicine_code={medicineKey}/>
                             </ScaleFade>
                         </GridItem>: null }
                         <GridItem area={'divider'}>

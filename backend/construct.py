@@ -46,6 +46,6 @@ DISEASE_NOTE = sa.Table('disease_note', metadata, autoload=True, autoload_with=e
 LOAD_DATA_MANUAL = sa.Table('load_data_manual', metadata, autoload=True, autoload_with=engine)  
 FILES = sa.Table('files', metadata, autoload=True, autoload_with=engine) 
 MODEL_SCHEDULE = sa.Table('model_schedule', metadata, autoload=True, autoload_with=engine)  
- 
+DRUG_NOTE = sa.Table('drug_note', metadata, autoload=True, autoload_with=engine)  
 
 

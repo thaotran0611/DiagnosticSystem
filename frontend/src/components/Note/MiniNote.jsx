@@ -29,7 +29,7 @@ const MiniNote = (props) => {
                 <p className="content-text" style={{ maxWidth: '80%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{props.note}</p>
                 <Popup trigger={<EditIcon onClick={handleEdit}  className="edit-icon"/>}
                     nested modal contentStyle={{background: 'none', border: 'none'}}>
-                    {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} type={props.type} new={false} note={props.note} priority={props.priority} created_at={props.created_at} note_id={props.note_id} title={props.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>}
+                    {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} type={props.type} new={false} note={props.note} priority={props.priority} created_at={props.created_at} note_id={props.note_id} title={props.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>}
                 </Popup>
                 <DeleteIcon onClick={handleClick} className="delete-icon"/>
             </div>

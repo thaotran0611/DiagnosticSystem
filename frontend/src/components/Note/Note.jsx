@@ -92,7 +92,7 @@ const Note = (props) => {
                     <Text className="header">Note</Text> 
                     <Popup trigger={<PlusSquareIcon marginBottom={1} boxSize={'1.2em'} className="icon-add"/>}
                         nested modal contentStyle={{background: 'none', border: 'none'}}>
-                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>}
+                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>}
                     </Popup>
                 </GridItem>
                 <GridItem colSpan={4} rowSpan={1}>
@@ -126,7 +126,7 @@ const Note = (props) => {
                         {
                             fromdate === null && todate === null ?
                             slicedData.map(note => (
-                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>
                             )) :
                             searchvalue!== '' ? 
                             slicedData.filter((item) => {
@@ -134,14 +134,14 @@ const Note = (props) => {
                                 const timeValue = dayjs(item.created_at).toDate();
                                 return itemValue.includes(searchvalue) && (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                             }).map(note => (
-                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>
                             ))
                             :
                             slicedData.filter((item) => {
                                 const timeValue = dayjs(item.created_at).toDate();
                                 return (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
                             }).map(note => (
-                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code}/>
+                                <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>
                             ))
                         }
                     </div>

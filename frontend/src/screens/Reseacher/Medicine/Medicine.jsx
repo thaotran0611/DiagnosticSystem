@@ -137,7 +137,7 @@ const Medicine = () => {
             'related_item': 'Medicine ' + data.drug_name_poe
           }
           log(log_data);
-        navigate(`detailmedicine/${data.drug_name_poe}`, {state: {data: data}}); // Assuming the URL pattern is '/patient/:patientCode'
+        navigate(`detailmedicine/${data.drug_name_poe}`, {state: {data: data}}); 
     };
     return(
         <ResearcherLayout path={

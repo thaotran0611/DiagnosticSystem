@@ -17,7 +17,7 @@ export default function DiseaseTable(props) {
   }
   function renderDiagnose(value) {
     if (value === null || value === undefined) {
-      return 'Pending';
+      return 'Unknown';
     } else if (value === true) {
       return 'Positive';
     } else {

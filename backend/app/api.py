@@ -1470,13 +1470,15 @@ async def insert_note(data:dict, db=Depends(get_db)) -> dict:
         'self-note':'transactional_note',
         'patient-note': 'transactional_patient_note',
         'user-note': 'users_note',
-        'disease-note': 'disease_note'
+        'disease-note': 'disease_note',
+        'medicine-note': 'drug_note'
     }
     action = {
         'self-note':'insert self note',
         'patient-note': 'insert patient note',
         'user-note': 'insert user note',
-        'disease-note': 'insert disease note'
+        'disease-note': 'insert disease note',
+        'medicine-note': 'insert medicine note'
     }
     try:
         note = data.get('note')
@@ -1535,13 +1537,16 @@ async def update_note(data:dict, db=Depends(get_db)) -> dict:
         'self-note':'transactional_note',
         'patient-note': 'transactional_patient_note',
         'user-note': 'users_note',
-        'disease-note': 'disease_note'
+        'disease-note': 'disease_note',
+        'medicine-note': 'drug_note'
+
     }
         action = {
             'self-note':'update self note',
             'patient-note': 'update patient note',
             'user-note': 'update user note',
-            'disease-note': 'update disease note'
+            'disease-note': 'update disease note',
+            'medicine-note': 'update medicine note'
         }
         
         note = data.get('note')
@@ -1603,14 +1608,15 @@ async def delete_note(data:dict, db=Depends(get_db)) -> dict:
         'self-note':'transactional_note',
         'patient-note': 'transactional_patient_note',
         'user-note': 'users_note',
-        'disease-note': 'disease_note'
+        'disease-note': 'disease_note',
+        'medicine-note': 'drug_note'
     }
         action = {
             'self-note':'delete self note',
             'patient-note': 'delete patient note',
             'user-note': 'delete user note',
-            'disease-note': 'delete disease note'
-
+            'disease-note': 'delete disease note',
+            'medicine-note': 'delete medicine note'
         }
         
         note_id = data.get('note_id')
@@ -1677,6 +1683,28 @@ async def get_disease_notes(user_code,disease_code ,db=Depends(get_db)) -> dict:
     stmt = DISEASE_NOTE.select().where(sa.and_(DISEASE_NOTE.columns.user_code == user_code, DISEASE_NOTE.columns.disease_code == disease_code, 
                                                DISEASE_NOTE.columns.active == True ))\
         .order_by(sa.desc(DISEASE_NOTE.columns.updated_at))
+    
+    df = pd.DataFrame(db.execute(stmt).fetchall())
+
+    if len(df)>0:
+        transform_timestamp(df,['created_at','updated_at'])
+        result = df.to_dict(orient='records')
+        # print(result)
+    else:
+        result = []
+    # print(result)
+    return JSONResponse(content={"note": result})
+
+@app.get("/medicine-notes", response_model=dict, tags=["root"]) 
+async def get_medicine_notes(user_code,drug, drug_name_poe, drug_type, formulary_drug_cd ,db=Depends(get_db)) -> dict:
+
+    stmt = DRUG_NOTE.select().where(sa.and_(DRUG_NOTE.columns.user_code == user_code
+                                            , DRUG_NOTE.columns.drug == drug
+                                            , DRUG_NOTE.columns.drug_name_poe == drug_name_poe
+                                            , DRUG_NOTE.columns.drug_type == drug_type
+                                            , DRUG_NOTE.columns.formulary_drug_cd == formulary_drug_cd
+                                            ,DRUG_NOTE.columns.active == True ))\
+        .order_by(sa.desc(DRUG_NOTE.columns.updated_at))
     
     df = pd.DataFrame(db.execute(stmt).fetchall())
 
