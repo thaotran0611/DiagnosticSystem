@@ -47,7 +47,7 @@ export const AdminLayout = ({children, path, expand, user, name}) => {
         navigate('/login');
     };
     return(
-        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0', overflow: 'auto'}}>
+        <div className="Doctor_Layout_Container" style={{backgroundColor: '#3E36B0', overflow: 'hidden'}}>
             <Grid
             templateAreas={user ? `"header header"
                                       "nav main"` :

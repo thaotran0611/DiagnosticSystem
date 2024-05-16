@@ -92,7 +92,7 @@ const Note = (props) => {
                     <Text className="header">Note</Text> 
                     <Popup trigger={<PlusSquareIcon marginBottom={1} boxSize={'1.2em'} className="icon-add"/>}
                         nested modal contentStyle={{background: 'none', border: 'none'}}>
-                        {close => <Takenote data={props.data} setNote={props.setNote} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>}
+                        {close => <Takenote data={props.data} setNote={props.setNote} onCancel={close} onSubmit={close} new={true} type={props.type} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>}
                     </Popup>
                 </GridItem>
                 <GridItem colSpan={4} rowSpan={1}>

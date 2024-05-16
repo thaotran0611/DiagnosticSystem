@@ -1,4 +1,4 @@
-import { Grid, GridItem, HStack, Select, Text, Box } from "@chakra-ui/react"
+import { Grid, GridItem, HStack, Select, Text, Box, Switch } from "@chakra-ui/react"
 import React, { useState } from "react"
 import InputColor from "react-input-color"
 import { LineChart } from "./LineChart"
@@ -63,8 +63,9 @@ const MedicalTestChart = (props) => {
                 >
                 <GridItem colStart={1} colSpan={4}>
                     <HStack>
-                    <Text paddingTop={0} color={'red'} fontSize={'22px'} fontWeight={600}>{typeoftestmanytime}</Text>
-                    <SmallCloseIcon onClick={props.onClose} cursor={'pointer'}/>
+                        <Text paddingTop={0} color={'red'} fontSize={'22px'} fontWeight={600}>{typeoftestmanytime}</Text>
+                        {/* <SmallCloseIcon onClick={props.onClose} cursor={'pointer'}/> */}
+                        <Switch isChecked={true} onChange={props.onClose}/>
                     </HStack>
                 </GridItem>
                 <GridItem colStart={5} colSpan={1} paddingTop={1}>

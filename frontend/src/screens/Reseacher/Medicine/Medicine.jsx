@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SearchAndFilterBar from "../../../components/SearchAndFilterBar/SearchAndFilterBar";
-import { Center, Slider, Divider, SimpleGrid, Icon  } from "@chakra-ui/react";
+import { Center, Slider, Divider, SimpleGrid, Icon, Box  } from "@chakra-ui/react";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -119,15 +119,47 @@ const Medicine = () => {
             setFilteredResults(drugs);
         }
     }
+
+    const [sortby, setSortBy] = useState('drug_type')
+    const [ascending, setAscending] = useState(true)
+
+    const [selectedLayout, setSelectedLayout] = useState('list');
+    const handleLayoutChange = (layout) => {
+        setSelectedLayout(layout);
+    };
+    const pageSizeList = [12, 24, 48];
+    const [goToPage, setGoToPage] = useState("");
+
+    const [pageSize, setPageSize] = useState(pageSizeList[0]);
+    const handleGoToPage = () => {
+    const pageNumber = parseInt(goToPage);
+    if (pageNumber >= 1 && pageNumber <= Math.ceil(filteredResults.length / pageSize)) {
+        setPage(pageNumber);
+    } else {
+        alert(`Page number should be between 1 and ${Math.ceil(filteredResults.length / pageSize)}`);
+    }
+    };
+    let filterSortResult = ascending ? [...filteredResults].sort((a, b) => {
+        console.log(sortby);
+        if (sortby === 'subject_id'){
+          return a[sortby] - b[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && a[sortby].toString().localeCompare(b[sortby].toString())
+        }})
+        : [...filteredResults].sort((a, b) => {
+        if (sortby === 'subject_id'){
+          return b[sortby] - a[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && b[sortby].toString().localeCompare(a[sortby].toString());
+    }});
     
-    const pageSize = 12;
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
     let startIndex = (page - 1) * pageSize;
     let endIndex = startIndex + pageSize;
-    let slicedData = filteredResults.slice(startIndex, endIndex);
+    let slicedData = filterSortResult.slice(startIndex, endIndex);
     const navigate = useNavigate();
     const handleClick = (data) => {
         var log_data = {
@@ -151,11 +183,25 @@ const Medicine = () => {
         disease={false}>
                 <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
                 <Center padding={'1% 4%'}>
-                    <SearchAndFilterBar patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>   
+                    <SearchAndFilterBar setSortBy={setSortBy} ascending={ascending} setAscending={setAscending} handleLayoutChange={handleLayoutChange} selectedLayout={selectedLayout} handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage={setGoToPage} pageSizeList={pageSizeList} setPageSize={setPageSize} pageSize={pageSize}
+                                        patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>   
                 </Center>
                     <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
+                    <Box overflow={'auto'} h={'500px'} style={{
+                                        scrollbarWidth: 'thin', 
+                                        scrollbarColor: '#A0AEC0 #ffffff'
+                                    }}> 
                         <ThemeProvider theme={theme}>
                             <Center>
+                                {selectedLayout === 'list' ? 
+                                <SimpleGrid mt={0} columns={1} spacing={10}>
+                                {
+                                    slicedData.map(item => (
+                                        <DiseaseTag width={1600}  onClick={handleClick} sum_of_admission={1} medicine={true} data={item}/>
+                                    ))
+                                }
+                                </SimpleGrid>
+                                :
                                 <SimpleGrid mt={0} columns={4} spacing={10}>
                                     {
                                         slicedData.map(item => (
@@ -163,14 +209,19 @@ const Medicine = () => {
                                         ))
                                     }
                                 </SimpleGrid>
+                                }
                             </Center>
-                            <Center>
-                                <MyPagination 
-                                    count={Math.ceil(filteredResults.length / pageSize)} 
-                                    page = {page} 
-                                    onChange = {handleChangePage}/>
-                            </Center>
+                            
                         </ThemeProvider>
+                    </Box>
+                    <ThemeProvider theme={theme}>
+                        <Center>
+                            <MyPagination 
+                                count={Math.ceil(filteredResults.length / pageSize)} 
+                                page = {page} 
+                                onChange = {handleChangePage}/>
+                        </Center>
+                    </ThemeProvider>
                 </GridItem>
         </ResearcherLayout>
     )

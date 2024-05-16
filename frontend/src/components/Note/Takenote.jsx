@@ -9,6 +9,7 @@ import {
     AlertIcon,
     AlertTitle,
     AlertDescription,
+    Button,
   } from '@chakra-ui/react'
 import {log} from '../../functions'
 const Takenote = (props) => {
@@ -170,7 +171,16 @@ const Takenote = (props) => {
             <textarea id="title" value={title} onChange={handleTitleChange} placeholder="Enter title" name="title" />
             <textarea id="takenote" value={message} onChange={handleTakenote} placeholder="Write your note here!" name="takenote" />
             <div className="submit-btn" style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: '10px' }}>
-                {props.new ? <Submit_button text = "Submit" onClick = {submit} />: <Submit_button text = "Change" onClick = {change} /> }
+                {props.new ? 
+                <>
+                    <Button onClick={props.onCancel} marginRight={2} className="btn" width={'150px'}>Cancel</Button>
+                    <Submit_button text = "Submit" onClick = {submit} />
+                </>
+                : 
+                <>
+                    {/* <Button onClick={props.onCancel} marginRight={2} className="btn" width={'150px'}>Cancel</Button> */}
+                    <Submit_button text = "Change" onClick = {change} /> 
+                </>}
                 {/* {
                     insertSuccess && <Alert status='success'> <AlertIcon /> Insert New Note ! </Alert>
                 } */}

@@ -25,6 +25,25 @@ import axios from "axios";
 const theme = createTheme();
 
 const DetailDisease = (props) => {
+    const mappingTagDisease = {
+        disease_code: 'Code',
+        sum_of_admission: 'Admissions',
+        sum_of_male: 'Male',
+        sum_of_female: 'Female',
+        disease_name: 'Name'
+    }
+    const mapping = {
+        hadm_id: 'Admission ID',
+        disease_code: 'Disease Code',
+        name: 'Name',
+        gender: 'Gender',
+        marital_status: 'Marital Status',
+        religion: 'Religion',
+        ethnicity: 'Ethnicity',
+        dob: 'Date of Birth',
+        dod: 'Date of Death',
+        yearold: 'Life Expectancy'
+    }
     const location = useLocation();
     const disease = location.state.data;
     const researcher_code = sessionStorage.getItem('user')
@@ -232,16 +251,16 @@ const DetailDisease = (props) => {
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'} w={'100%'} position={'relative'}>
-                                <GeneralTab expand={expand} diseaseStatistic={diseaseStatistic}/>
+                                <GeneralTab mapping={mapping} expand={expand} diseaseStatistic={diseaseStatistic}/>
                             </TabPanel>
                             <TabPanel key={2} h={'100%'}>
-                                <OtherDiseaseTab expand={expand} otherdiseases={otherdiseases}/>
+                                <OtherDiseaseTab mapping={mapping} expand={expand} otherdiseases={otherdiseases}/>
                             </TabPanel>
                             {/* <TabPanel key={3} h={'100%'}>
                                 <ClinicalSignTab/>
                             </TabPanel> */}
                             <TabPanel key={3} h={'100%'}>
-                                <PrescriptionTab prescription={prescription}/>
+                                <PrescriptionTab mapping={mapping} prescription={prescription}/>
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

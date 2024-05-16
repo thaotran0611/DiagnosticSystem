@@ -3,6 +3,25 @@ import React, { useState } from "react";
 import MyTable2 from "../../../components/MyTable/MyTable2";
 
 const PrescriptionTab = (props) => {
+    const mappingDiseases = {
+        AA: 'Alcohol Abuse',
+        CND: 'Chronic Neuro Dystrophies',
+        SA: 'Subtance Abuse',
+        CP: 'Chronic Pain',
+        Dep: 'Depression',
+        MC: 'Metastatic Cancer',
+        Ob: 'Obesity',
+        PD: 'Psychiatric Disorders',
+        HD: 'Advanced Heart Disease',
+        LD: 'Advanced Lung Disease'
+    };
+    const mapping = {
+        Drug: 'Drug',
+        Drug_type: 'Drug type',
+        Drug_name_poe: 'Drug name poe',
+        Drug_name_generic: 'Drug name generic',
+        Frequency: 'Frequency'
+    };
     let otherdiseasesValue = [{
             name: 'AA',
             label: 'Alcohol Abuse',
@@ -81,7 +100,18 @@ const PrescriptionTab = (props) => {
                     </PopoverContent>
                 </Popover>
             </HStack>
-            <MyTable2 onSelect = {()=>{}} data={filterOtherDiseases} tablename={'Table of prescriptions with diseases: ' + codiseases.map(item => " "+ item)} height={'590px'}/>
+            <MyTable2 onSelect = {()=>{}} 
+            data={filterOtherDiseases.map(item => {
+                                    const newItem = {};
+                                    for (const [oldKey, newKey] of Object.entries(mapping)) {
+                                        if (item.hasOwnProperty(oldKey)) {
+                                        newItem[newKey] = item[oldKey];
+                                        }
+                                    }
+                                    return newItem;
+                                })
+                            } 
+             tablename={'Table of prescriptions with: ' + codiseases.length + ' diseases'} height={'590px'}/>
         </Box>
     )
 }

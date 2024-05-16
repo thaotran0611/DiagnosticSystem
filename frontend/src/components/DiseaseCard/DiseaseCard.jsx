@@ -27,13 +27,19 @@ const mapping_disease = {
   SA:	"Substance Abuse"
 }
 
-const DiseaseCard = ({ text, hidden }) => {
+const DiseaseCard = ({ text, hidden, absolutecenter }) => {
   return (
     <Box boxSize={100} overflow="hidden" w={100}>
       <Box>
+        {absolutecenter ? 
+        <AbsoluteCenter> 
+          <Image src={imagePaths[text]} alt={`Card Image for ${text}`} boxSize="40px"/>
+        </AbsoluteCenter>
+        :
         <Center> 
           <Image src={imagePaths[text]} alt={`Card Image for ${text}`} boxSize="40px"/>
         </Center>
+        }
       </Box>
       {hidden ? null : 
         <Box boxSize={100}>

@@ -3,8 +3,7 @@ import { Card, CardHeader, CardBody, CardFooter, Button, Heading, Image, Stack, 
 import { BellIcon } from "@chakra-ui/icons";
 import DiseaseCard from "../DiseaseCard/DiseaseCard";
 import { GiMedicines } from "react-icons/gi";
-const DiseaseTag = ({data, medicine, sum_of_admission, onClick}) => {
-    console.log(data)
+const DiseaseTag = ({data, medicine, sum_of_admission, onClick, width}) => {
     const handleClick = () => {
         onClick(data);
     };
@@ -16,6 +15,8 @@ const DiseaseTag = ({data, medicine, sum_of_admission, onClick}) => {
             variant='outline'
             borderRadius={20}
             border={'1px solid #A6DEF7'}
+            cursor={'pointer'} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}}
+            w={width || ''}
             >
             <HStack>
                 <CardHeader w={'max-content'} p={1}>
@@ -30,7 +31,7 @@ const DiseaseTag = ({data, medicine, sum_of_admission, onClick}) => {
                                                 <Icon boxSize={10} as={GiMedicines}/>
                                             </Box>
                                         </Box> :
-                                        <DiseaseCard hidden={true} text={data.disease_code}/>
+                                        <DiseaseCard absolutecenter={true} hidden={true} text={data.disease_code}/>
                                     }
                                 </AbsoluteCenter>
                             </Box>

@@ -14,9 +14,9 @@ const FilterTag = (props) => {
     return(
         <div>
             {/* <HStack spacing={4}> */}
-                <Text cursor={'pointer'}>{props.name}</Text>
+                <Text w={'max-content'} fontSize={'14px'}  cursor={'pointer'}>{props.name}</Text>
                 <Tag
-                size={'lg'}
+                size={'md'}
                 key={props.key}
                 borderRadius='full'
                 variant='solid'
@@ -24,6 +24,7 @@ const FilterTag = (props) => {
                 _disabled={props.disabled}
                 onClick={props.onClickTag}
                 cursor={'pointer'}
+                w={'max-content'}
                 >
                 <PopoverTrigger>
                     <TagLabel>{props.text}</TagLabel>

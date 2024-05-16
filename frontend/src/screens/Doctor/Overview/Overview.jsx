@@ -9,14 +9,10 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
-    BreadcrumbSeparator,
   } from '@chakra-ui/react'
 import { DoctorLayout } from "../../../layout/DoctorLayout";
-import { useNavigate } from "react-router-dom";
-import { Grid, GridItem,Text } from '@chakra-ui/react'
-import dayjs from 'dayjs';
+import { Grid, GridItem } from '@chakra-ui/react'
 const Overview = () => {
-    const navigate = useNavigate();
     const doctor_code = sessionStorage.getItem('user')
     ? JSON.parse(sessionStorage.getItem('user')).code
     : '0';
@@ -39,7 +35,6 @@ const Overview = () => {
                         user_code: doctor_code
                     }
                 });
-                console.log(response)
                 setNote(response.data.data);
                 setLoadingNote(false);
             } catch (error) {
@@ -49,8 +44,6 @@ const Overview = () => {
         };
     
         fetchData();
-        // const intervalId = setInterval(fetchData, 5000);
-        // return () => clearInterval(intervalId);
     }, []);
     const [tagData, setTagData] = useState([]); // PASS AS PARAMETER
 
@@ -62,14 +55,12 @@ const Overview = () => {
                         doctor_code: doctor_code
                     }
                 });
-                console.log(response)
                 setPatientData(response.data.data);
                 setTagData(response.data.genderData)
                 if (response.data.data.length > 0) {
                     setSelectedPatient(response.data.data[0]);
                 }
                 setLoadingPatient(false);
-                console.log(tagData)
             } catch (error) {
                 setError(error);
                 setLoadingPatient(false);

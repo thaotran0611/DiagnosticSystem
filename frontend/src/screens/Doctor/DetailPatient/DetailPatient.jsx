@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DoctorLayout } from "../../../layout/DoctorLayout";
-import { AbsoluteCenter, Box, Button, Divider, Grid, GridItem, IconButton, ScaleFade, SimpleGrid } from "@chakra-ui/react";
+import { AbsoluteCenter, Box, Divider, Grid, GridItem, ScaleFade } from "@chakra-ui/react";
 import { Center } from "@chakra-ui/react";
 import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
-    BreadcrumbSeparator,
   } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
-import { BellIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, Text } from '@chakra-ui/react'
 import Note from "../../../components/Note/Note";
 import PatientTag from "../../../components/PatientTag/PatientTag";
-import MyPagination from "../../../components/Pagination/Pagination";
-import { Pagination, ThemeProvider, createTheme } from "@mui/material";
 import GeneralTab from "./GeneralTab";
 import MedicalTestTab from "./MedicalTestTab";
 import PrescriptionTab from "./PrescriptionTab";
@@ -29,19 +26,12 @@ import { useLocation } from 'react-router-dom';
 import {log} from '../../../functions';
 import { format } from 'date-fns'
 
-const theme = createTheme();
-
-
 const DetailPatient = (props) => {
     const location = useLocation();
     if (!location || !location.state || !location.state.patient_Data) {
-        // Handle the case where location or location.state or location.state.patient_Data is null
         console.error("Location state or patient data is null.");
-        // return null; // Or render some fallback UI
     }
     const { patient_Data } = location.state;
-    console.log("Navigate data")
-    console.log(patient_Data)
     const navigate = useNavigate();
 
     const doctor_code = sessionStorage.getItem('user')
@@ -52,8 +42,6 @@ const DetailPatient = (props) => {
     : '';
     const { patientCode } = useParams();
     console.log(patientCode)
-    const [patientdata, setPatientData] = useState([]); // PASS AS PARAMETER
-    const [loadingPatient, setLoadingPatient] = useState(true);
     const [hadmID, sethadmID] = useState('All Admission');
     const [allAdmission, setAllAdmission] = useState(['All Admission']);
     const [error, setError] = useState(null);
@@ -64,26 +52,6 @@ const DetailPatient = (props) => {
     const [pageSizeGeneral, setPageSizeGeneral] = useState(4);
     const [pageSizeMedicalTest, setPageSizeMedicalTest] = useState(4);
     const [activeTab, setActiveTab] = useState("General");
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await axios.get('http://localhost:8000/patients-detail-overview', {
-    //                 params: {
-    //                     doctor_code: doctor_code,
-    //                     subject_id: patientCode
-    //                 }
-    //             });
-    //             // console.log(response)
-    //             setPatientData(response.data.patientDetail);
-    //             setLoadingPatient(false);
-    //         } catch (error) {
-    //             setError(error);
-    //             setLoadingPatient(false);
-    //         }
-    //     };
-    //     fetchData();
-    // }, []);
 
     const [addmission, setAddmission] = useState([]); // PASS AS PARAMETER
     const [loadingAdmission, setLoadingAdmission] = useState(true);
@@ -101,7 +69,6 @@ const DetailPatient = (props) => {
                 setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "Admission ID").map((image) => image['Admission ID'])));
                 setLoadingAdmission(false);
                 setInfoTag(response.data.infomation_tag)
-                console.log(allAdmission)
             } catch (error) {
                 setError(error);
                 setLoadingAdmission(false);
@@ -124,7 +91,6 @@ const DetailPatient = (props) => {
                         subject_id: patientCode
                     }
                 });
-                // console.log(response)
                 setNote(response.data.note);
                 setLoadingNote(false);
             } catch (error) {
@@ -133,8 +99,6 @@ const DetailPatient = (props) => {
             }
         };
         fetchData();
-        // const intervalId = setInterval(fetchData, 5000);
-        // return () => clearInterval(intervalId);
     }, []);
 
     const [procedure, setProcedure] = useState([]); // PASS AS PARAMETER
@@ -152,7 +116,6 @@ const DetailPatient = (props) => {
                 });
                 setProcedure(response.data.procedure);
                 setLoadingProcedure(false);
-                // console.log(procedure)
             } catch (error) {
                 setError(error);
                 setLoadingProcedure(false);
@@ -219,7 +182,6 @@ const DetailPatient = (props) => {
                 });
                 setNoteEvent(response.data.note);
                 setLoadingNoteEvent(false);
-                // console.log(note)
             } catch (error) {
                 setError(error);
                 setLoadingNoteEvent(false);
@@ -236,7 +198,6 @@ const DetailPatient = (props) => {
         }
         if (note_event.length === 0 && activeTab === "Note") {
             fetchData();
-            
         }
     }, [activeTab]);
 
@@ -248,7 +209,6 @@ const DetailPatient = (props) => {
     const [typeofmedicaltestmanytime, setTypeofmedicaltestmanytime] = useState([]);
     const [loadingMedicalTest, setLoadingMedicalTest] = useState(true);
     const isUnique = (arr, item) => {
-        // Check if there's only one occurrence of this combination in the array
         return arr.filter(obj => obj.hadm_id === item.hadm_id && obj.itemid === item.itemid).length === 1;
       };
     function sortByDatetimeAscending(a, b) {

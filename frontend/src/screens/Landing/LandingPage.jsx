@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import './LandingPage.css'
 import logo from '../../img/logo.png';
 import Submit_button from "../../components/Button/Submit-button";
@@ -20,7 +20,7 @@ import linkedin from "../../img/LandingPage/linkedin.png";
 import telegram from "../../img/LandingPage/telegram.png";
 import axios from 'axios';
 import { Pagination, ThemeProvider, createTheme} from "@mui/material";
-import { useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Scrollspy from 'react-scrollspy'
 
 
@@ -46,7 +46,6 @@ const LandingPage = () => {
         .then(res => {
             setData(res.data['glossary']);
             setLoading(false);
-            console.log(res.data['glossary']);
         })
         .catch(error => {
             setError(error);
@@ -70,12 +69,6 @@ const LandingPage = () => {
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
-
-    // useEffect(() => {
-    //     setInterval(() => {
-    //       setPage(page + 1)
-    //     }, 10000);
-    //   }, []);
       
     const AnyReactComponent = ({ text }) => <div style={{width: 'max-content', color: 'red', fontSize: '10pxpx'}}>{text}</div>;
 
@@ -84,9 +77,6 @@ const LandingPage = () => {
         <div style={{height: 'max-content'}}>
             <div className="LandingPage_Header">
                 <img style={{height: '120px', marginLeft: '10%'}} src={logo}/>
-                {/* <div style={{marginLeft: '80%', marginTop: '50px'}}>
-                    <Submit_button onClick={()=>{navigate('../login')}} text = 'Login'/>
-                </div> */}
                 <nav style={{position: 'absolute', marginTop: '40px', marginLeft: '44%'}} class="navbar navbar-expand-lg bg-body-tertiary">
                     <div class="container-fluid">
                         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
@@ -112,25 +102,27 @@ const LandingPage = () => {
                         <img style={{position: 'absolute', left: '230px', top: '200px'}}src={icu} alt="no img" />
                     </div>
                     <div style={{paddingRight: '200px', fontSize: '18px'}} className="LandingPage_icu_content">
-                        <p style={{fontSize: '26px', fontWeight: '800'}}>Khoa Hồi sức tích cực</p>
+                        <p style={{fontSize: '26px', fontWeight: '800'}}>Intensive Care Unit (ICU)</p>
                         <ul style={{fontSize: '20px', fontWeight: '500'}}>
-                            <li>Khoa Hồi sức tích cực là khoa lâm sàng có nhiệm vụ tiếp tục điều trị và chăm sóc tích cực những người bệnh của khoa Cấp cứu và của các khoa lâm sàng trong bệnh
-                                viện chuyển đến.</li>
-                            <li>Phối hợp với khoa Cấp cứu tham gia cấp cứu ngoài bệnh viện và tại bệnh viện trong
-                                tình huống xảy ra cấp cứu hàng loạt, cấp cứu thảm hoạ.</li>
-                            <li>Phối hợp cùng với khoa Cấp cứu hỗ trợ chuyên môn cho hệ thống cấp cứu tại các
-                                khoa khác trong bệnh viện.</li>
-                            <li>Trường hợp người bệnh nặng vượt quá khả năng chuyên môn thì hội chẩn, mời
-                                tuyến trên hỗ trợ hoặc chuyển người bệnh.</li>
+                            <li>"Intensive Care Unit (ICU)" or "Critical Care Unit (CCU)" is a clinical department tasked with continuing the intensive treatment and care of critically ill patients from the Emergency Department and other clinical departments within the hospital.</li>
+                            <li>Coordinating with the Emergency Department to participate in pre-hospital and in-hospital emergency care situations during mass casualty incidents and disasters.</li>
+                            <li>Collaborating with the Emergency Department to provide specialized support for the emergency response system in other departments within the hospital.</li>
+                            <li>In cases where a critically ill patient exceeds the expertise available, a consultation may be sought, higher-level support may be requested, or the patient may be transferred to another facility.</li>
                         </ul>
-                        <Submit_button text='Read more...' />
+                        <div style={{marginTop: '20px', paddingLeft: '600px'}}>
+                            <a href="https://pubmed.ncbi.nlm.nih.gov/27612678/" style={{textDecoration: 'none'}}>
+                                <Submit_button text = 'Read more...'/>
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div id="ICUProcess" style={{height: '800px'}} className="LandingPage_process_doctor">
                     <div style={{padding: '200px 100px'}} className="LandingPage_process_doctor_content">
                         <img style={{width: '1000px'}} src={doctor_process} alt="no img" />
                         <div style={{marginTop: '50px', paddingLeft: '500px'}}>
-                            <Submit_button text = 'Read more...'/>
+                            <a href="https://benhnhietdoi.vn/UploadFiles/2018/12/20/QT.03_NKTH.pdf" style={{textDecoration: 'none'}}>    
+                                <Submit_button text = 'Read more...'/>
+                            </a>
                         </div>
                     </div>
                     <div className="LandingPage_process_doctor_img">
@@ -144,10 +136,12 @@ const LandingPage = () => {
                         <img style={{position: 'absolute', top: '80px', left: '20px'}} src={medicine_process} alt="no img" />
                     </div>
                     <div style={{padding: '100px 200px'}} className="LandingPage_process_medicine_content">
-                        <p style={{fontSize: '26px', fontWeight: '800'}}>Quy trình nghiên cứu thuốc</p>
+                        <p style={{fontSize: '26px', fontWeight: '800'}}>The process of drug discovery</p>
                         <img src={medicine_process2} alt="no img" />
                         <div style={{marginTop: '20px', paddingLeft: '500px'}}>
-                            <Submit_button text = 'Read more...'/>
+                            <a href="https://www.rasayanika.com/2020/08/10/what-is-clinical-pharmacology-understanding-clinical-pharmacology/" style={{textDecoration: 'none'}}>
+                                <Submit_button text = 'Read more...'/>
+                            </a>
                         </div>
                     </div>
                 </div>

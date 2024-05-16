@@ -143,22 +143,40 @@ const GeneralTab = (props) => {
     const [label2, setLabel2]=useState('agegroup');
     const [color, setColor] = useState('#5e72e4');
     const [decision, setDecision] = useState('All');
+    const [decision2, setDecision2] = useState('All');
     const [changeChart, setChangeChart] = useState(1);
     let filterDataTable = [];
+    let filterDataTable2 = [];
+
     if (decision === 'All') {
         filterDataTable = props.diseaseStatistic;
     }
-    else if (changeChart === 1) {
+    else {
         filterDataTable = props.diseaseStatistic.filter((item) => {return item[label] === decision})
     }
-    else if (changeChart === 2) {
+
+    if (decision2 === 'All'){
+        filterDataTable2 = props.diseaseStatistic;
+    }
+    else {
         if (label2 === 'agegroup'){
-            const [start, end] = decision.split("-").map(Number);
-            filterDataTable = props.diseaseStatistic.filter((item) => {return item.yearold > start && item.yearold < end})
+            const [start, end] = decision2.split("-").map(Number);
+            filterDataTable2 = props.diseaseStatistic.filter((item) => {return item.yearold > start && item.yearold < end})
         } else{
-            filterDataTable = props.diseaseStatistic.filter((item) => {return item[label2] === decision});
+            filterDataTable2 = props.diseaseStatistic.filter((item) => {return item[label2] === decision2});
         }
     }
+    // else if (changeChart === 1) {
+    //     filterDataTable = props.diseaseStatistic.filter((item) => {return item[label] === decision})
+    // }
+    // else if (changeChart === 2) {
+    //     if (label2 === 'agegroup'){
+    //         const [start, end] = decision.split("-").map(Number);
+    //         filterDataTable = props.diseaseStatistic.filter((item) => {return item.yearold > start && item.yearold < end})
+    //     } else{
+    //         filterDataTable = props.diseaseStatistic.filter((item) => {return item[label2] === decision});
+    //     }
+    // }
     return(
         <Grid gridTemplateRows={expandGeneral === 1 ? '3% 97%' :
                                 expandGeneral === 2 ? '48.5% 3% 48.5%':
@@ -185,8 +203,8 @@ const GeneralTab = (props) => {
                                     <Text paddingTop={2}>Statistic:</Text>
                                     <Flex align={'flex-end'}>
                                         <Select w={100} onChange={(e) => {setLabel(e.target.value)}}>
-                                            <option value="ethnicity">ethnicity</option>
                                             <option defaultValue={true} value="gender">gender</option>
+                                            <option value="ethnicity">ethnicity</option>
                                             <option value="marital_status">marital status</option>
                                             <option value="religion">religion</option>
                                         </Select>
@@ -204,7 +222,19 @@ const GeneralTab = (props) => {
                         </Grid>
                     </GridItem>
                     <GridItem h={'100%'} position={'relative'}>
-                        <Grid h={'100%'} gridTemplateRows={'20% 80%'}>
+                        <MyTable2
+                                tablename={ 'Patients with ' + label + ': ' + decision }
+                                data={filterDataTable.map(item => {
+                                    const newItem = {};
+                                    for (const [oldKey, newKey] of Object.entries(props.mapping)) {
+                                        if (item.hasOwnProperty(oldKey)) {
+                                        newItem[newKey] = item[oldKey];
+                                        }
+                                    }
+                                    return newItem;
+                                })} 
+                                width={props.expand ? '1100px' : '550px'} height={expandGeneral === 2 ? '240px' : '590px'} onSelect={()=>{}}/>
+                        {/* <Grid h={'100%'} gridTemplateRows={'20% 80%'}>
                             <GridItem>
                             <HStack textAlign={'left'} spacing={1}>
                                 <Text fontSize={26} fontWeight={650} color={'#3E36B0'}>Statistics of Death</Text>
@@ -228,10 +258,9 @@ const GeneralTab = (props) => {
                             </HStack>
                             </GridItem>
                             <GridItem h={'100%'} overflow={'auto'} w={'100%'} position={'relative'}>
-                                {/* <AreaChart/> */}
                                 <LineChart changeChart={changeChart} setChangeChart={setChangeChart} setDecision={setDecision} color={color} data={datas2[label2]} label={labels2[label2]} level={'default'}/>
                             </GridItem>
-                        </Grid>
+                        </Grid> */}
                     </GridItem>
                 </Grid>
             </GridItem>
@@ -266,10 +295,51 @@ const GeneralTab = (props) => {
             </GridItem>
             {expandGeneral === 3 ? null :
             <GridItem h={'100%'} position={'relative'}>
-                <MyTable2
-                            tablename={ (changeChart === 1 ? 'Patients with ' + label + ': ' + decision : 'Died patients with ' + label2 + ': ' + decision)}
-                            data={filterDataTable} 
-                            width={props.expand ? '1700px' : '1100px'} height={expandGeneral === 2 ? '260px' : '600px'} onSelect={()=>{}}/>
+                <Grid gridTemplateColumns={'50% 50%'} h={'100%'}>
+                    <GridItem h={'100%'} position={'relative'}>
+                        <Grid h={'100%'} gridTemplateRows={'20% 80%'}>
+                            <GridItem>
+                            <HStack textAlign={'left'} spacing={1}>
+                                <Text fontSize={26} fontWeight={650} color={'#3E36B0'}>Statistics of Death</Text>
+                                <Text paddingTop={2} fontWeight={600}>Color:</Text>
+                                <InputColor
+                                    // disabled={typeofchart === 'Table'? true : false}
+                                    initialValue="#5e72e4"
+                                    onChange={setColor}
+                                    placement="right"
+                                />
+                                <Text paddingTop={2}>Statistic:</Text>
+                                <Flex align={'flex-end'}>
+                                    <Select w={120} onChange={(e) => {setLabel2(e.target.value)}}>
+                                        <option defaultValue={true} value="agegroup">age group</option>
+                                        <option value="ethnicity">ethnicity</option>
+                                        <option value="gender">gender</option>
+                                        <option value="marital_status">marital status</option>
+                                        <option value="religion">religion</option>
+                                    </Select>
+                                </Flex>
+                            </HStack>
+                            </GridItem>
+                            <GridItem h={'100%'} overflow={'auto'} w={'100%'} position={'relative'}>
+                                <LineChart changeChart={changeChart} setChangeChart={setChangeChart} setDecision={setDecision2} color={color} data={datas2[label2]} label={labels2[label2]} level={'default'}/>
+                            </GridItem>
+                        </Grid>
+                    </GridItem>
+                    <GridItem h={'100%'} position={'relative'}>
+                        <MyTable2
+                                    tablename={'Died patients with ' + label2 + ': ' + decision2}
+                                    data={filterDataTable2.map(item => {
+                                        const newItem = {};
+                                        for (const [oldKey, newKey] of Object.entries(props.mapping)) {
+                                            if (item.hasOwnProperty(oldKey)) {
+                                            newItem[newKey] = item[oldKey];
+                                            }
+                                        }
+                                        return newItem;
+                                    })} 
+                                    width={props.expand ? '1100px' : '550px'} height={expandGeneral === 2 ? '240px' : '590px'} onSelect={()=>{}}/>
+                    </GridItem>
+                </Grid>
             </GridItem>
             }
         </Grid>

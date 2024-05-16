@@ -29,6 +29,18 @@ import { IoChevronDown } from "react-icons/io5";
 import { Radio, RadioGroup } from '@chakra-ui/react'
 import { Stack } from "@chakra-ui/react";
 const Filter = (props) => {
+    const mapping = {
+        disease_code: 'Code',
+        sum_of_admission: 'Admissions',
+        sum_of_male: 'Male',
+        sum_of_female: 'Female',
+        disease_name: 'Name',
+        drug_type: 'Drug Type',
+        gender: 'Gender',
+        role: 'Role',
+        type_file: 'Type of file',
+        type_of_disease: 'Type of disease'
+    }
     
     return (
         <Menu flip={true} closeOnSelect={false} direction="ltr">
@@ -74,7 +86,7 @@ const Filter = (props) => {
                     props.filterData.map(item => (
                         <Popover closeOnBlur={true}>
                             <PopoverTrigger>
-                                <Text padding={2} _hover={{bgColor: '#EDF2F7'}} cursor={'pointer'}>{item.name}</Text>
+                                <Text padding={2} _hover={{bgColor: '#EDF2F7'}} cursor={'pointer'}>{props.patient ? item.name : mapping[item.name]}</Text>
                             </PopoverTrigger>
                             <PopoverContent>
                                 <PopoverArrow />

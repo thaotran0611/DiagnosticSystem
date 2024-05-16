@@ -19,7 +19,7 @@ const PatientGridCard = (props) => {
         props.onClick(props.data);
     };
   return ( 
-    <Card w={750} onClick={handleClick} height={250} 
+    <Card w={props.width || 750} onClick={handleClick} height={props.height || 250} 
       _hover={{ 
         boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)', 
         cursor: 'pointer' // Change cursor style on hover
@@ -46,24 +46,24 @@ const PatientGridCard = (props) => {
                 <TypeCard type={props.data['Admission Type']}/>
             </Flex> 
             
-            <Flex> {/* Use Flex container */}
-                        <Flex direction="column" flex="1"  alignItems="flex-start"> {/* Set flex="1" to make it grow */}
-                            {keyValueList ? keyValueList.slice(0, halfIndex).map((item, index) => ( 
-                                <Flex key={index} justifyContent="space-between" alignItems="flex-start"  my={1}> 
-                                    <Text fontWeight="bold">{item.key}:</Text> 
-                                    <Text>{item.value}</Text> 
-                                </Flex> 
-                            )): null} 
-                        </Flex>
-                        <Flex direction="column" flex="1"  alignItems="flex-start"> {/* Set flex="1" to make it grow */}
-                            {keyValueList ? keyValueList.slice(halfIndex).map((item, index) => ( 
-                                <Flex key={index} justifyContent="space-between" alignItems="flex-start"  my={1}>
-                                    <Text fontWeight="bold">{item.key}:</Text> 
-                                    <Text>{item.value}</Text> 
-                                </Flex> 
-                            )): null} 
-                        </Flex>  
-                    </Flex>
+            <Flex>
+              <Flex direction="column" flex="1"  alignItems="flex-start"> {/* Set flex="1" to make it grow */}
+                  {keyValueList ? keyValueList.slice(0, halfIndex).map((item, index) => ( 
+                      <Flex key={index} justifyContent="space-between" alignItems="flex-start"  my={1}> 
+                          <Text fontWeight="bold">{item.key}:</Text> 
+                          <Text>{item.value}</Text> 
+                      </Flex> 
+                  )): null} 
+              </Flex>
+              <Flex direction="column" flex="1"  alignItems="flex-start"> {/* Set flex="1" to make it grow */}
+                  {keyValueList ? keyValueList.slice(halfIndex).map((item, index) => ( 
+                      <Flex key={index} justifyContent="space-between" alignItems="flex-start"  my={1}>
+                          <Text fontWeight="bold">{item.key}:</Text> 
+                          <Text>{item.value}</Text> 
+                      </Flex> 
+                  )): null} 
+              </Flex>  
+          </Flex>
         </Stack> 
       </CardBody> 
     </Card> 

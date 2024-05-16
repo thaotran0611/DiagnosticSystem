@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import SearchAndFilterBar from "../../../components/SearchAndFilterBar/SearchAndFilterBar";
-import { Center, Slider, Divider, SimpleGrid, Icon, Box  } from "@chakra-ui/react";
+import { Center,  Divider, SimpleGrid, Box  } from "@chakra-ui/react";
 import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
-    BreadcrumbSeparator,
   } from '@chakra-ui/react'
 import { ThemeProvider, createTheme } from "@mui/material";
 import MyPagination from "../../../components/Pagination/Pagination";
 import PatientGridCard from "../../../components/PatientGridCard/PatientGridCard";
 import { DoctorLayout } from "../../../layout/DoctorLayout";
-import { Grid, GridItem, Spinner } from '@chakra-ui/react'
+import { GridItem, Spinner } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 import _ from "lodash";
-import dayjs from 'dayjs';
 import { format } from 'date-fns'
 import {log} from '../../../functions';
 
@@ -84,7 +82,8 @@ const Patient = () => {
           log(log_data);
         navigate(`detailpatient/${data.subject_id}`, { state: { patient_Data: data }} ); // Assuming the URL pattern is '/patient/:patientCode'
     };
-
+    const [sortby, setSortBy] = useState('subject_id')
+    const [ascending, setAscending] = useState(true)
     const [searchInput, setSearchInput] = useState('');
     const [adms, setAdms] = useState(null);
     const [disc, setDisc] = useState(null);
@@ -212,17 +211,51 @@ const Patient = () => {
         }
         // console.log(filterData.find(item => item.name === 'admission_location'))
     }
+    let filterSortResult = ascending ? [...filteredResults].sort((a, b) => {
+        console.log(sortby);
+        if (sortby === 'subject_id'){
+          return a[sortby] - b[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && a[sortby].toString().localeCompare(b[sortby].toString())
+        }})
+        : [...filteredResults].sort((a, b) => {
+        if (sortby === 'subject_id'){
+          return b[sortby] - a[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && b[sortby].toString().localeCompare(a[sortby].toString());
+        }});
 
-    const pageSize = 4;
+    // const pageSize = 4;
+    const pageSizeList = [10, 20, 30];
+
+    const [pageSize, setPageSize] = useState(pageSizeList[0]);
+
     const [page, setPage] = useState(1);
+    const [goToPage, setGoToPage] = useState("");
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
+        setGoToPage(newpage.toString()); // Update the input field when page changes
     };
+    const [selectedLayout, setSelectedLayout] = useState('list');
+    const handleLayoutChange = (layout) => {
+        setSelectedLayout(layout);
+    };
+
+    const handleGoToPage = () => {
+    const pageNumber = parseInt(goToPage);
+    if (pageNumber >= 1 && pageNumber <= Math.ceil(filteredResults.length / pageSize)) {
+        setPage(pageNumber);
+    } else {
+        alert(`Page number should be between 1 and ${Math.ceil(filteredResults.length / pageSize)}`);
+    }
+    };
+    
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const slicedData = filteredResults.slice(startIndex, endIndex);
+    const slicedData = filterSortResult.slice(startIndex, endIndex);
     
     const navigate = useNavigate();
+
 
     return(
         <DoctorLayout path={
@@ -235,12 +268,15 @@ const Patient = () => {
         patient={false}
         name={doctor_name}
         >
-            <GridItem h={'100%'} bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
-            <Center padding={'1% 4%'}>
-                <SearchAndFilterBar patient={true} adms={adms} disc={disc} setAdms={setAdms} setDisc={setDisc} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
+            <GridItem h={'100%'} bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'} position={'relative'}>
+            <Center padding={'0.5% 4% 0 4%'}>
+                <SearchAndFilterBar setSortBy={setSortBy} ascending={ascending} setAscending={setAscending} handleLayoutChange={handleLayoutChange} selectedLayout={selectedLayout} handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage={setGoToPage} pageSizeList={pageSizeList} setPageSize={setPageSize} pageSize={pageSize} patient={true} adms={adms} disc={disc} setAdms={setAdms} setDisc={setDisc} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
             </Center>
-                <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
-                <Box h={'100%'} position={'relative'}>
+                <Divider m={1} size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
+                <Box h={'550px'} position={'relative'}  overflow={'auto'} style={{
+                                        scrollbarWidth: 'thin', 
+                                        scrollbarColor: '#A0AEC0 #ffffff'
+                                    }}>
 
                     {loadingPatient ?(
                         <Center h={'60%'} w={'100%'} bg={'#fff'} borderRadius={'20px'} position={'absolute'}>
@@ -249,6 +285,15 @@ const Patient = () => {
                         ) :
                         <ThemeProvider theme={theme}>
                             <Center>
+                                {selectedLayout === 'list' ? 
+                                <SimpleGrid mt={5} columns={1} spacing={2}>
+                                    {
+                                        slicedData.map(item => (
+                                            <PatientGridCard width = {1600} height = {'max-content'}data={item} onClick={handleClick}/>
+                                        ))
+                                    }
+                                </SimpleGrid>
+                                :
                                 <SimpleGrid mt={0} columns={2} spacing={1}>
                                     {
                                         slicedData.map(item => (
@@ -256,17 +301,26 @@ const Patient = () => {
                                         ))
                                     }
                                 </SimpleGrid>
+                                }
                             </Center>
-                            <Center mt={3} mb={3}>
+                            {/* <Center  mt={3} mb={3}>
                                 <MyPagination 
                                     count={Math.ceil(filteredResults.length / pageSize)} 
                                     page = {page} 
                                     onChange = {handleChangePage}/>
-                            </Center>
+                            </Center> */}
                         </ThemeProvider>
                     }
                 </Box>
-
+                <ThemeProvider theme={theme}>
+                    <Center  mt={3} mb={3}>
+                        <MyPagination 
+                            count={Math.ceil(filteredResults.length / pageSize)} 
+                            page = {page} 
+                            onChange = {handleChangePage}/>
+                    </Center>
+                </ThemeProvider>
+                
             </GridItem>
         </DoctorLayout>
     )

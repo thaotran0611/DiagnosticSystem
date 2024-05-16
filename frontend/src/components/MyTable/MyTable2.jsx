@@ -55,7 +55,7 @@ const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
 
 export default function MyTable2(props) {
   const apiRef = useGridApiRef();
-  
+  const [page, setPage] = useState(1);
   const data = props.data || [];
   const columnNames = data.length > 0 ? Object.keys(data[0]) : [];
 
@@ -73,10 +73,9 @@ export default function MyTable2(props) {
   }));
 
 
-  const [page, setPage] = useState(1);
   const pageSizeList = [10, 20, 30];
   const [pageSize, setPageSize] = useState(pageSizeList[0]);
-  const [goToPage, setGoToPage] = useState("");
+  const [goToPage, setGoToPage] = useState(data.length > 0 ? "1" : "0");
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     setGoToPage(newPage.toString()); // Update the input field when page changes

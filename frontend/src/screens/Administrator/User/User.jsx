@@ -27,7 +27,7 @@ const UserCard = (props) => { // Destructure user from props
         props.onClick(props.user);
     };
   return ( // Add return statement here
-    <Card w={'400px'} onClick={handleClick} key={props.user.code} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}} borderRadius='20px'> 
+    <Card w={props.width || '400px'} onClick={handleClick} key={props.user.code} _hover={{ bg: 'rgba(217, 217, 217, 0.3)' , borderRadius: "20px"}} borderRadius='20px'> 
       <CardBody border="1px solid rgba(17, 17, 17, 0.3)" borderRadius="20px" p="2" m='1'> 
           <Stack divider={<StackDivider />} spacing="2"> 
               <Flex> 
@@ -84,14 +84,45 @@ const User = () => {
       };
       fetchData();
   }, []);
-    const pageSize = 16;
+  const [sortby, setSortBy] = useState('gender')
+    const [ascending, setAscending] = useState(true)
+
+    const [selectedLayout, setSelectedLayout] = useState('list');
+    const handleLayoutChange = (layout) => {
+        setSelectedLayout(layout);
+    };
+    const pageSizeList = [12, 24, 48];
+    const [goToPage, setGoToPage] = useState("");
+
+    const [pageSize, setPageSize] = useState(pageSizeList[0]);
+    const handleGoToPage = () => {
+    const pageNumber = parseInt(goToPage);
+    if (pageNumber >= 1 && pageNumber <= Math.ceil(filteredResults.length / pageSize)) {
+        setPage(pageNumber);
+    } else {
+        alert(`Page number should be between 1 and ${Math.ceil(filteredResults.length / pageSize)}`);
+    }
+    };
+    let filterSortResult = ascending ? [...filteredResults].sort((a, b) => {
+        if (sortby === 'subject_id'){
+          return a[sortby] - b[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && a[sortby].toString().localeCompare(b[sortby].toString())
+        }})
+        : [...filteredResults].sort((a, b) => {
+        if (sortby === 'subject_id'){
+          return b[sortby] - a[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && b[sortby].toString().localeCompare(a[sortby].toString());
+    }});
+    
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const slicedData = filteredResults.slice(startIndex, endIndex);
+    const slicedData = filterSortResult.slice(startIndex, endIndex);
     const navigate = useNavigate();
     const [searchInput, setSearchInput] = useState('');
     const [dynamicFilter, setDynamicFilter] = useState([]);
@@ -159,25 +190,38 @@ const User = () => {
           </Breadcrumb>
         }
         disease={false}>
-                <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
+                <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'} overflow={'hidden'}>
                 <Center padding={'1% 4%'}>
-                    <SearchAndFilterBar patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
+                    <SearchAndFilterBar setSortBy={setSortBy} ascending={ascending} setAscending={setAscending} handleLayoutChange={handleLayoutChange} selectedLayout={selectedLayout} handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage={setGoToPage} pageSizeList={pageSizeList} setPageSize={setPageSize} pageSize={pageSize}
+                     patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>
                 </Center>
                     <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
                         <ThemeProvider theme={theme}>
-                        <Box p={5} maxHeight="100vh" overflowY="auto" style={{scrollbarWidth: 'thin', 
+                        <Box p={5} h={'500px'} overflowY="auto" style={{scrollbarWidth: 'thin', 
                             scrollbarColor: '#A0AEC0 #ffffff', 
                           }}>
                             <Center>
-                                <SimpleGrid mt={0} columns={4} spacing={1}>
+                                {selectedLayout === 'list' ? 
+                                <SimpleGrid mt={0} columns={1} spacing={1}>
                                     {
                                         slicedData.map(item => (
-                                            <UserCard user={item} onClick={handleClick} />
+                                            <UserCard width={1600} user={item} onClick={handleClick} />
                                         ))
                                     }
                                 </SimpleGrid>
+                                :
+                                    <SimpleGrid mt={0} columns={4} spacing={4}>
+                                        {
+                                            slicedData.map(item => (
+                                                <UserCard user={item} onClick={handleClick} />
+                                            ))
+                                        }
+                                    </SimpleGrid>
+                                }
                             </Center>
                         </Box>
+                        </ThemeProvider>
+                        <ThemeProvider theme={theme}>
                             <Center>
                                 <MyPagination 
                                     count={Math.ceil(filteredResults.length / pageSize)} 

@@ -2,7 +2,6 @@ import React from "react";
 import './OveralTag.css';
 import InformationTag from "../InformationTag/InformationTag";
 import doctorimg from "../../img/doctor.png";
-// import { TagData } from "../Note/NoteData";
 const OveralTag = (props) => {
     return(
         <div style={{width: '100%', height: '280px;', position: 'relative', marginTop: '40px'}}>
@@ -12,8 +11,6 @@ const OveralTag = (props) => {
                 {
                     props.data ? 
                     props.data.map(infor => (
-                    // props.tagData ? 
-                    // props.tagData.map(infor => (
                         infor.id === 1 ?
                         <div style={{ width: 'fit-content', position: 'absolute', bottom: '5%'}}>
                             <InformationTag title={infor.title} value={infor.value}/>

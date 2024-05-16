@@ -6,7 +6,6 @@ import { Grid, GridItem } from "@chakra-ui/react";
 
 import UserTag from "../components/Usertag/UserTag";
 import { Icon } from "@chakra-ui/react";
-import { BellIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';

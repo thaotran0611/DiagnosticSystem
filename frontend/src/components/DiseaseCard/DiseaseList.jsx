@@ -26,7 +26,7 @@ const DiseaseList = (props) => {
       const [error, setError] = useState(null);
       const pageSizeList = [10, 20, 30];
       const [pageSize, setPageSize] = useState(pageSizeList[0]);
-      const [goToPage, setGoToPage] = useState("");
+      const [goToPage, setGoToPage] = useState("1");
       const [list, setList] = useState('Disease List');
       const [selectedLayout, setSelectedLayout] = useState('list');
       const handleLayoutChange = (layout) => {
@@ -59,8 +59,8 @@ const DiseaseList = (props) => {
         }
       };
       const [ascendding, setAscending] = useState(true);
-      const [sortDiseaseby, setSortDiseaseby] = useState('no sort');
-      const [sortDrugby, setSortDrugby] = useState('no sort');
+      const [sortDiseaseby, setSortDiseaseby] = useState('disease_name');
+      const [sortDrugby, setSortDrugby] = useState('drug_name_poe');
       let sortResultDisease = sortDiseaseby !== 'no sort' ?  ascendding ? [...props.diseases].sort((a, b) => {
         if (sortDiseaseby === 'sum_of_male' || sortDiseaseby === 'sum_of_female') {
           return (a[sortDiseaseby]/a['sum_of_admission']).toString().localeCompare((b[sortDiseaseby]/b['sum_of_admission']).toString());
@@ -114,16 +114,14 @@ const DiseaseList = (props) => {
                 <Text paddingTop={3}>Sort:</Text>
                 {list === 'Disease List' ? 
                 <select paddingTop={4} onClick={(e) => {setSortDiseaseby(e.target.value)}} style={{cursor: 'pointer'}}>
-                  <option value={'no sort'}>No sort</option>
-                  <option value={'disease_name'}>Disease name</option>
+                  <option defaultValue={true} value={'disease_name'}>Disease name</option>
                   <option value={'sum_of_admission'}>Number of patient</option>
                   <option value={'sum_of_male'}>Percent of male patient</option>
                   <option value={'sum_of_female'}>Percent of female patient</option>
                 </select>
                   : 
                 <select paddingTop={4} onClick={(e) => {setSortDrugby(e.target.value)}} style={{cursor: 'pointer'}}>
-                  <option value={'no sort'}>No sort</option>
-                  <option value={'drug_name_poe'}>Drug name</option>
+                  <option defaultValue={true} value={'drug_name_poe'}>Drug name</option>
                   <option value={'sum_of_admission'}>Number of prescription</option>
                   <option value={'sum_of_male'}>Percent of male prescription</option>
                   <option value={'sum_of_female'}>Percent of female prescription</option>

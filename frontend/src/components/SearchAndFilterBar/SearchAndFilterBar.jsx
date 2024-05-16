@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Checkbox, Flex, Grid, GridItem, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, Spacer, Stack } from '@chakra-ui/react'
+import { Checkbox, Flex, Grid, GridItem, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, Select, Spacer, Stack, Text } from '@chakra-ui/react'
 import Search from "../Search/Search";
 import Filter from "../Filter/Filter";
 import { format } from 'date-fns'
@@ -7,11 +7,31 @@ import FilterTag from "../Filter/FilterTag";
 import { HStack } from "@chakra-ui/react";
 import CalendarCustomize from "../Calendar/Calendar";
 import Calendar from "react-calendar";
+import LayoutSelector from "../LayoutSelector/LayoutSelector";
+import GoToPage from "../GoToPage/GoToPage";
+import { ThemeProvider, createTheme } from "@mui/material";
+import { ArrowDownIcon, ArrowUpIcon } from "@chakra-ui/icons";
 
 const SearchAndFilterBar = (props) => {
     // const [props.adms, props.setAdms] = useState(null);
     // const [props.disc, props.setprops.disc] = useState(null);
-
+    const mapping = {
+        disease_code: 'Code',
+        sum_of_admission: 'Admissions',
+        sum_of_male: 'Male',
+        sum_of_female: 'Female',
+        disease_name: 'Name',
+        drug_type: 'Drug Type',
+        gender: 'Gender',
+        role: 'Role',
+        type_file: 'Type of file',
+        type_of_disease: 'Type of disease'
+    }
+    const theme = createTheme({
+        sizes: {
+          container: props.size || '800px',
+        },
+      });
     const [gender, setGender] = useState(0);
     const AddFilter = (name, value) => {
         // Dynamically set a property in the object
@@ -45,10 +65,10 @@ const SearchAndFilterBar = (props) => {
     return(
         <div style={{width: '100%'}}>
             <Grid
-                h='180px'
-                templateRows='repeat(2, 1fr)'
+                h='190px'
+                templateRows='repeat(3, 1fr)'
                 templateColumns='repeat(10, 1fr)'
-                gap={1}
+                // gap={1}
                 >
                 <GridItem rowSpan={1} colSpan={9}>
                     <Search setSearchInput={props.setSearchInput} onClick={props.onClick} onChange={props.onChange}/>
@@ -111,7 +131,7 @@ const SearchAndFilterBar = (props) => {
                         {
                             props.dynamicFilter.map(item => (
                                 <Popover closeOnBlur={true}>
-                                    <FilterTag name={item.name} key={item.name} onClick={() => AddFilter(item.name, item.value)} text={item.value}/>
+                                    <FilterTag name={props.patient ? item.name : mapping[item.name]} key={item.name} onClick={() => AddFilter(item.name, item.value)} text={item.value}/>
                                     <PopoverContent>
                                         <PopoverArrow />
                                         <PopoverCloseButton />
@@ -133,6 +153,52 @@ const SearchAndFilterBar = (props) => {
                             ))
                         }
                     </HStack>
+                </GridItem>
+                <GridItem colStart={6} rowSpan={1} colSpan={2} paddingTop={2} >
+                    <HStack>
+                    <Text paddingTop={2}>Sort: </Text>
+                    <Select w={'200px'} onChange={(e) => props.setSortBy(e.target.value)}>
+                        {  
+                            props.patient? (
+                                <>
+                                    <option value="subject_id">Subject ID</option>
+                                    <option value="Admission Time">Admission Time</option>
+                                    <option value="Discharge Time">Discharge Time</option>
+                                </> 
+                            )
+                            : null
+                        }
+                        {
+                            props.filterData.map(item => (
+                                <option value={item.name}>{props.patient ? item.name : mapping[item.name]}</option>
+                            ))
+                        }
+                    </Select>
+                    {props.ascending ? 
+                        <ArrowDownIcon onClick={() => {props.setAscending(!props.ascending)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={0} boxSize={6} />
+                        :
+                        <ArrowUpIcon onClick={() => {props.setAscending(!props.ascending)}} cursor={'pointer'} _hover={{backgroundColor: '#ccc', borderRadius: '5px'}} marginTop={0} boxSize={6}/>
+                    }
+                    </HStack>
+                </GridItem>
+                <GridItem colStart={8} rowSpan={1} colSpan={1}>
+                <LayoutSelector
+                    onChange={props.handleLayoutChange}
+                    selectedLayout={props.selectedLayout} />
+                </GridItem>
+                <GridItem colStart={9} rowSpan={1} colSpan={1} paddingTop={2} paddingLeft={6} paddingRight={6}>
+                <ThemeProvider theme={theme} >
+                    <GoToPage handleGoToPage={props.handleGoToPage} goToPage={props.goToPage} setGoToPage ={props.setGoToPage}/>
+                </ThemeProvider>
+                </GridItem>
+                <GridItem colStart={10} rowSpan={1} colSpan={1}>
+                    <Select paddingTop={2} className='itemPerPage' onChange={e => props.setPageSize(Number(e.target.value))} value={props.pageSize}>
+                        {props.pageSizeList.map(size => (
+                            <option key={size} value={size} >
+                            Show {size}
+                            </option>
+                        ))}
+                    </Select>
                 </GridItem>
                 
             </Grid>

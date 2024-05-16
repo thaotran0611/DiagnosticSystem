@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 import SearchAndFilterBar from "../../../components/SearchAndFilterBar/SearchAndFilterBar";
-import { Center, Slider, Divider, SimpleGrid, Icon  } from "@chakra-ui/react";
+import { Center, Divider, SimpleGrid,  Box  } from "@chakra-ui/react";
 import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
-    BreadcrumbSeparator,
   } from '@chakra-ui/react'
 import { ThemeProvider, createTheme } from "@mui/material";
 import MyPagination from "../../../components/Pagination/Pagination";
-import PatientGridCard from "../../../components/PatientGridCard/PatientGridCard";
-// import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { ResearcherLayout } from "../../../layout/ResearcherLayout";
-import { Grid, GridItem } from '@chakra-ui/react'
+import { GridItem } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 import DiseaseTag from "../../../components/DiseaseTag/DiseaseTag";
 import axios from "axios";
@@ -98,11 +95,7 @@ const Disease = () => {
                 setLoadingDiseases(false);
                 disease_code = joinArrays(response.data.diseases, mappingDiseases, 'disease_code').map((image) => image.disease_code);
                 disease_name = joinArrays(response.data.diseases, mappingDiseases, 'disease_code').map((image) => image.disease_name);
-                console.log(joinArrays(response.data.diseases, mappingDiseases, 'disease_code'));
                 setSum_of_admission(joinArrays(response.data.diseases, mappingDiseases));
-                console.log(response.data.diseases.reduce((accumulator, currentValue) => {
-                    return accumulator + currentValue.sum_of_admission;
-                }, 0))
                 setfilterData([{name: 'disease_code', data: disease_code},
                                {name: 'disease_name', data: disease_name}]);
             } catch (error) {
@@ -122,7 +115,6 @@ const Disease = () => {
                     }
                 });
                 sum_of_admission = response.data.admissions.length;
-                console.log(response.data.admissions.length);
             } catch (error) {
                 setError(error);
                 setLoadingDiseases(false);
@@ -159,7 +151,6 @@ const Disease = () => {
             
                 // Check if item matches all dynamicFilter criteria
                 const uniqueFilter = _.uniqBy(dynamicFilter, 'name').map((item) => item.name);
-                console.log(uniqueFilter)
                 const uniquematchesdynamicFilter = uniqueFilter.every((name) => {
                     const matchesdynamicFilter = dynamicFilter.filter((item) => {return item.name === name}).some(({name, value}) => {
                         const itemValue = String(item[name]).toLowerCase();
@@ -182,7 +173,6 @@ const Disease = () => {
             const filterData2 = diseases.filter((item) => {
                 // Check if item matches all search criteria
                 const uniqueFilter = _.uniqBy(dynamicFilter, 'name').map((item) => item.name);
-                console.log(uniqueFilter)
                 const uniquematchesdynamicFilter = uniqueFilter.every((name) => {
                     const matchesdynamicFilter = dynamicFilter.filter((item) => {return item.name === name}).some(({name, value}) => {
                         const itemValue = String(item[name]).toLowerCase();
@@ -198,15 +188,45 @@ const Disease = () => {
             setFilteredResults(diseases)
         }
     }
+    const [sortby, setSortBy] = useState('disease_code')
+    const [ascending, setAscending] = useState(true)
+
+    const [selectedLayout, setSelectedLayout] = useState('list');
+    const handleLayoutChange = (layout) => {
+        setSelectedLayout(layout);
+    };
+    const pageSizeList = [16, 32, 64];
+    const [goToPage, setGoToPage] = useState("");
+
+    const [pageSize, setPageSize] = useState(pageSizeList[0]);
+    const handleGoToPage = () => {
+    const pageNumber = parseInt(goToPage);
+    if (pageNumber >= 1 && pageNumber <= Math.ceil(filteredResults.length / pageSize)) {
+        setPage(pageNumber);
+    } else {
+        alert(`Page number should be between 1 and ${Math.ceil(filteredResults.length / pageSize)}`);
+    }
+    };
     
-    const pageSize = 16;
     const [page, setPage] = useState(1);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
     };
+    let filterSortResult = ascending ? [...filteredResults].sort((a, b) => {
+        if (sortby === 'subject_id'){
+          return a[sortby] - b[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && a[sortby].toString().localeCompare(b[sortby].toString())
+        }})
+        : [...filteredResults].sort((a, b) => {
+        if (sortby === 'subject_id'){
+          return b[sortby] - a[sortby];
+        } else {
+          return a[sortby] !== null && b[sortby] !== null && b[sortby].toString().localeCompare(a[sortby].toString());
+        }});
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    const slicedData = filteredResults.slice(startIndex, endIndex);
+    const slicedData = filterSortResult.slice(startIndex, endIndex);
     const navigate = useNavigate();
 
     return(
@@ -219,29 +239,50 @@ const Disease = () => {
         }
         name={researcher_name}
         disease={false}>
-                <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}>
+            <GridItem bg={'#fff'} area={'main'} borderRadius={'0 0 40px 40px'}position={'relative'}>
                 <Center padding={'1% 4%'}>
-                    <SearchAndFilterBar patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>   
+                    <SearchAndFilterBar setSortBy={setSortBy} ascending={ascending} setAscending={setAscending} handleLayoutChange={handleLayoutChange} selectedLayout={selectedLayout} handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage={setGoToPage} pageSizeList={pageSizeList} setPageSize={setPageSize} pageSize={pageSize}
+                                        patient={false} setSearchInput={setSearchInput} searchItems={searchItems} dynamicFilter={dynamicFilter} setDynamicFilter={setDynamicFilter} onClick={searchItems} onChange={searchItems} filterData={filterData}/>   
                 </Center>
-                    <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
-                        <ThemeProvider theme={theme}>
-                            <Center>
-                                <SimpleGrid mt={0} columns={4} spacing={10}>
-                                    {
-                                        slicedData.map(item => (
-                                            <DiseaseTag sum_of_admission={sum_of_admission} data={item} onClick={handleClick}/>
-                                        ))
-                                    }
-                                </SimpleGrid>
-                            </Center>
-                            <Center>
-                                <MyPagination 
-                                    count={Math.ceil(filteredResults.length / pageSize)} 
-                                    page = {page} 
-                                    onChange = {handleChangePage}/>
-                            </Center>
-                        </ThemeProvider>
-                </GridItem>
+                <Divider size={{height: '3px'}} color={'#3E36B0'} orientation='horizontal'/>
+                <ThemeProvider theme={theme}>
+                    <Box overflow={'auto'} h={'500px'} style={{
+                                        scrollbarWidth: 'thin', 
+                                        scrollbarColor: '#A0AEC0 #ffffff'
+                                    }}>
+                        <Center>
+
+                        {selectedLayout === 'list' ? 
+                        <SimpleGrid mt={0} columns={1} spacing={8} paddingTop={8}>
+                            {
+                                slicedData.map(item => (
+                                    <DiseaseTag width={1600} sum_of_admission={sum_of_admission} data={item} onClick={handleClick}/>
+                                ))
+                            }
+                        </SimpleGrid>
+                        :
+                        <SimpleGrid mt={0} columns={4} spacing={10}>
+                            {
+                                slicedData.map(item => (
+                                    <DiseaseTag sum_of_admission={sum_of_admission} data={item} onClick={handleClick}/>
+                                ))
+                            }
+                        </SimpleGrid>
+                        }
+                        </Center>
+
+                    </Box>
+                </ThemeProvider>
+                <ThemeProvider theme={theme}>
+                    <Center>
+                        <MyPagination 
+                            count={Math.ceil(filteredResults.length / pageSize)} 
+                            page = {page} 
+                            onChange = {handleChangePage}/>
+                    </Center>
+                </ThemeProvider>
+            </GridItem>
+
         </ResearcherLayout>
     )
 };

@@ -8,6 +8,19 @@ import InputColor from "react-input-color";
 import BarChart from "../../../components/Chart/BarChart";
 import _ from 'lodash';
 const OtherDiseaseTab = (props) => {
+    const mappingDiseases = {
+        AA: 'Alcohol Abuse',
+        CND: 'Chronic Neuro Dystrophies',
+        SA: 'Subtance Abuse',
+        CP: 'Chronic Pain',
+        Dep: 'Depression',
+        MC: 'Metastatic Cancer',
+        Ob: 'Obesity',
+        PD: 'Psychiatric Disorders',
+        HD: 'Advanced Heart Disease',
+        LD: 'Advanced Lung Disease'
+    };
+    
     
     const [expandOtherDiseases, setExpandOtherDiseases] = useState(2);
     let otherdiseasesValue = [{
@@ -87,7 +100,6 @@ const OtherDiseaseTab = (props) => {
         } else {
             setCodiseases((prev) => [...prev, disease])
         }
-        console.log(filterOtherDiseases);
     }
     const [statistics, setStatistics] = useState('gender');
     let labels2 = {
@@ -143,7 +155,7 @@ const OtherDiseaseTab = (props) => {
                     <Grid gridTemplateColumns={'50% 50%'} h={'100%'} position={'relative'}>
                         <GridItem h={'95%'} position={'relative'} overflow={'auto'}>
                             <HStack spacing={1} marginBottom={1} textAlign={'left'}>
-                                <Text fontSize={26} fontWeight={650} color={'#3E36B0'}>Co-morbidities</Text>
+                                <Text fontSize={20} fontWeight={550} color={'#3E36B0'}>Co-morbidities</Text>
                                 <Text paddingTop={2} fontWeight={600}>Color:</Text>
                                 <InputColor
                                     // disabled={typeofchart === 'Table'? true : false}
@@ -158,9 +170,21 @@ const OtherDiseaseTab = (props) => {
                             </Box>
                         </GridItem>
                         <GridItem h={'100%'} position={'relative'}>
+                            <HStack>
+                            <Text fontSize={20} fontWeight={550} color={'#3E36B0'}>Co-morbidities:</Text>
+                            <Text fontSize={20} fontWeight={550} color={color.rgba}>{decision}</Text>
+                            </HStack>
                             <MyTable2 
-                                tablename={'Co-morbidities: ' + decision}
-                                data={filterDataTable}
+                                // tablename={'Co-morbidities: ' + decision}
+                                data={filterDataTable.map(item => {
+                                    const newItem = {};
+                                    for (const [oldKey, newKey] of Object.entries(props.mapping)) {
+                                        if (item.hasOwnProperty(oldKey)) {
+                                        newItem[newKey] = item[oldKey];
+                                        }
+                                    }
+                                    return newItem;
+                                })}
                                 width={props.expand ? '850px' : '550px'}
                                 height={expandOtherDiseases === 2 ? '240px' : '600px'}
                                 onSelect = {()=>{}}/>
@@ -222,8 +246,8 @@ const OtherDiseaseTab = (props) => {
                                 <Text paddingTop={2}>Statistic:</Text>
                                 <Flex align={'flex-end'}>
                                     <Select w={100} onChange={(e) => {setStatistics(e.target.value)}}>
-                                        <option value="ethnicity">ethnicity</option>
                                         <option defaultValue={true} value="gender">gender</option>
+                                        <option value="ethnicity">ethnicity</option>
                                         <option value="marital_status">marital status</option>
                                         <option value="religion">religion</option>
                                     </Select>
@@ -236,14 +260,27 @@ const OtherDiseaseTab = (props) => {
                                     placement="right"
                                 />
                             </HStack>
-                            <Text fontSize={'14px'}>{filterOtherDiseases.length + ' patients:' + codiseases.map(item => " "+item )}</Text>
+                            <Text fontSize={'14px'}>{filterOtherDiseases.length + ' patients:' + codiseases.map(item => " "+mappingDiseases[item] )}</Text>
                             <Box h={'64%'} overflow={'auto'} position={'relative'} w={'95%'}>
                                 <BarChart setDecision={setDecision2} data={datas2[statistics]} label={labels2[statistics]} level={'default'} unitY={'patients'} color={color2}/>
                             </Box>
                         </GridItem>
                         <GridItem h={'100%'} position={'relative'} >
-                            <MyTable2 tablename={filterDataTable2.length + ' patients:'}
-                                data={filterDataTable2}
+                            <HStack>
+                                <Text fontSize={20} fontWeight={550} color={'#3E36B0'}>{filterDataTable2.length + ' patients:'}</Text>
+                                <Text fontSize={20} fontWeight={550} color={color2.rgba}>{statistics + ' ' +decision2}</Text>
+                            </HStack>
+                            <MyTable2 
+                                // tablename={filterDataTable2.length + ' patients:'}
+                                data={filterDataTable2.map(item => {
+                                    const newItem = {};
+                                    for (const [oldKey, newKey] of Object.entries(props.mapping)) {
+                                        if (item.hasOwnProperty(oldKey)) {
+                                        newItem[newKey] = item[oldKey];
+                                        }
+                                    }
+                                    return newItem;
+                                })}
                                 width={props.expand ? '850px' : '550px'}
                                 height={expandOtherDiseases === 2 ? '240px' : '600px'}
                                 onSelect = {()=>{}}/>

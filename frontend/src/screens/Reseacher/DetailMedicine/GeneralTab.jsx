@@ -169,8 +169,8 @@ const GeneralTab = (props) => {
                                     </Select>
                                     <Text paddingTop={2}>Statistic:</Text>
                                         <Select w={'50%'} onChange={(e) => {setLabel(e.target.value)}}>
-                                            <option value="ethnicity">ethnicity</option>
                                             <option defaultValue={true} value="gender">gender</option>
+                                            <option value="ethnicity">ethnicity</option>
                                             <option value="marital_status">marital status</option>
                                             <option value="religion">religion</option>
                                             <option value="admission_location">admission location</option>

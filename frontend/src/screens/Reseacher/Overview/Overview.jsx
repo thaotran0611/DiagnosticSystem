@@ -7,13 +7,11 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     BreadcrumbLink,
-    BreadcrumbSeparator,
   } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 import { Grid, GridItem,Text } from '@chakra-ui/react'
 import { ResearcherLayout } from "../../../layout/ResearcherLayout";
 import DiseaseList from "../../../components/DiseaseCard/DiseaseList";
-import dayjs from 'dayjs';
 import { format } from 'date-fns'
 import {log} from '../../../functions';
 const OverviewResearcher = () => {
@@ -141,7 +139,6 @@ const OverviewResearcher = () => {
                 });
                 setDiseases(joinArrays(response.data.diseases, mappingDiseases, 'disease_code'));
                 setLoadingDiseases(false);
-                console.log(joinArrays(response.data.diseases, mappingDiseases, 'disease_code'));
             } catch (error) {
                 setError(error);
                 setLoadingDiseases(false);
@@ -160,7 +157,6 @@ const OverviewResearcher = () => {
                 });
                 setDrugs(response.data.drugs)
                 setLoadingDrugs(false);
-                console.log(response.data.drugs.length);
             } catch (error) {
                 setError(error);
                 setLoadingDiseases(false);

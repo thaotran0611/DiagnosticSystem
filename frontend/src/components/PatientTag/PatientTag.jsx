@@ -6,6 +6,13 @@ import { GiMedicines } from "react-icons/gi";
 import { Grid, GridItem, Spinner} from '@chakra-ui/react'
 
 const PatientTag = (props) => { 
+    const mappingTagDisease = {
+        disease_code: 'Code',
+        sum_of_admission: 'Admissions',
+        sum_of_male: 'Male',
+        sum_of_female: 'Female',
+        disease_name: 'Name'
+    }
     let patientDataList = [];
     console.log(props.data)
     // const keysToExtract = ['Gender','Ethnicity','Date of Birth','Marital Status','Admission Time','Discharge Time']; // List of keys to extract
@@ -21,7 +28,7 @@ const PatientTag = (props) => {
     // }
     const halfIndex = Math.ceil(patientDataList.length / 2);
     return(
-        <Card width={'98%'} shadow={'none'} height={'100%'} borderRadius={'20px'}>
+        <Card width={'98%'} shadow={'none'} height={'100%'} borderRadius={'20px'} >
             <CardHeader position={'relative'} paddingTop={4} paddingBottom={2}>
                 <AbsoluteCenter top={0}>
                     <Box position={'relative'} bg={'#fff'} borderRadius={'50%'} width={'100px'} height={'100px'}>
@@ -35,7 +42,7 @@ const PatientTag = (props) => {
                                                 {props.data.subject_id ? props.data.subject_id : props.data.code}
                                             </Text>
                                             : props.disease ?
-                                            <DiseaseCard text={props.data.disease_code} hidden={true}/> 
+                                            <DiseaseCard absolutecenter={true} text={props.data.disease_code} hidden={true}/> 
                                             : props.medicine ? 
                                             <Box w={10} overflow="hidden">
                                                 <Box>
@@ -62,7 +69,7 @@ const PatientTag = (props) => {
                     <SimpleGrid columns={2} spacing={1}>
                         {patientDataList ? patientDataList.slice(0, halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
-                            <Text fontWeight="bold">{item.key}:</Text> 
+                            <Text fontWeight="bold">{props.disease ? mappingTagDisease[item.key] : item.key}:</Text> 
                             <Text>{item.value}</Text> 
                         </React.Fragment> 
                         )): null} 
@@ -73,7 +80,7 @@ const PatientTag = (props) => {
                     <SimpleGrid columns={2} spacing={1}> 
                         {patientDataList ? patientDataList.slice(halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
-                            <Text fontWeight="bold">{item.key}:</Text> 
+                            <Text fontWeight="bold">{props.disease ? mappingTagDisease[item.key] : item.key}:</Text> 
                             <Text>{item.value}</Text> 
                         </React.Fragment> 
                     )): null} 
