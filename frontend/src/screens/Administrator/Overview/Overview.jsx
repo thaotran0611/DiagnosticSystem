@@ -332,7 +332,29 @@ const OverviewAdmin = () => {
                                 <Note loading ={loadingNote} pageSize={2} setNote={setNote} data={note} type={"self-note"} subject_id={""} />
                             </Center>
                         </GridItem>
+
                         <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
+                            <Grid templateAreas={`"system user"`}          
+                                gridTemplateRows={'50% 50%'}
+                                gridTemplateColumns={'49% 49%'}
+                                gridGap={'15px'} 
+                                h='100%'>
+                                <GridItem area={'system'} bg={'#fff'} borderRadius={'20px'} p={2}>
+                                    {/* Content for the system log */}
+                                    <MyTable2 tablename={'System Log'} data={systemLog} height={'320px'} onSelect={setSelectedRow}/> 
+                                </GridItem>
+                                <GridItem area={'user'} bg={'#fff'} borderRadius={'20px'} p={2}>
+                                    {/* Content for the user action log */}
+                                    <MyTable2 tablename={'User Action Log'} data={actionLog} height={'320px'} onSelect={setSelectedUser}/>
+                                </GridItem>
+                            </Grid>
+                        </GridItem>
+
+
+
+
+
+                        {/* <GridItem area={'list'} bg={'#fff'} borderRadius={'20px'}>
                             <Grid gridTemplateRows={'12% 88%'} h={'100%'}>
                                 <GridItem p={3}>
                                 <Text pt="2" fontSize={35} fontWeight="bold" marginRight="auto" variant={'outline'}>
@@ -347,7 +369,7 @@ const OverviewAdmin = () => {
                                     {option == 'System Log' ? <MyTable2 data = {systemLog} height={'320px'} onSelect={setSelectedRow}/> : <MyTable2 data = {actionLog} height={'320px'} onSelect={setSelectedUser}/>}
                                 </GridItem>
                             </Grid>
-                        </GridItem>
+                        </GridItem> */}
                     </Grid>
                 </GridItem>
         </AdminLayout>

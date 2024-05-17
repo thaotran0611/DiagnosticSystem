@@ -94,6 +94,11 @@ const User = () => {
     const pageSizeList = [12, 24, 48];
     const [goToPage, setGoToPage] = useState("");
 
+    useEffect(() => {
+        if (data.length > 0){
+          setGoToPage("1")
+        }
+      }, [data.length]);
     const [pageSize, setPageSize] = useState(pageSizeList[0]);
     const handleGoToPage = () => {
     const pageNumber = parseInt(goToPage);

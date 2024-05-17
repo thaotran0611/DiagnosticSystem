@@ -232,6 +232,11 @@ const Patient = () => {
 
     const [page, setPage] = useState(1);
     const [goToPage, setGoToPage] = useState("");
+    useEffect(() => {
+        if (patientdata.length > 0){
+          setGoToPage("1")
+        }
+      }, [patientdata.length]);
     const handleChangePage = (event, newpage) => {
         setPage(newpage);
         setGoToPage(newpage.toString()); // Update the input field when page changes

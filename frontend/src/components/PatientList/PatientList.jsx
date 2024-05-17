@@ -21,7 +21,11 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
   const pageSizeList = [10, 20, 30];
   const [pageSize, setPageSize] = useState(pageSizeList[0]);
   const [goToPage, setGoToPage] = useState("");
-
+  useEffect(() => {
+    if (data.length > 0){
+      setGoToPage("1")
+    }
+  }, [data.length]);
   const [selectedLayout, setSelectedLayout] = useState('list');
   const handleLayoutChange = (layout) => {
     setSelectedLayout(layout);

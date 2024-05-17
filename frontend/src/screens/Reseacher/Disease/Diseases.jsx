@@ -197,7 +197,11 @@ const Disease = () => {
     };
     const pageSizeList = [16, 32, 64];
     const [goToPage, setGoToPage] = useState("");
-
+    useEffect(() => {
+        if (diseases.length > 0){
+          setGoToPage("1")
+        }
+      }, [diseases.length]);
     const [pageSize, setPageSize] = useState(pageSizeList[0]);
     const handleGoToPage = () => {
     const pageNumber = parseInt(goToPage);

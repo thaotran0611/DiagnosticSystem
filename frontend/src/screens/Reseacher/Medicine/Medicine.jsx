@@ -129,7 +129,11 @@ const Medicine = () => {
     };
     const pageSizeList = [12, 24, 48];
     const [goToPage, setGoToPage] = useState("");
-
+    useEffect(() => {
+        if (drugs.length > 0){
+          setGoToPage("1")
+        }
+      }, [drugs.length]);
     const [pageSize, setPageSize] = useState(pageSizeList[0]);
     const handleGoToPage = () => {
     const pageNumber = parseInt(goToPage);

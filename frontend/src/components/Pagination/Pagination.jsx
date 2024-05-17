@@ -10,6 +10,7 @@ const MyPagination = (props) =>{
         shape="rounded"
         showFirstButton
         showLastButton
+        variant="outlined"
     />
     )
 }

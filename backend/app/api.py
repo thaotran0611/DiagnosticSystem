@@ -1795,20 +1795,20 @@ async def get_load_manual_history(db=Depends(get_db)) -> dict:
 @app.get("/files-system", response_model=dict, tags=["root"]) 
 async def get_files(db=Depends(get_db)) -> dict:
     stmt = FILES.select()
-    df = pd.DataFrame(db.execute(stmt).fetchall())
+    df = pd.DataFrame(db.execute(stmt).fetchall()).drop(columns=['code'])
     df_general = df[(df['active'] == 1) & (df['type_file'] == 'Model')]
     df_general['type_model'] = df_general['metadata'].apply(lambda x: x.split('Type of Model: ')[1])
     df_general = df_general[['type_of_disease','type_model']]
     df_general.columns = ['disease','name']
     if len(df)>0:
+
+        df.fillna(value=np.nan, inplace=True)
+        df.replace({np.nan: None}, inplace=True)
         transform_timestamp(df,['created_at','updated_at','last_access_time'])
         result = df.to_dict(orient='records')
         genderal_result = df_general.to_dict(orient='records')
-
-        # print(result)
     else:
         result = []
-    # print(result)
     return JSONResponse(content={"file": result, 'general': genderal_result})
 
 @app.post("/update-file-location", response_model=dict, tags=["root"])
@@ -1914,7 +1914,7 @@ async def get_training_data(disease, db=Depends(get_db)) -> dict:
     stmt = sa.select(
         ANNOTATE.columns.hadm_id,
         ANNOTATE.columns.disease_code,
-        ANNOTATE.columns.value,
+        ANNOTATE.columns.value.label('label'),
     ) \
     .select_from(ANNOTATE) \
     .join(
@@ -1941,8 +1941,9 @@ async def get_training_data(disease, db=Depends(get_db)) -> dict:
     if len(df_note)>0:
         df = pd.merge(df_annotate,df_note, how="inner", on=["hadm_id","hadm_id"])
 
-        df = df[['hadm_id','text','value']]
+        df = df[['hadm_id','text','label']]
         print(df)
+        df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
     else:
         result = []

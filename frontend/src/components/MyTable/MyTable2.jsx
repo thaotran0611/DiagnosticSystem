@@ -76,6 +76,16 @@ export default function MyTable2(props) {
   const pageSizeList = [10, 20, 30];
   const [pageSize, setPageSize] = useState(pageSizeList[0]);
   const [goToPage, setGoToPage] = useState(data.length > 0 ? "1" : "0");
+
+
+
+  useEffect(() => {
+    if (data.length > 0){
+      setGoToPage("1")
+    }
+  }, [data.length]);
+
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
     setGoToPage(newPage.toString()); // Update the input field when page changes
