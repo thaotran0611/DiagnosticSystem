@@ -151,6 +151,11 @@ const Files = () => {
     };
     const pageSizeList = [24, 48, 96];
     const [goToPage, setGoToPage] = useState("");
+    useEffect(() => {
+        if (file.length > 0){
+          setGoToPage("1")
+        }
+      }, [file.length]);
 
     const [pageSize, setPageSize] = useState(pageSizeList[0]);
     const handleGoToPage = () => {

@@ -946,6 +946,9 @@ async def predict_disease(hadm_id, db=Depends(get_db)) -> dict:
     .limit(1) 
 
     df = pd.DataFrame(db.execute(subq).fetchall())
+    if len(df) == 0:
+        return JSONResponse(content={"message": 'This is the first admission. There is no historical discharge summary'})
+
     print("*********",df)
     hadm_id_list = list(df['hadm_id'])
     

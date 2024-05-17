@@ -67,6 +67,7 @@ const DetailPatient = (props) => {
                 });
                 setAddmission(response.data.admission);
                 setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "Admission ID").map((image) => image['Admission ID'])));
+                console.log(allAdmission)
                 setLoadingAdmission(false);
                 setInfoTag(response.data.infomation_tag)
             } catch (error) {
@@ -368,7 +369,7 @@ const DetailPatient = (props) => {
                         gap={4}
                         >
                         <GridItem textAlign={'right'} colStart={5} colSpan={1}>
-                            <Text paddingTop={1} fontWeight={600}>Hadm_ID:</Text>
+                            <Text paddingTop={1} fontWeight={600}>Admission ID:</Text>
                         </GridItem>
                         <GridItem colStart={6} colSpan={1}>
                             <Select onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>

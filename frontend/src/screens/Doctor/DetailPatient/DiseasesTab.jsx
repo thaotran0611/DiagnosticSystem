@@ -1,7 +1,7 @@
 import { Box, Grid, GridItem } from "@chakra-ui/react";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Select } from '@chakra-ui/react'
+import { Select, Text } from '@chakra-ui/react'
 
 // import MyTable2 from "../../../components/MyTable/MyTable2";
 import DiseaseTable from "../../../components/MyTable/DiseaseTable";
@@ -23,6 +23,8 @@ const DiseasesTab = (props) => {
     const [change, setChange] = useState(false)
     const [doctor, setDoctor] = useState('')
     const [tableKey, setTableKey] = useState(0);
+    const [message, setMessage] = useState(null);
+
     useEffect(() => {
         // Update tableKey to trigger re-render
         setTableKey(prevKey => prevKey + 1);
@@ -35,11 +37,17 @@ const DiseasesTab = (props) => {
                         hadm_id: hadmID
                     }
                 });
+                if (response.data.message){
+                    setMessage('Not Null')
+                }
+                else{
+                    setMessage(null)
+                }
+
                 setAnnotate(response.data.annotate);
                 setDoctor(response.data.doctor);
                 setBackupData(response.data.annotate)
                 setLoadingAnnotate(false);
-                console.log(doctor)
             } catch (error) {
                 setError(error);
                 setLoadingAnnotate(false);
@@ -58,9 +66,12 @@ const DiseasesTab = (props) => {
             setDoctor('');
         }
         sethadmID(e.target.value);
+        setMessage(null);
     };
     return(
+        
         <Box h={'100%'} position={'relative'}>
+            <Text paddingTop={1} fontWeight={600}>Admission ID:</Text>
             <Select onChange={handleHadmIDChange} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
                 {
                     props.allAdmission.map(item => (
@@ -69,7 +80,15 @@ const DiseasesTab = (props) => {
                 }
             </Select>
             {/* <MyTable2 editable={true} height={'680px'}/> */}
-            {<DiseaseTable key={tableKey} backup={backupData} setBackup={setBackupData} setData={setAnnotate} data={annotate} doctor={doctor} hadmID={hadmID}/>} 
+            {
+            hadmID !== 'All Admission' 
+                ? (message === null 
+                    ? <DiseaseTable key={tableKey} backup={backupData} setBackup={setBackupData} setData={setAnnotate} data={annotate} doctor={doctor} hadmID={hadmID}/> 
+                    : <Text paddingTop={1} fontWeight={600} fontSize={'30px'}>This is the first admission of this patient. So there is no historical discharge summary to predict</Text>
+                ) 
+                : null
+        }
+        
         </Box>
     )
 }
