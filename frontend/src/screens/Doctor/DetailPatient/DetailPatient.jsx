@@ -43,7 +43,7 @@ const DetailPatient = (props) => {
     const { patientCode } = useParams();
     console.log(patientCode)
     const [hadmID, sethadmID] = useState('All Admission');
-    const [allAdmission, setAllAdmission] = useState(['All Admission']);
+    const [allAdmission, setAllAdmission] = useState([{'Admission ID':'All Admission'}]);
     const [error, setError] = useState(null);
 
     const [infoTag, setInfoTag] = useState([]); // PASS AS PARAMETER
@@ -66,8 +66,7 @@ const DetailPatient = (props) => {
                     }
                 });
                 setAddmission(response.data.admission);
-                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "Admission ID").map((image) => image['Admission ID'])));
-                console.log(allAdmission)
+                setAllAdmission(allAdmission.concat(_.unionBy(response.data.admission, "Admission ID")));
                 setLoadingAdmission(false);
                 setInfoTag(response.data.infomation_tag)
             } catch (error) {
@@ -375,7 +374,7 @@ const DetailPatient = (props) => {
                             <Select onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
                                 {
                                     allAdmission.map(item => (
-                                        <option selected={item === hadmID ? true : false} value={item}>{item}</option>
+                                        <option selected={item === hadmID ? true : false} value={item['Admission ID']}>{item['Admission ID'] === 'All Admission' ? item['Admission ID'] : item['Admission ID'] + '   -   ' + item['Admission Time'] + '   -   ' + item['Admission Type']+ '   -   ' + item['Admission Location']}</option>
                                     ))
                                 }
                             </Select>

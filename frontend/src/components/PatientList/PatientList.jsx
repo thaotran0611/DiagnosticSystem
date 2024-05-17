@@ -10,7 +10,7 @@ import GoToPage from '../GoToPage/GoToPage';
 import { ArrowDownIcon, ArrowUpIcon } from '@chakra-ui/icons';
 
 
-const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
+const PatientList = ({ size, data, onPatientSelect, selectedPatient, setSelectedPatient }) => {
   const theme = createTheme({
     sizes: {
       container: size || '800px',
@@ -64,6 +64,7 @@ const PatientList = ({ size, data, onPatientSelect, selectedPatient }) => {
     } else {
       return b[sortby].toString().localeCompare(a[sortby].toString());
     }});
+  // setSelectedPatient(sortResult[0]);
   let startIndex = (page - 1) * pageSize;
   let endIndex = startIndex + pageSize;
   let slicedData = sortResult.slice(startIndex, endIndex);

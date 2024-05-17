@@ -63,7 +63,7 @@ const MedicalTestChart = (props) => {
                 >
                 <GridItem colStart={1} colSpan={4}>
                     <HStack>
-                        <Text paddingTop={0} color={'red'} fontSize={'22px'} fontWeight={600}>{typeoftestmanytime}</Text>
+                        <Text paddingTop={0} color={'red'} fontSize={'20px'} fontWeight={600}>{typeoftestmanytime}</Text>
                         {/* <SmallCloseIcon onClick={props.onClose} cursor={'pointer'}/> */}
                         <Switch isChecked={true} onChange={props.onClose}/>
                     </HStack>

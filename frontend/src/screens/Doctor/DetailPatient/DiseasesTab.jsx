@@ -24,7 +24,6 @@ const DiseasesTab = (props) => {
     const [doctor, setDoctor] = useState('')
     const [tableKey, setTableKey] = useState(0);
     const [message, setMessage] = useState(null);
-
     useEffect(() => {
         // Update tableKey to trigger re-render
         setTableKey(prevKey => prevKey + 1);
@@ -43,11 +42,11 @@ const DiseasesTab = (props) => {
                 else{
                     setMessage(null)
                 }
-
                 setAnnotate(response.data.annotate);
                 setDoctor(response.data.doctor);
                 setBackupData(response.data.annotate)
                 setLoadingAnnotate(false);
+                console.log(doctor)
             } catch (error) {
                 setError(error);
                 setLoadingAnnotate(false);
@@ -65,21 +64,18 @@ const DiseasesTab = (props) => {
             setAnnotate([]);
             setDoctor('');
         }
+        setMessage(null)
         sethadmID(e.target.value);
-        setMessage(null);
     };
     return(
-        
         <Box h={'100%'} position={'relative'}>
-            <Text paddingTop={1} fontWeight={600}>Admission ID:</Text>
             <Select onChange={handleHadmIDChange} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
                 {
                     props.allAdmission.map(item => (
-                        <option selected={item === hadmID ? true : false} value={item}>{item}</option>
+                        <option selected={item === hadmID ? true : false} value={item['Admission ID']}>{item['Admission ID'] === 'All Admission' ? item['Admission ID'] : item['Admission ID'] + '   -   ' + item['Admission Time'] + '   -   ' + item['Admission Type']+ '   -   ' + item['Admission Location']}</option>
                     ))
                 }
             </Select>
-            {/* <MyTable2 editable={true} height={'680px'}/> */}
             {
             hadmID !== 'All Admission' 
                 ? (message === null 
@@ -87,9 +83,7 @@ const DiseasesTab = (props) => {
                     : <Text paddingTop={1} fontWeight={600} fontSize={'30px'}>This is the first admission of this patient. So there is no historical discharge summary to predict</Text>
                 ) 
                 : null
-        }
-        
-        </Box>
+        }        </Box>
     )
 }
 
