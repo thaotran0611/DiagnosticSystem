@@ -32,7 +32,7 @@ const DiseasesTab = (props) => {
             try {
                 const response = await axios.get('http://localhost:8000/predict', {
                     params: {
-                        hadm_id: hadmID
+                        hadm_id: hadmID['Admission ID']
                     }
                 });
                 setAnnotate(response.data.annotate);
@@ -45,14 +45,14 @@ const DiseasesTab = (props) => {
                 setLoadingAnnotate(false);
             }
         };
-        if (change && hadmID !== 'All Admission') {
+        if (change && hadmID['Admission ID'] !== 'All Admission') {
             fetchData();
         }
-    }, [hadmID]);
+    }, [hadmID['Admission ID']]);
     
     const handleHadmIDChange = (e) => {
-        setShouldRenderTable(hadmID !== 'All Admission'); 
-        setChange(e.target.value !== hadmID)
+        setShouldRenderTable(hadmID['Admission ID'] !== 'All Admission'); 
+        setChange(e.target.value !== hadmID['Admission ID'])
         if (change){
             setAnnotate([]);
             setDoctor('');
@@ -64,12 +64,12 @@ const DiseasesTab = (props) => {
             <Select onChange={handleHadmIDChange} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
                 {
                     props.allAdmission.map(item => (
-                        <option selected={item === hadmID ? true : false} value={item}>{item}</option>
+                        <option selected={item === hadmID['Admission ID'] ? true : false} value={item['Admission ID']}>{item['Admission ID'] === 'All Admission' ? item['Admission ID'] : item['Admission ID'] + '   -   ' + item['Admission Time'] + '   -   ' + item['Admission Type']+ '   -   ' + item['Admission Location']}</option>
                     ))
                 }
             </Select>
             {/* <MyTable2 editable={true} height={'680px'}/> */}
-            {<DiseaseTable key={tableKey} backup={backupData} setBackup={setBackupData} setData={setAnnotate} data={annotate} doctor={doctor} hadmID={hadmID}/>} 
+            {<DiseaseTable key={tableKey} backup={backupData} setBackup={setBackupData} setData={setAnnotate} data={annotate} doctor={doctor} hadmID={hadmID['Admission ID']}/>} 
         </Box>
     )
 }
