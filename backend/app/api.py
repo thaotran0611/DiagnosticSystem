@@ -88,6 +88,26 @@ def mapping_column(col):
            "starttime":"Start Time",
            "endtime": "End Time",
            "locationcategory":"Location Category",
+           'response_status_code':'Status Code',
+           'request_method': 'Method',
+           'request_url': 'URL',
+           'request_path_parameters': 'Path Parameters',
+           'request_query_params': 'Query Parameters',
+           'timespan' : 'Time Span',
+           'created': 'Created',
+           'url': 'Location Store',
+           'created_at': 'Created',
+           'updated_at': 'Updated',
+           'last_access_time': 'Last Access Time',
+           'type_file': 'Type of File',
+           'type_of_disease': 'Prediction Disease',
+           'metadata': 'Metadata',
+           'active': 'Active',
+           'acc': 'Accuracy',
+           'auc': 'AUC',
+           'p': 'Precision',
+           'r': 'Recall',
+           'f1': 'F1-Score'
            }
     mapped_cols = [dic.get(column, column) for column in col]
     return mapped_cols
@@ -1344,6 +1364,7 @@ async def get_sytem_log(db=Depends(get_db)) -> dict:
     if len(df) > 0:
         df = df.drop(columns=['id'])
         transform_timestamp(df,['created'])
+        df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
         return JSONResponse(content={"system_log": result})
     else:
@@ -1808,6 +1829,7 @@ async def get_files(db=Depends(get_db)) -> dict:
         df.fillna(value=np.nan, inplace=True)
         df.replace({np.nan: None}, inplace=True)
         transform_timestamp(df,['created_at','updated_at','last_access_time'])
+        # df.columns = mapping_column(df.columns)
         result = df.to_dict(orient='records')
         genderal_result = df_general.to_dict(orient='records')
     else:

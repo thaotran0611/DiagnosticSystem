@@ -106,7 +106,22 @@ const OverviewAnalyst = () => {
     const endIndex = startIndex + pageSize;
     const slicedData = generalTag.slice(startIndex, endIndex);
     const [selectedRecord, setSelectedRecord] = useState(null);
-
+    const mapping = {
+            'name': 'name',
+           'url': 'Location Store',
+           'created_at': 'Created',
+           'updated_at': 'Updated',
+           'last_access_time': 'Last Access Time',
+           'type_file': 'Type of File',
+           'type_of_disease': 'Prediction Disease',
+           'metadata': 'Metadata',
+           'active': 'Active',
+           'acc': 'Accuracy',
+           'auc': 'AUC',
+           'p': 'Precision',
+           'r': 'Recall',
+           'f1': 'F1-Score'
+    }
     return(
         <AnalystLayout path={
             <Breadcrumb fontSize="xl">
@@ -163,7 +178,17 @@ const OverviewAnalyst = () => {
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Model List</Text>
                                 </GridItem>
                                 <GridItem padding={'0 10px'}>
-                                    <MyTable2 data={file}  onSelect={setSelectedRecord} height={'350px'}/>
+                                    <MyTable2 data={file.map(item => {
+                                    const newItem = {};
+                                    for (const [oldKey, newKey] of Object.entries(mapping)) {
+                                        if (item.hasOwnProperty(oldKey)) {
+                                        newItem[newKey] = item[oldKey];
+                                        }
+                                    }
+                                    return newItem;
+                                })
+                            }   
+                                    onSelect={setSelectedRecord} height={'350px'}/>
                                 </GridItem>
                             </Grid>
                         </GridItem>

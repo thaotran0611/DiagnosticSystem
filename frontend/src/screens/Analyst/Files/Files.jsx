@@ -44,16 +44,18 @@ const ModelCard = (props) => { // Destructure user from props
   ); // End of return statement
 }
 const Files = () => {
-     
+    
     const handleClick = (data) => {
         var log_data = {
             'user_code': sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).code: '0',
             'time': format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
             'action': 'View Detail of File',
-            'related_item': 'File ' + data.code
+            'related_item': 'File ' + data.name
           }
         log(log_data);
-        navigate(`detailfiles/${data.code}`, { state: { selectedModel: data }} ); // Assuming the URL pattern is '/patient/:patientCode'
+        
+        
+        navigate(`detailfiles/${data.name}`, { state: { selectedModel: data }} ); // Assuming the URL pattern is '/patient/:patientCode'
     };
 
     const [file, setFile] = useState([]);

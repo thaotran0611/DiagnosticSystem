@@ -59,10 +59,36 @@ const Model = () => {
     
         fetchData();
     }, []);
-
+    const mapping = {
+        'name': 'Name',
+        'url': 'Location Store',
+        'created_at': 'Created',
+        'updated_at': 'Updated',
+        'last_access_time': 'Last Access Time',
+        'type_file': 'Type of File',
+        'type_of_disease': 'Prediction Disease',
+        'metadata': 'Metadata',
+        'active': 'Active',
+        'acc': 'Accuracy',
+        'auc': 'AUC',
+        'p': 'Precision',
+        'r': 'Recall',
+        'f1': 'F1-Score'
+    }
+    const changeKeys = (obj, keyMapping) => {
+        let newObj = {};
+        for (let key in obj) {
+            if (keyMapping.hasOwnProperty(key)) {
+                newObj[keyMapping[key]] = obj[key];
+            } else {
+                newObj[key] = obj[key]; // Retain the original key if not in the mapping
+            }
+        }
+        return newObj;
+    };
     let selectModel_keyvalue = [];
     if (file !== null){
-        selectModel_keyvalue= Object.entries(file)
+        selectModel_keyvalue= Object.entries(changeKeys(file,mapping))
                             .map(([key, value]) => { return { key: key, value: value };
                             });
     }
@@ -174,11 +200,11 @@ const Model = () => {
                             <Grid gridTemplateRows={'10% 90%'} h={'100%'} position={'relative'}>
                                 <GridItem>
                                     <Center>
-                                        <Text color={'#3E36B0'} fontSize={'24px'} fontWeight={'700'}>Detail of Prediction Model for {file.name}</Text>
+                                        <Text color={'#3E36B0'} fontSize={'24px'} fontWeight={'700'}>Detail of Prediction Model for {file.type_of_disease}</Text>
                                     </Center>
                                 </GridItem>
                                 <GridItem h={'100%'} position={'relative'} p={2} overflow={'auto'}>
-                                <SimpleGrid columns={2} spacing={0} > 
+                                <SimpleGrid columns={2} spacing={0} templateColumns="30% 70%"> 
                                     {selectModel_keyvalue.map((item, index) => ( 
                                     <React.Fragment key={index}> 
                                         <Text  fontWeight="bold" fontSize={'20px'}>{item.key}:</Text> 

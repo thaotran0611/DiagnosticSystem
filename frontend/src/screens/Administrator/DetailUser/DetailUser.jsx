@@ -42,6 +42,14 @@ const DetailUser = (props) => {
     const navigate=useNavigate();
     const { userCode } = useParams();
 
+    const mapping = {
+        'user_code': 'User Code',
+        'time': 'Time',
+        'action': 'Action',
+        'related_item': 'Related Item',
+        'role': 'Role',
+    }
+    
     const location = useLocation();
     if (!location || !location.state || !location.state.patient_Data) {
         // Handle the case where location or location.state or location.state.patient_Data is null
@@ -355,7 +363,15 @@ const DetailUser = (props) => {
                                     const currentDate = new Date(item.time);
                                     return item.action === typeAction && (drillup === 'date' ? `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}` === decision 
                                     : drillup === 'month' ? `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}` ===  decision
-                                    : `${currentDate.getFullYear()}` === decision)})} 
+                                    : `${currentDate.getFullYear()}` === decision)}).map(item => {
+                                        const newItem = {};
+                                        for (const [oldKey, newKey] of Object.entries(mapping)) {
+                                            if (item.hasOwnProperty(oldKey)) {
+                                                newItem[newKey] = item[oldKey];
+                                            }
+                                        }
+                                        return newItem;
+                                    })} 
                                     height={expandGeneral === 1 ? '620px': '320px'} width={expand ? '1700px' : '1100px'}/>
                             </Box>
                             </GridItem>}

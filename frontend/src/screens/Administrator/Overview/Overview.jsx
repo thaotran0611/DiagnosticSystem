@@ -37,6 +37,13 @@ import { LineChart } from '../../../components/Chart/LineChart';
 
 const theme = createTheme();
 const OverviewAdmin = () => {
+    const mapping = {
+        'user_code': 'User Code',
+        'time': 'Time',
+        'action': 'Action',
+        'related_item': 'Related Item',
+        'role': 'Role',
+    }
     const img = {'DOCTOR':DoctorLogo, 'RESEARCHER':ResearcherLogo, 'ADMINISTRATOR':AdminLogo, 'ANALYST':AnalystLogo}
     const navigate = useNavigate();
     const admin_code = sessionStorage.getItem('user')
@@ -345,7 +352,17 @@ const OverviewAdmin = () => {
                                 </GridItem>
                                 <GridItem area={'user'} bg={'#fff'} borderRadius={'20px'} p={2}>
                                     {/* Content for the user action log */}
-                                    <MyTable2 tablename={'User Action Log'} data={actionLog} height={'320px'} onSelect={setSelectedUser}/>
+                                    <MyTable2 tablename={'User Action Log'} data={actionLog.map(item => {
+                                                                                    const newItem = {};
+                                                                                    for (const [oldKey, newKey] of Object.entries(mapping)) {
+                                                                                        if (item.hasOwnProperty(oldKey)) {
+                                                                                        newItem[newKey] = item[oldKey];
+                                                                                        }
+                                                                                    }
+                                                                                    return newItem;
+                                                                                })
+                                                                            }  
+                                        height={'320px'} onSelect={setSelectedUser}/>
                                 </GridItem>
                             </Grid>
                         </GridItem>

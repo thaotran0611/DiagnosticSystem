@@ -11,7 +11,11 @@ const PatientTag = (props) => {
         sum_of_admission: 'Admissions',
         sum_of_male: 'Male',
         sum_of_female: 'Female',
-        disease_name: 'Name'
+        disease_name: 'Name',
+        code: 'Code',
+        name: 'Name',
+        gender: 'Gender',
+        role:'Role'
     }
     let patientDataList = [];
     console.log(props.data)
@@ -62,14 +66,14 @@ const PatientTag = (props) => {
             <div> 
             <CardBody paddingTop={2}>
                 <Center marginTop={4} marginBottom={1}>
-                    <Text fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.subject_id : props.disease ? props.data.disease_code : props.data.drug} - </Text>
+                    <Text fontWeight={'500'} fontSize={'22px'}>{props.patient ? (props.data.subject_id ? props.data.subject_id: props.data.code) : props.disease ? props.data.disease_code : props.data.drug} - </Text>
                     <Text color={'#F62020'} marginLeft={2} fontWeight={'500'} fontSize={'22px'}>{props.patient ? props.data.name : props.disease ? props.data.disease_name : props.data.drug_type}</Text>
                 </Center>
                 <SimpleGrid columns={3} spacing={2} gridTemplateColumns={'48% 4% 48%'}>
                     <SimpleGrid columns={2} spacing={1}>
                         {patientDataList ? patientDataList.slice(0, halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
-                            <Text fontWeight="bold">{props.disease ? mappingTagDisease[item.key] : item.key}:</Text> 
+                            <Text fontWeight="bold">{props.disease || props.data.code ? mappingTagDisease[item.key] : item.key}:</Text> 
                             <Text>{item.value}</Text> 
                         </React.Fragment> 
                         )): null} 
@@ -80,7 +84,7 @@ const PatientTag = (props) => {
                     <SimpleGrid columns={2} spacing={1}> 
                         {patientDataList ? patientDataList.slice(halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
-                            <Text fontWeight="bold">{props.disease ? mappingTagDisease[item.key] : item.key}:</Text> 
+                            <Text fontWeight="bold">{props.disease || props.data.code ? mappingTagDisease[item.key] : item.key}:</Text> 
                             <Text>{item.value}</Text> 
                         </React.Fragment> 
                     )): null} 
