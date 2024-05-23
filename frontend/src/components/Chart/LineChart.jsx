@@ -125,7 +125,7 @@ export function LineChart(props) {
     datasets: data.datasets.map((dataset, datasetIndex) => {
       return {
         ...dataset,
-        pointBackgroundColor: dataset.data.map((_, dataIndex) => props.changeChart ? dataIndex === clickedIndex && props.changeChart === 2 ? 'red' : props.color.rgba : props.color.rgba)
+        pointBackgroundColor: dataset.data.map((_, dataIndex) => props.changeChart ? dataIndex === clickedIndex && props.changeChart === 2 ? 'red' : props.color.rgba : dataIndex === clickedIndex ? 'red' : props.color.rgba)
       };
     })
   };

@@ -34,7 +34,7 @@ const OveralTag = (props) => {
                     )) : null
                 }
                 <div style={{position: 'absolute', right: '1%', bottom: '-9%'}}>
-                    <img src={doctorimg}/>;
+                    <img src={doctorimg} alt="no img" width={'397px'} height={'333px'}/>;
                 </div>
             </div>
         </div>

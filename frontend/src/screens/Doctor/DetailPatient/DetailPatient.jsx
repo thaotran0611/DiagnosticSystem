@@ -368,10 +368,11 @@ const DetailPatient = (props) => {
                         gap={4}
                         >
                         <GridItem textAlign={'right'} colStart={5} colSpan={1}>
-                            <Text paddingTop={1} fontWeight={600}>Admission ID:</Text>
+                            <label htmlFor="Admission ID">
+                            <Text paddingTop={1} fontWeight={600}>Admission ID:</Text></label>
                         </GridItem>
                         <GridItem colStart={6} colSpan={1}>
-                            <Select onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
+                            <Select id='Admission ID' onChange={(e) => {sethadmID(e.target.value)}} fontWeight={600} color={'#3E36B0'} variant={'outline'}>
                                 {
                                     allAdmission.map(item => (
                                         <option selected={item === hadmID ? true : false} value={item['Admission ID']}>{item['Admission ID'] === 'All Admission' ? item['Admission ID'] : item['Admission ID'] + '   -   ' + item['Admission Time'] + '   -   ' + item['Admission Type']+ '   -   ' + item['Admission Location']}</option>

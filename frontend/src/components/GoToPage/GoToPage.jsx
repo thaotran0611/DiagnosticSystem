@@ -9,6 +9,7 @@ const GoToPage = (props) => {
     return (
         <ThemeProvider theme={theme}>
             <Stack direction="row" spacing="10" p="5">
+                <label htmlFor="filled-hidden-label-small" style={{display: 'none'}}></label>
                 <Button onClick={props.handleGoToPage}>Page: </Button>
                 <Spacer/>
                 <TextField

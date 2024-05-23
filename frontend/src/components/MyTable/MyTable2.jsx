@@ -133,7 +133,8 @@ export default function MyTable2(props) {
               <Spacer/>
               <GoToPage handleGoToPage={handleGoToPage} goToPage={goToPage} setGoToPage ={setGoToPage}/>
               <Box marginLeft="10px" />
-              <select className='itemPerPage' onChange={e => setPageSize(Number(e.target.value))} value={pageSize}> 
+              <label htmlFor="show" style={{display: 'none'}}></label>
+              <select id='show' className='itemPerPage' onChange={e => setPageSize(Number(e.target.value))} value={pageSize}> 
                 {pageSizeList.map(size => ( 
                   <option key={size} value={size}> 
                     Show {size} 

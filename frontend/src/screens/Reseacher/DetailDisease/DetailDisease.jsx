@@ -42,7 +42,10 @@ const DetailDisease = (props) => {
         ethnicity: 'Ethnicity',
         dob: 'Date of Birth',
         dod: 'Date of Death',
-        yearold: 'Life Expectancy'
+        yearold: 'Life Expectancy',
+        charttime: 'Chart Time',
+        category: 'Category',
+        text: 'Text'
     }
     const location = useLocation();
     const disease = location.state.data;
@@ -119,10 +122,6 @@ const DetailDisease = (props) => {
                     ...item,
                     yearold: calculateYearDifference(item.dod, item.dob)
                 })));
-                console.log(response.data.disease.map(item => ({
-                    ...item,
-                    yearold: calculateYearDifference(item.dod, item.dob)
-                })));
                 setLoadingDisease(false);
             } catch (error) {
                 setError(error);
@@ -146,10 +145,6 @@ const DetailDisease = (props) => {
                     ...item,
                     yearold: calculateYearDifference(item.dod, item.dob)
                 })));
-                console.log(response.data.otherdiseases.map(item => ({
-                    ...item,
-                    yearold: calculateYearDifference(item.dod, item.dob)
-                })));
             } catch (error) {
                 setError(error);
             }
@@ -168,12 +163,32 @@ const DetailDisease = (props) => {
                     }
                 });
                 setPrescription(response.data.prescriptions);
-                console.log(response.data.prescriptions);
             } catch (error) {
                 setError(error);
             }
         };
         if (prescription.length == 0){
+            fetchData();
+        }
+    }, []);
+    const [clinicalsign, setClinicalSign] = useState([]);
+    const [loadingClinicalSign, setLoadingClinicalSign] = useState(true);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/detaildisease-clinical-sign', {
+                    params: {
+                        disease_code: diseaseCode
+                    }
+                });
+                setClinicalSign(response.data.clinicalsign);
+                setLoadingClinicalSign(false);
+            } catch (error) {
+                setError(error);
+                setLoadingClinicalSign(false);
+            }
+        };
+        if (clinicalsign.length == 0){
             fetchData();
         }
     }, []);
@@ -246,8 +261,8 @@ const DetailDisease = (props) => {
                         <TabList>
                             <Tab fontWeight={'bold'} key={1}>General</Tab>
                             <Tab fontWeight={'bold'} key={2}>Other Diseases</Tab>
-                            {/* <Tab fontWeight={'bold'} key={3}>Clinical sign</Tab> */}
                             <Tab fontWeight={'bold'} key={3}>Prescription</Tab>
+                            <Tab fontWeight={'bold'} key={4}>Clinical sign</Tab>
                         </TabList>
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'} w={'100%'} position={'relative'}>
@@ -256,11 +271,12 @@ const DetailDisease = (props) => {
                             <TabPanel key={2} h={'100%'}>
                                 <OtherDiseaseTab mapping={mapping} expand={expand} otherdiseases={otherdiseases}/>
                             </TabPanel>
-                            {/* <TabPanel key={3} h={'100%'}>
-                                <ClinicalSignTab/>
-                            </TabPanel> */}
+                            
                             <TabPanel key={3} h={'100%'}>
-                                <PrescriptionTab mapping={mapping} prescription={prescription}/>
+                                <PrescriptionTab mapping={mapping} expand={expand} prescription={prescription}/>
+                            </TabPanel>
+                            <TabPanel key={4} h={'100%'}>
+                                <ClinicalSignTab mapping={mapping} expand={expand} clinicalsign={clinicalsign}/>
                             </TabPanel>
                         </TabPanels>
                     </Tabs>

@@ -8,6 +8,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import { PieChart } from "../../../components/Chart/PieChart";
 import _ from 'lodash';
 const GeneralTab = (props) => {
+    
     const [expandGeneral, setExpandGenaral] = useState(2);
     const [scheme, setScheme] = useState('Tableau10');
     const [decision, setDecision] = useState('All');
@@ -146,7 +147,7 @@ const GeneralTab = (props) => {
                                     }}>
                             {
                                 diseases.map(item => (
-                                    <Checkbox onChange={(e) => handleOnChange(e.target.value)} isChecked={codiseases.findIndex(disease => disease === item) !== -1 ? true : false} value={item}>{item}</Checkbox>
+                                    <Checkbox onChange={(e) => handleOnChange(e.target.value)} isChecked={codiseases.findIndex(disease => disease === item) !== -1 ? true : false} value={item}>{props.mapping[item]}</Checkbox>
                                 ))
                             }
                         </Stack>
@@ -251,7 +252,15 @@ const GeneralTab = (props) => {
             <GridItem h={'100%'} position={'relative'}>
                 <MyTable2
                             tablename={ (changeChart === 1 ? 'Patients with ' + label + ': ' + decision : null)}
-                            data={filterDataTable} 
+                            data={filterDataTable.map(item => {
+                                const newItem = {};
+                                for (const [oldKey, newKey] of Object.entries(props.mapping)) {
+                                    if (item.hasOwnProperty(oldKey)) {
+                                    newItem[newKey] = item[oldKey];
+                                    }
+                                }
+                                return newItem;
+                            })} 
                             width={props.expand ? '1700px' : '1100px'} height={expandGeneral === 2 ? '240px' : '600px'} onSelect={()=>{}}/>
             </GridItem>
             }

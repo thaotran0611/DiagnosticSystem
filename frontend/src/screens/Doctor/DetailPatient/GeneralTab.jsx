@@ -58,6 +58,7 @@ const GeneralTab = (props ) => {
                         <Box position='relative' bg={'white'} w={'90px'}>
                             <Center>
                                 <IconButton
+                                    aria-label="down"
                                     isDisabled = {expandGeneral === 3 ? true: false}
                                     boxSize={'20px'}
                                     icon={<ChevronDownIcon/>}
@@ -66,6 +67,7 @@ const GeneralTab = (props ) => {
                                     onClick={expandGeneral === 2 ? ()=>{setExpandGenaral(expandGeneral + 1); props.setPageSize(props.pageSize*3)}: ()=>{setExpandGenaral(expandGeneral + 1)}}
                                 />
                                 <IconButton
+                                    aria-label="up"
                                     marginLeft={2}
                                     isDisabled = {expandGeneral === 1 ? true: false}
                                     boxSize={'20px'}

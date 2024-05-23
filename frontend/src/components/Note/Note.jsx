@@ -96,7 +96,7 @@ const Note = (props) => {
                     </Popup>
                 </GridItem>
                 <GridItem colSpan={4} rowSpan={1}>
-                    <BasicDateTimePicker value={fromdate} onChange={setFromDate}/> 
+                    <BasicDateTimePicker onChange={setFromDate}/> 
                 </GridItem>
                 <GridItem marginTop={6} colSpan={1}>
                     <Center>
@@ -104,12 +104,13 @@ const Note = (props) => {
                     </Center>
                 </GridItem>
                 <GridItem colSpan={4}>
-                    <BasicDateTimePicker value={todate} minDateTime={fromdate} onChange={setToDate}/> 
+                    <BasicDateTimePicker minDateTime={fromdate} onChange={setToDate}/> 
                 </GridItem>
                 <GridItem rowStart={2} colSpan={11}>
                     <InputGroup size={'sm'} padding={'0 10px'}>
-                        <InputLeftAddon bgColor={'#d9d9d9'} border={'1px solid #d9d9d9'} fontWeight={500} fontSize={'18px'} color={'#111'} borderTopLeftRadius={'10px'} borderBottomLeftRadius={'10px'}>Title</InputLeftAddon>
-                        <Input w={'100%'} display={'block'} border={'1px solid #d9d9d9'} fontSize={'18px'} fontWeight={400} style={{borderTopRightRadius: '10px', borderBottomRightRadius: '10px'}} onChange={(e)=>{setSearchvalue(e.target.value)}}/>
+                        <label for='title'>
+                        <InputLeftAddon bgColor={'#d9d9d9'} border={'1px solid #d9d9d9'} fontWeight={500} fontSize={'18px'} color={'#111'} borderTopLeftRadius={'10px'} borderBottomLeftRadius={'10px'}>Title</InputLeftAddon></label>
+                        <Input id='title' w={'100%'} display={'block'} border={'1px solid #d9d9d9'} fontSize={'18px'} fontWeight={400} style={{borderTopRightRadius: '10px', borderBottomRightRadius: '10px'}} onChange={(e)=>{setSearchvalue(e.target.value)}}/>
                     </InputGroup>
                 </GridItem>
             </Grid>
@@ -124,7 +125,7 @@ const Note = (props) => {
                 <ThemeProvider theme={theme}>
                     <div className="NoteDetail" style={{width: '100%'}}>
                         {
-                            fromdate === null && todate === null ?
+                            fromdate === null && todate === null && searchvalue === ''?
                             slicedData.map(note => (
                                 <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>
                             )) :
@@ -132,14 +133,14 @@ const Note = (props) => {
                             slicedData.filter((item) => {
                                 const itemValue = String(item.title).toLowerCase();
                                 const timeValue = dayjs(item.created_at).toDate();
-                                return itemValue.includes(searchvalue) && (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
+                                return itemValue.includes(searchvalue) && (fromdate !== null ? timeValue >= fromdate : true) && (todate !== null ? timeValue <= todate : true);
                             }).map(note => (
                                 <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>
                             ))
                             :
                             slicedData.filter((item) => {
                                 const timeValue = dayjs(item.created_at).toDate();
-                                return (fromdate !== null ? timeValue >= fromdate : 1) && (todate !== null ? timeValue <= todate : 1);
+                                return (fromdate !== null ? timeValue >= fromdate : true) && (todate !== null ? timeValue <= todate : true);
                             }).map(note => (
                                 <MiniNote data={props.data} setNote={props.setNote} type={props.type} onDelete={onDelete} priority={note.priority} note={note.note} note_id={note.note_id} created_at={format(note.created_at, 'yyyy-MM-dd hh:mm:ss')} title={note.title} subject_id={props.subject_id} user_code={props.user_code} disease_code={props.disease_code} medicine_code={props.medicine_code}/>
                             ))

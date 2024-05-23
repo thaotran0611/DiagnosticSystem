@@ -3,7 +3,7 @@ import axios from 'axios';
 import OveralTag from "../../../components/OveralTag/OveralTag";
 import Note from "../../../components/Note/Note";
 import PatientList from "../../../components/PatientList/PatientList";
-import { Center, SimpleGrid } from "@chakra-ui/react";
+import { Box, Center, SimpleGrid } from "@chakra-ui/react";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -177,7 +177,7 @@ const OverviewAnalyst = () => {
                                 <GridItem p={3}>
                                     <Text fontWeight={600} color={"#111111"} fontSize={'28px'}>Model List</Text>
                                 </GridItem>
-                                <GridItem padding={'0 10px'}>
+                                <GridItem position={'relative'} padding={'0 10px'}>
                                     <MyTable2 data={file.map(item => {
                                     const newItem = {};
                                     for (const [oldKey, newKey] of Object.entries(mapping)) {
@@ -188,7 +188,7 @@ const OverviewAnalyst = () => {
                                     return newItem;
                                 })
                             }   
-                                    onSelect={setSelectedRecord} height={'350px'}/>
+                                    onSelect={setSelectedRecord} height={'350px'} width={'1780px'}/>
                                 </GridItem>
                             </Grid>
                         </GridItem>

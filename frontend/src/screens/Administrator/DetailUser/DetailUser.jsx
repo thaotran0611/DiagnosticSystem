@@ -359,7 +359,7 @@ const DetailUser = (props) => {
                         </GridItem>
                         {expandGeneral === 3 ? null : <GridItem position={'relative'}>
                             <Box h={'100%'}>
-                                <MyTable2 tablename={'Action list'} data={decision === 'All' ? actionLog : actionLog.filter((item) => {
+                                <MyTable2 tablename={'Action list: '+ decision} data={decision === 'All' ? actionLog : actionLog.filter((item) => {
                                     const currentDate = new Date(item.time);
                                     return item.action === typeAction && (drillup === 'date' ? `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}` === decision 
                                     : drillup === 'month' ? `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}` ===  decision

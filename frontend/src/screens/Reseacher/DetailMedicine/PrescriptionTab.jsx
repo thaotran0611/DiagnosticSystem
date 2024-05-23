@@ -72,7 +72,15 @@ const PrescriptionTab = (props) => {
                     }
                 </Text>
             </HStack>
-            <MyTable2 data={filterData} tablename={'Table of co-prescribed-medication '} height={'600px'} onSelect={()=>{}}/>
+            <MyTable2 data={filterData.map(item => {
+                                const newItem = {};
+                                for (const [oldKey, newKey] of Object.entries(props.mapping)) {
+                                    if (item.hasOwnProperty(oldKey)) {
+                                    newItem[newKey] = item[oldKey];
+                                    }
+                                }
+                                return newItem;
+                            })} tablename={'Table of co-prescribed-medication '} height={'600px'} onSelect={()=>{}}/>
         </Box>
     )
 }

@@ -139,6 +139,34 @@ const DetailMedicine = (props) => {
         // const intervalId = setInterval(fetchData, 5000);
         // return () => clearInterval(intervalId);
     }, []);
+    const mapping = {
+        drug: 'Drug',
+        drug_name_poe: 'Drug name POE',
+        formulary_drug_cd: 'Formulary drug cd',
+        drug_type: 'Drug type',
+        sum_of_male: 'Sum of male',
+        sum_of_female: 'Sum of female',
+        Alcohol_Abuse: 'Alcohol Abuse',
+        Chronic_Neurologic_Dystrophies: 'Chronic Neurologic Dystrophies',
+        Substance_Abuse: 'Subtance Abuse',
+        Chronic_Pain: 'Chronic Pain',
+        Depression: 'Depression',
+        Adv_Heart_Disease: 'Adv Heart Disease',
+        Metastatic_Cancer: 'Metastatic Cancer',
+        Adv_Lung_Disease: 'Adv Lung Disease',
+        Obesity: 'Obesity',
+        Psychiatric_Disorders: 'Psychiatric Disorders',
+        hadm_id: 'Admission ID',
+        gender: 'Gender',
+        dob: 'Date of Birth',
+        dod: 'Date of Death',
+        admission_type: 'Admission type',
+        admission_location: 'Admission location',
+        religion: 'Religion',
+        marital_status: 'Marital Status',
+        ethnicity: 'Ethnicity',
+        insurance: 'Insurance'
+    }
     return(
         <ResearcherLayout path={
                 <Breadcrumb fontSize="xl">
@@ -212,7 +240,7 @@ const DetailMedicine = (props) => {
                         <TabPanels h={'99%'}>
                             <TabPanel key={1} h={'100%'} w={'100%'} position={'relative'}>
                                 {
-                                    !loadingMedicine ? <GeneralTab medicineStatistic={medicineStatistic} expand={expand}/> : 
+                                    !loadingMedicine ? <GeneralTab mapping={mapping} medicineStatistic={medicineStatistic} expand={expand}/> : 
                                     <Center>
                                         <Spinner/> 
                                     </Center>
@@ -223,7 +251,7 @@ const DetailMedicine = (props) => {
                             </TabPanel> */}
                             <TabPanel key={2} h={'100%'}>
                                 {
-                                    !loadingOtherMedicine ? <PrescriptionTab otherdrugs={otherdrugs}/> : 
+                                    !loadingOtherMedicine ? <PrescriptionTab mapping={mapping} otherdrugs={otherdrugs}/> : 
                                     <Center>
                                         <Spinner/> 
                                     </Center>

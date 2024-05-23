@@ -1,10 +1,10 @@
-import { Card, CardHeader, Flex, Avatar, Box, Heading, IconButton, Text, BsThreeDotsVertical, AbsoluteCenter, Center, CardBody, SimpleGrid, Divider, Icon } from "@chakra-ui/react";
+import { Card, CardHeader, Flex, Avatar, Box, Heading, IconButton, Text, BsThreeDotsVertical, AbsoluteCenter, Center, CardBody, SimpleGrid, Divider, Icon, Image } from "@chakra-ui/react";
 import React from "react";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import DiseaseCard from "../DiseaseCard/DiseaseCard";
 import { GiMedicines } from "react-icons/gi";
 import { Grid, GridItem, Spinner} from '@chakra-ui/react'
-
+import avatar from '../../img/Avatar/img15.jpg';
 const PatientTag = (props) => { 
     const mappingTagDisease = {
         disease_code: 'Code',
@@ -15,7 +15,13 @@ const PatientTag = (props) => {
         code: 'Code',
         name: 'Name',
         gender: 'Gender',
-        role:'Role'
+        role:'Role',
+        drug: 'Drug',
+        drug_name_poe: 'Drug name POE',
+        formulary_drug_cd: 'Formulary drug cd',
+        drug_type: 'Drug type',
+        sum_of_male: 'Sum of male',
+        sum_of_female: 'Sum of female',
     }
     let patientDataList = [];
     console.log(props.data)
@@ -40,11 +46,18 @@ const PatientTag = (props) => {
                             <Box position={'relative'} borderRadius={'50%'} width={'90px'} height={'90px'} border={'1px solid #A6DEF7'}>
                                 <AbsoluteCenter>
                                     <Box position={'relative'} borderRadius={'50%'} width={'80px'} height={'80px'} bg={'rgba(166,222,247,0.4)'}>
-                                        <AbsoluteCenter>
+                                        <AbsoluteCenter boxSize={'80px'}>
                                             {props.patient ? 
-                                            <Text color={'#A6DEF7'} fontWeight={'medium'} fontSize={'40px'}>  
-                                                {props.data.subject_id ? props.data.subject_id : props.data.code}
-                                            </Text>
+                                            // <Text color={'#A6DEF7'} fontWeight={'medium'} fontSize={'40px'}>  
+                                            //     {props.data.subject_id ? props.data.subject_id : props.data.code}
+                                            // </Text>
+                                            <Image
+                                                w={'80px'}
+                                                h={'80px'}
+                                                src={avatar}
+                                                alt="avatar"
+                                                borderRadius={'50%'}
+                                            />
                                             : props.disease ?
                                             <DiseaseCard absolutecenter={true} text={props.data.disease_code} hidden={true}/> 
                                             : props.medicine ? 
@@ -73,7 +86,7 @@ const PatientTag = (props) => {
                     <SimpleGrid columns={2} spacing={1}>
                         {patientDataList ? patientDataList.slice(0, halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
-                            <Text fontWeight="bold">{props.disease || props.data.code ? mappingTagDisease[item.key] : item.key}:</Text> 
+                            <Text fontWeight="bold">{props.disease || props.data.code || props.medicine ? mappingTagDisease[item.key] : item.key}:</Text> 
                             <Text>{item.value}</Text> 
                         </React.Fragment> 
                         )): null} 
@@ -84,7 +97,7 @@ const PatientTag = (props) => {
                     <SimpleGrid columns={2} spacing={1}> 
                         {patientDataList ? patientDataList.slice(halfIndex).map((item, index) => ( 
                         <React.Fragment key={index}> 
-                            <Text fontWeight="bold">{props.disease || props.data.code ? mappingTagDisease[item.key] : item.key}:</Text> 
+                            <Text fontWeight="bold">{props.disease || props.data.code || props.medicine ? mappingTagDisease[item.key] : item.key}:</Text> 
                             <Text>{item.value}</Text> 
                         </React.Fragment> 
                     )): null} 
