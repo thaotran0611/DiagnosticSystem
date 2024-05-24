@@ -70,7 +70,7 @@ const DetailUser = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/user-notes', {
+                const response = await axios.get('http://localhost:8004/user-notes', {
                     params: {
                         admin_code: admin_code,
                         user_code: userCode
@@ -94,7 +94,7 @@ const DetailUser = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/detail-user-action-log', {
+                const response = await axios.get('http://localhost:8004/detail-user-action-log', {
                     params: {
                         user_code: userCode
                     }

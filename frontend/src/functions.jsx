@@ -4,7 +4,7 @@ export function log(data) {
     console.log(data);
     axios({
         method: 'post',
-        url: 'http://localhost:8000/log-action',
+        url: 'http://localhost:8004/log-action',
         data: data,
     })
     .then((res) => {

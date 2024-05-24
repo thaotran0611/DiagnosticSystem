@@ -30,7 +30,7 @@ const Overview = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/self-notes', {
+                const response = await axios.get('http://localhost:8001/self-notes', {
                     params: {
                         user_code: doctor_code
                     }
@@ -50,7 +50,7 @@ const Overview = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-overview', {
+                const response = await axios.get('http://localhost:8001/patients-overview', {
                     params: {
                         doctor_code: doctor_code
                     }

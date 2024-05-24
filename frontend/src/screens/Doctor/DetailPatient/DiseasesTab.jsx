@@ -31,7 +31,7 @@ const DiseasesTab = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/predict', {
+                const response = await axios.get('http://localhost:8001/predict', {
                     params: {
                         hadm_id: hadmID
                     }

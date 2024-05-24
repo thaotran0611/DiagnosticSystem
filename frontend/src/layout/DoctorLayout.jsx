@@ -23,8 +23,7 @@ export const DoctorLayout = ({children, path, expand, patient, name}) => {
         ? JSON.parse(sessionStorage.getItem('user')).token
         : '0';
         console.log(sessionToken)
-        const url = 'http://localhost:8000/auth/logout'
-        sessionStorage.removeItem('user');
+        const url = 'http://localhost:8004/auth/logout'
         axios({
             method: 'delete',
             url: url,
@@ -43,6 +42,7 @@ export const DoctorLayout = ({children, path, expand, patient, name}) => {
             'related_item': ''
             }
         log(log_data);
+        sessionStorage.removeItem('user');
         navigate('/login');
     };
     return(

@@ -10,8 +10,6 @@ import {
   } from '@chakra-ui/react'
 import { ThemeProvider, createTheme } from "@mui/material";
 import MyPagination from "../../../components/Pagination/Pagination";
-import PatientGridCard from "../../../components/PatientGridCard/PatientGridCard";
-import { DoctorLayout } from "../../../layout/DoctorLayout";
 import { Grid, GridItem } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
 import { AnalystLayout } from "../../../layout/AnalystLayout";
@@ -70,7 +68,7 @@ const Files = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/files-system');
+                const response = await axios.get('http://localhost:8003/files-system');
                 console.log(response)
                 setFile(response.data.file);
                 setFilteredResults(response.data.file);

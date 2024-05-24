@@ -85,7 +85,7 @@ const Disease = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/researcher-overview-disease', {
+                const response = await axios.get('http://localhost:8002/researcher-overview-disease', {
                     params: {
                         researcher_code: researcher_code
                     }
@@ -109,7 +109,7 @@ const Disease = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/researcher-disease-all-admission', {
+                const response = await axios.get('http://localhost:8002/researcher-disease-all-admission', {
                     params: {
                         researcher_code: researcher_code
                     }

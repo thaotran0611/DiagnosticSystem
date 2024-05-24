@@ -43,7 +43,7 @@ const Patient = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-overview', {
+                const response = await axios.get('http://localhost:8001/patients-overview', {
                     params: {
                         doctor_code: doctor_code
                     }

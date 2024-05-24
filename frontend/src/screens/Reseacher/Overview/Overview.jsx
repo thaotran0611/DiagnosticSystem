@@ -84,7 +84,7 @@ const OverviewResearcher = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/researcher-overview-patient', {
+                const response = await axios.get('http://localhost:8002/researcher-overview-patient', {
                     params: {
                         researcher_code: researcher_code
                     }
@@ -112,7 +112,7 @@ const OverviewResearcher = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/self-notes', {
+                const response = await axios.get('http://localhost:8002/self-notes', {
                     params: {
                         user_code: researcher_code
                     }
@@ -132,7 +132,7 @@ const OverviewResearcher = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/researcher-overview-disease', {
+                const response = await axios.get('http://localhost:8002/researcher-overview-disease', {
                     params: {
                         researcher_code: researcher_code
                     }
@@ -150,7 +150,7 @@ const OverviewResearcher = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/researcher-overview-drug', {
+                const response = await axios.get('http://localhost:8002/researcher-overview-drug', {
                     params: {
                         researcher_code: researcher_code
                     }

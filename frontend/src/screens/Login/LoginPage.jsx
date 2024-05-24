@@ -38,7 +38,7 @@ const LoginPage = ({ setLoggedIn, setRole }) => {
       setIsLoading(true);
         axios({
             method: 'put',
-            url: 'http://localhost:8000/auth',
+            url: 'http://localhost:8004/auth',
             data: {
               username: username,
               password: password,

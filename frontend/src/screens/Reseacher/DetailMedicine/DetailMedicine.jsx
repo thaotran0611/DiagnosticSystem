@@ -68,7 +68,7 @@ const DetailMedicine = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/detailmedicine-general', {
+                const response = await axios.get('http://localhost:8002/detailmedicine-general', {
                     params: {
                         drug: medicine.drug,
                         drug_name_poe: medicine.drug_name_poe,
@@ -93,7 +93,7 @@ const DetailMedicine = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/detailmedicine-co-prescribed-medication', {
+                const response = await axios.get('http://localhost:8002/detailmedicine-co-prescribed-medication', {
                     params: {
                         drug: medicine.drug,
                         drug_name_poe: medicine.drug_name_poe,
@@ -121,7 +121,7 @@ const DetailMedicine = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/medicine-notes', {
+                const response = await axios.get('http://localhost:8002/medicine-notes', {
                     params: {
                         user_code: researcher_code,
                         drug: medicine.drug,

@@ -45,7 +45,7 @@ const Takenote = (props) => {
         }
     };
     const submit = () => {
-        let url = 'http://localhost:8000/insert-note' ;
+        let url = 'http://localhost:8004/insert-note' ;
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
         let newNoteData = {
             note_id: generateRandomString(5),
@@ -111,7 +111,7 @@ const Takenote = (props) => {
             user_code: user_code,
         };
 
-        let url = 'http://localhost:8000/update-note' ;
+        let url = 'http://localhost:8004/update-note' ;
         if (props.type === "self-note"){
             // url = 'http://localhost:8000/update-self-note'
         }

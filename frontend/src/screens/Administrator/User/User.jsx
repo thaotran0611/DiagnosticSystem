@@ -66,7 +66,7 @@ const User = () => {
     useEffect(() => {
       const fetchData = async () => {
           try {
-              const response = await axios.get('http://localhost:8000/get-users');
+              const response = await axios.get('http://localhost:8004/get-users');
               console.log(response.data.users)
               setData(response.data.users);
               setFilteredResults(response.data.users);

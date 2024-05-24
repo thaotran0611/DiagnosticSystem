@@ -80,7 +80,7 @@ const DetailDisease = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/disease-notes', {
+                const response = await axios.get('http://localhost:8002/disease-notes', {
                     params: {
                         user_code: researcher_code,
                         disease_code: diseaseCode
@@ -113,7 +113,7 @@ const DetailDisease = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/detaildisease-general', {
+                const response = await axios.get('http://localhost:8002/detaildisease-general', {
                     params: {
                         disease_code: diseaseCode
                     }
@@ -136,7 +136,7 @@ const DetailDisease = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/detaildisease-otherdiseases', {
+                const response = await axios.get('http://localhost:8002/detaildisease-otherdiseases', {
                     params: {
                         disease_code: diseaseCode
                     }
@@ -157,7 +157,7 @@ const DetailDisease = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/detaildisease-prescriptions', {
+                const response = await axios.get('http://localhost:8002/detaildisease-prescriptions', {
                     params: {
                         disease_code: diseaseCode
                     }
@@ -176,7 +176,7 @@ const DetailDisease = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/detaildisease-clinical-sign', {
+                const response = await axios.get('http://localhost:8002/detaildisease-clinical-sign', {
                     params: {
                         disease_code: diseaseCode
                     }

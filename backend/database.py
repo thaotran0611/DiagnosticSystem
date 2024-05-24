@@ -25,7 +25,7 @@ else:
 
 # SQLALCHEMY_DATABASE_URL = "hive://localhost:10000/mimic_iii"
 # Create a SQLAlchemy engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_size=10, max_overflow=20)
 
 # Create a sessionmaker
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

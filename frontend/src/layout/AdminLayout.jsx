@@ -24,7 +24,7 @@ export const AdminLayout = ({children, path, expand, user, name}) => {
         ? JSON.parse(sessionStorage.getItem('user')).token
         : '0';
         console.log(sessionToken)
-        const url = 'http://localhost:8000/auth/logout'
+        const url = 'http://localhost:8004/auth/logout'
         axios({
             method: 'delete',
             url: url,

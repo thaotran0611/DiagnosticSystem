@@ -60,7 +60,7 @@ const Note = (props) => {
         props.setNote(updatedNotes);
         const currentDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
 
-        let url = 'http://localhost:8000/delete-note' ;
+        let url = 'http://localhost:8004/delete-note' ;
         
         axios({
             method: 'post',

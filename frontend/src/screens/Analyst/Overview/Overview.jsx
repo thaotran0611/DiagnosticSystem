@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import OveralTag from "../../../components/OveralTag/OveralTag";
 import Note from "../../../components/Note/Note";
-import PatientList from "../../../components/PatientList/PatientList";
 import { Box, Center, SimpleGrid } from "@chakra-ui/react";
 import {
     Breadcrumb,
@@ -14,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 import { Grid, GridItem,Text } from '@chakra-ui/react'
 import { AnalystLayout } from "../../../layout/AnalystLayout";
 import MyTable2 from "../../../components/MyTable/MyTable2";
-import { AreaChart } from "../../../components/Chart/AreaChart";
 import Tag from "../../../components/Tag/Tag";
 import AIlogo from "../../../img/Analyst/AIlogo.png"
 import { ThemeProvider } from "@emotion/react";
@@ -40,7 +37,7 @@ const OverviewAnalyst = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/self-notes', {
+                const response = await axios.get('http://localhost:8003/self-notes', {
                     params: {
                         user_code: user_code
                     }
@@ -77,7 +74,7 @@ const OverviewAnalyst = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/files-system');
+                const response = await axios.get('http://localhost:8003/files-system');
                 console.log(response)
                 setFile(response.data.file);
                 const updatedFiles = response.data.general.map(model => {

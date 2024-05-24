@@ -73,7 +73,7 @@ export default function DiseaseTable(props) {
     };
 
     // Send requestData to the backend API endpoint
-    fetch('http://localhost:8000/update-annotate', {
+    fetch('http://localhost:8001/update-annotate', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

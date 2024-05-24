@@ -9,21 +9,16 @@ import {
     BreadcrumbSeparator,
   } from '@chakra-ui/react'
 import { ThemeProvider, createTheme } from "@mui/material";
-import MyPagination from "../../../components/Pagination/Pagination";
-import PatientGridCard from "../../../components/PatientGridCard/PatientGridCard";
-import { ResearcherLayout } from "../../../layout/ResearcherLayout";
 import { Grid, GridItem } from '@chakra-ui/react'
 import { useNavigate } from "react-router-dom";
-import DiseaseTag from "../../../components/DiseaseTag/DiseaseTag";
 import { AnalystLayout } from "../../../layout/AnalystLayout";
 import MyTable2 from "../../../components/MyTable/MyTable2";
-import { AreaChart } from "../../../components/Chart/AreaChart";
 import { useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import BasicDateTimePicker from "../../../components/DateTimePicker/DateTimePicker";
-import { format, set } from 'date-fns'
-import {log} from '../../../functions';
-import dayjs from 'dayjs';
+// import BasicDateTimePicker from "../../../components/DateTimePicker/DateTimePicker";
+// import { format, set } from 'date-fns'
+// import {log} from '../../../functions';
+// import dayjs from 'dayjs';
 
 const theme = createTheme();
 
@@ -45,7 +40,7 @@ const Model = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/get-training-data',{
+                const response = await axios.get('http://localhost:8003/get-training-data',{
                     params: {
                         disease: selectedModel.type_of_disease
                     }
@@ -124,7 +119,7 @@ const Model = () => {
     //     else{
     //         insertData.schedule = format(new Date(), 'yyyy-MM-dd HH:mm:ss');
     //     }
-    //     const url = 'http://localhost:8000/retrain-model';
+    //     const url = 'http://localhost:8003/retrain-model';
     //     axios({
     //         method: 'post',
     //         url: url,
@@ -158,7 +153,7 @@ const Model = () => {
     //     const updatedData = selectedModel;
     //     updatedData['updated_at'] = currentDate;
     //     updatedData['url'] = fileLocation;
-    //     let url = 'http://localhost:8000/update-file-location' ;
+    //     let url = 'http://localhost:8003/update-file-location' ;
     //     axios({
     //         method: 'post',
     //         url: url,

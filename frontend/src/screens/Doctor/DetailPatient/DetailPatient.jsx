@@ -59,7 +59,7 @@ const DetailPatient = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-detail-admission', {
+                const response = await axios.get('http://localhost:8001/patients-detail-admission', {
                     params: {
                         doctor_code: doctor_code,
                         subject_id: patientCode
@@ -85,7 +85,7 @@ const DetailPatient = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patient-notes', {
+                const response = await axios.get('http://localhost:8001/patient-notes', {
                     params: {
                         doctor_code: doctor_code,
                         subject_id: patientCode
@@ -108,7 +108,7 @@ const DetailPatient = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-detail-procedure', {
+                const response = await axios.get('http://localhost:8001/patients-detail-procedure', {
                     params: {
                         doctor_code: doctor_code,
                         subject_id: patientCode
@@ -140,7 +140,7 @@ const DetailPatient = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-detail-prescription', {
+                const response = await axios.get('http://localhost:8001/patients-detail-prescription', {
                     params: {
                         doctor_code: doctor_code,
                         subject_id: patientCode
@@ -174,7 +174,7 @@ const DetailPatient = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-detail-note', {
+                const response = await axios.get('http://localhost:8001/patients-detail-note', {
                     params: {
                         doctor_code: doctor_code,
                         subject_id: patientCode
@@ -227,7 +227,7 @@ const DetailPatient = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/patients-detail-medicaltest', {
+                const response = await axios.get('http://localhost:8001/patients-detail-medicaltest', {
                     params: {
                         doctor_code: doctor_code,
                         subject_id: patientCode

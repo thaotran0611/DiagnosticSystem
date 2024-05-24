@@ -135,7 +135,7 @@ const Scheduler = () => {
             insertData.duration=selectedHour;
         }
         console.log(insertData)
-        const url = 'http://localhost:8000/insert-load-schedule';
+        const url = 'http://localhost:8004/insert-load-schedule';
         setScheduleLog([insertData, ...scheduleLog])
         axios({
             method: 'post',
@@ -162,7 +162,7 @@ const Scheduler = () => {
             user_code : user_code,
             created_at : format(new Date(), 'yyyy-MM-dd HH:mm:ss')
         }
-        const url = 'http://localhost:8000/load-data-manually';
+        const url = 'http://localhost:8004/load-data-manually';
         axios({
             method: 'post',
             url: url,
@@ -190,7 +190,7 @@ const Scheduler = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/self-notes', {
+                const response = await axios.get('http://localhost:8004/self-notes', {
                     params: {
                         user_code: user_code
                     }
@@ -213,7 +213,7 @@ const Scheduler = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/load-manual-history');
+                const response = await axios.get('http://localhost:8004/load-manual-history');
                 // console.log(response)
                 setLoadingHistory(response.data.load_data_manual_history);
                 setLoading(false);
@@ -229,7 +229,7 @@ const Scheduler = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/get-admin-schedule', {
+                const response = await axios.get('http://localhost:8004/get-admin-schedule', {
                     params: {
                         user_code: user_code
                     }

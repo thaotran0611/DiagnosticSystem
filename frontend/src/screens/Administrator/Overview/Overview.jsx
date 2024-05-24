@@ -59,7 +59,7 @@ const OverviewAdmin = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/self-notes', {
+                const response = await axios.get('http://localhost:8004/self-notes', {
                     params: {
                         user_code: admin_code
                     }
@@ -81,7 +81,7 @@ const OverviewAdmin = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/currentLogin');
+                const response = await axios.get('http://localhost:8004/currentLogin');
                 const updatedLoginUser = response.data.result.map(user => {
                     return {
                         ...user,
@@ -107,7 +107,7 @@ const OverviewAdmin = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/system-log');
+                const response = await axios.get('http://localhost:8004/system-log');
                 // console.log(response)
                 setSystemLog(response.data.system_log);
                 setLoadingSystemLog(false);
@@ -149,7 +149,7 @@ const OverviewAdmin = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/user-action-log');
+                const response = await axios.get('http://localhost:8004/user-action-log');
                 setActionLog(response.data.user_action_log);
                 console.log(response.data.user_action_log);
                 let maxDate = response.data.user_action_log.reduce((max, obj) => {

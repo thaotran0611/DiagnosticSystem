@@ -42,7 +42,7 @@ const Medicine = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/researcher-overview-drug', {
+                const response = await axios.get('http://localhost:8002/researcher-overview-drug', {
                     params: {
                         researcher_code: researcher_code
                     }
